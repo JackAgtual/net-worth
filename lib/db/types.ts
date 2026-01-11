@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 
-interface MongoDocument {
+export interface MongoDocument {
   _id: Types.ObjectId;
 }
 

@@ -9,7 +9,7 @@ export enum Category {
   Property = "Property",
 }
 
-interface AssetDoc extends Entry {
+export interface AssetDoc extends Entry {
   category: Category;
   retirement?: boolean;
   amountOneYearAgo?: number;
