@@ -3,11 +3,13 @@ dotenv.config({ path: ".env.local" });
 
 import dbConnect from "./mongodb";
 import { Asset } from "./asset";
+import { Liability } from "./liability";
 
 async function seed() {
   await dbConnect();
 
   await Asset.deleteMany();
+  await Liability.deleteMany();
 
   await Asset.insertMany([
     {
@@ -31,6 +33,17 @@ async function seed() {
       category: "Tax free",
       amountOneYearAgo: 1000,
       contributions: 500,
+    },
+  ]);
+
+  await Liability.insertMany([
+    {
+      title: "Liability 1",
+      amount: 500,
+    },
+    {
+      title: "Liability 2",
+      amount: 1234,
     },
   ]);
 

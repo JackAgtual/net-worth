@@ -1,4 +1,5 @@
-import mongoose, { Model, Schema, Types } from "mongoose";
+import mongoose, { Model, Schema } from "mongoose";
+import { Entry } from "./types";
 
 export enum Category {
   Cash = "Cash",
@@ -8,20 +9,12 @@ export enum Category {
   Property = "Property",
 }
 
-interface Document {
-  _id: Types.ObjectId;
-}
-
-interface AssetDoc extends Document {
-  title: string;
+interface AssetDoc extends Entry {
   category: Category;
-  amount: number;
-
   retirement?: boolean;
   amountOneYearAgo?: number;
   contributions?: number;
   selfContribution?: boolean;
-  notes?: string;
 }
 
 interface AssetVirtuals {
