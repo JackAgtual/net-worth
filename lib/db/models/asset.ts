@@ -9,12 +9,16 @@ export enum Category {
   Property = "Property",
 }
 
+interface DeltaAmount {
+  amountOneYearAgo: number;
+  contributions: number;
+  selfContribution: boolean;
+}
+
 export interface AssetDoc extends Entry {
   category: Category;
   retirement?: boolean;
-  amountOneYearAgo?: number;
-  contributions?: number;
-  selfContribution?: boolean;
+  deltaAmount?: DeltaAmount;
 }
 
 interface AssetVirtuals {
@@ -24,6 +28,12 @@ interface AssetVirtuals {
 type AssetModelType = Model<AssetDoc, {}, {}, AssetVirtuals>;
 
 const required = true;
+
+const deltaAmountSchema = new Schema<DeltaAmount>({
+  amountOneYearAgo: { type: Number, required },
+  contributions: { type: Number, required },
+  selfContribution: { type: Boolean, required },
+});
 
 const assetSchema = new Schema<AssetDoc, AssetModelType, {}, {}, AssetVirtuals>(
   {
@@ -35,24 +45,22 @@ const assetSchema = new Schema<AssetDoc, AssetModelType, {}, {}, AssetVirtuals>(
     },
     amount: { type: Number, required },
 
+    deltaAmount: deltaAmountSchema,
     retirement: Boolean,
-    amountOneYearAgo: Number,
-    contributions: Number,
-    selfContribution: Boolean,
     notes: String,
   },
   {
     virtuals: {
       growthFromAppreciation: {
         get() {
-          if (
-            typeof this.amountOneYearAgo !== "number" ||
-            typeof this.contributions !== "number"
-          ) {
-            return undefined;
-          }
+          const { deltaAmount } = this;
+          if (deltaAmount === undefined) return undefined;
 
-          return this.amount - this.amountOneYearAgo - this.contributions;
+          return (
+            this.amount -
+            deltaAmount.amountOneYearAgo -
+            deltaAmount.contributions
+          );
         },
       },
     },

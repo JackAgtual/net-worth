@@ -8,23 +8,16 @@ describe("Asset", () => {
   });
 
   describe("growthFromAppreciation", () => {
-    it("undefined if contribution and amount one year ago are not set", () => {
-      expect(asset.growthFromAppreciation).toBeUndefined();
-    });
-
-    it("undefined if only contributions is not set", () => {
-      asset.amountOneYearAgo = 50;
-      expect(asset.growthFromAppreciation).toBeUndefined();
-    });
-
-    it("undefined if only amountOneYearAgo is not set", () => {
-      asset.contributions = 50;
+    it("undefined if deltaAmount is not set", () => {
       expect(asset.growthFromAppreciation).toBeUndefined();
     });
 
     it("calculated correctly", () => {
-      asset.amountOneYearAgo = 50;
-      asset.contributions = 10;
+      asset.deltaAmount = {
+        amountOneYearAgo: 50,
+        contributions: 10,
+        selfContribution: true,
+      };
       expect(asset.growthFromAppreciation).toEqual(40);
     });
   });
