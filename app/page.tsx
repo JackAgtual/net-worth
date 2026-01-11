@@ -1,5 +1,5 @@
-import { Asset } from "@/lib/mongodb/schema";
-import dbConnect from "@/lib/mongodb/mongodb";
+import { Asset } from "@/lib/db/asset";
+import dbConnect from "@/lib/db/mongodb";
 
 export default async function Home() {
   await dbConnect();
@@ -13,8 +13,9 @@ export default async function Home() {
         <ol>
           {assets.map((asset) => {
             return (
-              <li>
-                {asset.title}: ${asset.amount}
+              <li key={asset._id.toString()}>
+                {asset.title}: ${asset.amount} category: {asset.category}
+                growth: {asset.growthFromAppreciation}
               </li>
             );
           })}

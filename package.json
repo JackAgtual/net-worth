@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' lib/mongodb/seed.ts"
+    "seed": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' lib/db/seed.ts"
   },
   "dependencies": {
     "dotenv": "^17.2.3",

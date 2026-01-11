@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 
 import dbConnect from "./mongodb";
-import { Asset } from "./schema";
+import { Asset } from "./asset";
 
 async function seed() {
   await dbConnect();
@@ -13,18 +13,24 @@ async function seed() {
     {
       title: "Asset 1",
       amount: 100,
+      category: "After Tax",
     },
     {
       title: "Asset 2",
       amount: 10000,
+      category: "Cash",
     },
     {
       title: "Asset 3",
       amount: 100000,
+      category: "Property",
     },
     {
       title: "Asset 4",
       amount: 1200,
+      category: "Tax free",
+      amountOneYearAgo: 1000,
+      contributions: 500,
     },
   ]);
 
