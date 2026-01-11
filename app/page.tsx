@@ -1,5 +1,5 @@
-import { Asset } from "@/lib/db/asset";
-import { Liability } from "@/lib/db/liability";
+import { Asset, Liability } from "@/lib/db/models";
+
 import dbConnect from "@/lib/db/mongodb";
 
 export default async function Home() {

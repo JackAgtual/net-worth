@@ -2,8 +2,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 
 import dbConnect from "./mongodb";
-import { Asset } from "./asset";
-import { Liability } from "./liability";
+import { Asset, Liability } from "./models";
 
 async function seed() {
   await dbConnect();

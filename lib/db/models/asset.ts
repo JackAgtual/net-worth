@@ -1,5 +1,5 @@
 import mongoose, { Model, Schema } from "mongoose";
-import { Entry } from "./types";
+import { Entry } from "../types";
 
 export enum Category {
   Cash = "Cash",
