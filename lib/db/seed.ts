@@ -31,8 +31,8 @@ async function seed() {
       title: "Asset 4",
       amount: 1200,
       category: "Tax free",
-      deltaAmount: {
-        amountOneYearAgo: 1000,
+      amountOneYearAgo: 1000,
+      contribution: {
         contributions: 500,
         selfContribution: false,
       },
