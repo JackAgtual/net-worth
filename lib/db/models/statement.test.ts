@@ -1,7 +1,8 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 import { Asset, Liability, Statement } from ".";
-import { Category } from "./asset";
+import { AssetTestDoc, Category } from "./asset";
+import { LiabilitiesTestDoc } from "./liability";
 
 describe("Statement", () => {
   let mongoServer: MongoMemoryServer;
@@ -23,7 +24,7 @@ describe("Statement", () => {
       await collections[key].deleteMany();
     }
 
-    const assets = await Asset.insertMany([
+    const assetsInput: AssetTestDoc[] = [
       {
         title: "Savings",
         amount: 2_000,
@@ -34,16 +35,19 @@ describe("Statement", () => {
         amount: 10_000,
         category: Category.Cash,
         amountOneYearAgo: 9_000,
-        contributions: 500,
-        selfContribution: true,
+        contribution: {
+          amount: 500,
+          selfContribution: true,
+        },
       },
       {
         title: "Tabxable individual",
         amount: 10_000,
         category: Category.AfterTax,
+        amountOneYearAgo: 5_000,
+        includeInGrowthCalculation: true,
         contribution: {
-          amountOneYearAgo: 5_000,
-          contributions: 4_500,
+          amount: 4_500,
           selfContribution: true,
         },
       },
@@ -54,11 +58,12 @@ describe("Statement", () => {
       },
       {
         title: "401k company match",
-        amount: 10_000,
+        amount: 10000,
         category: Category.TaxDeferred,
+        amountOneYearAgo: 7000,
+        includeInGrowthCalculation: true,
         contribution: {
-          amountOneYearAgo: 7_000,
-          contributions: 1_000,
+          amount: 1000,
           selfContribution: false,
         },
       },
@@ -66,9 +71,10 @@ describe("Statement", () => {
         title: "Roth IRA",
         amount: 30_000,
         category: Category.TaxFree,
+        includeInGrowthCalculation: true,
+        amountOneYearAgo: 22_000,
         contribution: {
-          amountOneYearAgo: 22_000,
-          contributions: 6_500,
+          amount: 6_500,
           selfContribution: true,
         },
       },
@@ -76,9 +82,10 @@ describe("Statement", () => {
         title: "Roth 401k",
         amount: 80_000,
         category: Category.TaxFree,
+        amountOneYearAgo: 50_000,
+        includeInGrowthCalculation: true,
         contribution: {
-          amountOneYearAgo: 50_000,
-          contributions: 25_000,
+          amount: 25_000,
           selfContribution: true,
         },
       },
@@ -92,9 +99,10 @@ describe("Statement", () => {
       //   amount: 500_000,
       //   category: Category.Property,
       // },
-    ]);
+    ];
+    const assets = await Asset.insertMany(assetsInput);
 
-    const liabilities = await Liability.insertMany([
+    const liabilitiesInput: LiabilitiesTestDoc[] = [
       {
         title: "Liability 1",
         amount: 500,
@@ -103,7 +111,8 @@ describe("Statement", () => {
         title: "Liability 2",
         amount: 1234,
       },
-    ]);
+    ];
+    const liabilities = await Liability.insertMany(liabilitiesInput);
 
     statement = await Statement.create({
       year: 2026,

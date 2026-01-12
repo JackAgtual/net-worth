@@ -20,7 +20,7 @@ describe("Asset", () => {
 
     it("undefined if amountOneYearAgo is not set", () => {
       asset.contribution = {
-        contributions: 10,
+        amount: 10,
         selfContribution: true,
       };
 
@@ -30,7 +30,7 @@ describe("Asset", () => {
     it("calculated correctly", () => {
       asset.amountOneYearAgo = 50;
       asset.contribution = {
-        contributions: 10,
+        amount: 10,
         selfContribution: true,
       };
       expect(asset.growthFromAppreciation).toEqual(40);

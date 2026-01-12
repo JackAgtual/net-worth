@@ -3,6 +3,8 @@ import { Entry } from "../types";
 
 export interface LiabilityDoc extends Entry {}
 
+export type LiabilitiesTestDoc = Omit<LiabilityDoc, "_id">;
+
 type LiabilityModelType = Model<LiabilityDoc>;
 
 const required = true;

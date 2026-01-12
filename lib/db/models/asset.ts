@@ -10,7 +10,7 @@ export enum Category {
 }
 
 interface Contribution {
-  contributions: number;
+  amount: number;
   selfContribution: boolean;
 }
 
@@ -19,7 +19,10 @@ export interface AssetDoc extends Entry {
   retirement?: boolean;
   amountOneYearAgo?: number;
   contribution?: Contribution;
+  includeInGrowthCalculation?: boolean;
 }
+
+export type AssetTestDoc = Omit<AssetDoc, "_id">;
 
 interface AssetVirtuals {
   growthFromAppreciation?: number;
@@ -30,7 +33,7 @@ type AssetModelType = Model<AssetDoc, {}, {}, AssetVirtuals>;
 const required = true;
 
 const contributionSchema = new Schema<Contribution>({
-  contributions: { type: Number, required },
+  amount: { type: Number, required },
   selfContribution: { type: Boolean, required },
 });
 
@@ -44,6 +47,7 @@ const assetSchema = new Schema<AssetDoc, AssetModelType, {}, {}, AssetVirtuals>(
     },
     amount: { type: Number, required },
 
+    includeInGrowthCalculation: { type: Boolean, default: false },
     amountOneYearAgo: Number,
     contribution: contributionSchema,
     retirement: Boolean,
@@ -58,9 +62,7 @@ const assetSchema = new Schema<AssetDoc, AssetModelType, {}, {}, AssetVirtuals>(
           const { contribution } = this;
           if (contribution === undefined) return undefined;
 
-          return (
-            this.amount - this.amountOneYearAgo - contribution.contributions
-          );
+          return this.amount - this.amountOneYearAgo - contribution.amount;
         },
       },
     },

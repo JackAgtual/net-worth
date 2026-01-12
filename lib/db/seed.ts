@@ -3,6 +3,8 @@ dotenv.config({ path: ".env.local" });
 
 import dbConnect from "./mongodb";
 import { Asset, Liability, Statement } from "./models";
+import { AssetTestDoc, Category } from "./models/asset";
+import { LiabilitiesTestDoc } from "./models/liability";
 
 async function seed() {
   await dbConnect();
@@ -11,35 +13,37 @@ async function seed() {
   await Liability.deleteMany();
   await Statement.deleteMany();
 
-  const assets = await Asset.insertMany([
+  const assetsInput: AssetTestDoc[] = [
     {
       title: "Asset 1",
       amount: 100,
-      category: "After Tax",
+      category: Category.AfterTax,
     },
     {
       title: "Asset 2",
       amount: 10000,
-      category: "Cash",
+      category: Category.Cash,
     },
     {
       title: "Asset 3",
       amount: 100000,
-      category: "Property",
+      category: Category.Property,
     },
     {
       title: "Asset 4",
       amount: 1200,
-      category: "Tax free",
+      category: Category.TaxFree,
       amountOneYearAgo: 1000,
+      includeInGrowthCalculation: true,
       contribution: {
-        contributions: 500,
+        amount: 500,
         selfContribution: false,
       },
     },
-  ]);
+  ];
+  const assets = await Asset.insertMany(assetsInput);
 
-  const liabilities = await Liability.insertMany([
+  const liabilitiesInput: LiabilitiesTestDoc[] = [
     {
       title: "Liability 1",
       amount: 500,
@@ -48,7 +52,8 @@ async function seed() {
       title: "Liability 2",
       amount: 1234,
     },
-  ]);
+  ];
+  const liabilities = await Liability.insertMany(liabilitiesInput);
 
   const statement = await Statement.create({
     year: 2026,
