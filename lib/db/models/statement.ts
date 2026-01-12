@@ -40,14 +40,26 @@ interface StatementVirtuals {
   taxDeferredRetirementAssets?: number;
 }
 
-type StatementModelType = Model<StatementDoc, {}, {}, StatementVirtuals>;
+interface StatementMethods {
+  getTotalAssetAmount(): Promise<number>;
+  getTotalLiabilityAmount(): Promise<number>;
+  getNetWorth(): Promise<number>;
+  getTotalAmountByCategory(category: Category): Promise<number>;
+  getPercentOfAssetsByCategory(category: Category): Promise<number>;
+}
+type StatementModelType = Model<
+  StatementDoc,
+  {},
+  StatementMethods,
+  StatementVirtuals
+>;
 
 const required = true;
 
 const statementSchema = new Schema<
   StatementDoc,
   StatementModelType,
-  {},
+  StatementMethods,
   {},
   StatementVirtuals
 >(
@@ -73,95 +85,9 @@ const statementSchema = new Schema<
   },
   {
     virtuals: {
-      totalAssets: {
-        get() {
-          if (!this.populated("assets")) {
-            console.error("assets not populated");
-            return undefined;
-          }
-
-          const assets = this.assets as unknown as AssetDoc[];
-          return assets.reduce((acc, cur) => acc + cur.amount, 0);
-        },
-      },
-      totalLiabilities: {
-        get() {
-          if (!this.populated("liabilities")) {
-            console.error("liabilities not populated");
-            return undefined;
-          }
-          const liabilities = this.liabilities as unknown as LiabilityDoc[];
-          return liabilities.reduce((acc, cur) => acc + cur.amount, 0);
-        },
-      },
-      netWorth: {
-        get(this: StatementDoc & StatementVirtuals) {
-          if (typeof this.totalAssets !== "number") {
-            console.error("Undefined total assets");
-            return undefined;
-          }
-          if (typeof this.totalLiabilities !== "number") {
-            throw new Error("Undefined total liabilities");
-          }
-
-          return this.totalAssets - this.totalLiabilities;
-        },
-      },
-
-      cashAmount: {
-        get() {
-          return 1;
-        },
-      },
-      afterTaxAmount: {
-        get() {
-          return 1;
-        },
-      },
-      taxFreeAmount: {
-        get() {
-          return 1;
-        },
-      },
-      taxDeferredAmount: {
-        get() {
-          return 1;
-        },
-      },
-      propertyAmount: {
-        get() {
-          return 1;
-        },
-      },
-
-      cashPercent: {
-        get() {
-          return 1;
-        },
-      },
-      afterTaxPercent: {
-        get() {
-          return 1;
-        },
-      },
-      taxFreePercent: {
-        get() {
-          return 1;
-        },
-      },
-      taxDeferredPercent: {
-        get() {
-          return 1;
-        },
-      },
-      propertyPercent: {
-        get() {
-          return 1;
-        },
-      },
-
       lastYearLiquidAssetGrowth: {
         get() {
+          // include if last year amount is not undefined
           return 1;
         },
       },
@@ -198,14 +124,50 @@ const statementSchema = new Schema<
         },
       },
       taxFreeRetirementAssets: {
+        // make instance method
         get() {
           return 1;
         },
       },
       taxDeferredRetirementAssets: {
+        // make instance method
         get() {
           return 1;
         },
+      },
+    },
+    methods: {
+      async getTotalAssetAmount(): Promise<number> {
+        await this.populate("assets");
+        const assets = this.assets as unknown as AssetDoc[];
+        return assets.reduce((acc, cur) => acc + cur.amount, 0);
+      },
+      async getTotalLiabilityAmount(): Promise<number> {
+        await this.populate("liabilities");
+        const liabilities = this.liabilities as unknown as LiabilityDoc[];
+        return liabilities.reduce((acc, cur) => acc + cur.amount, 0);
+      },
+      async getNetWorth(): Promise<number> {
+        const [totalAssets, totalLiabilities] = await Promise.all([
+          this.getTotalAssetAmount(),
+          this.getTotalLiabilityAmount(),
+        ]);
+        return totalAssets - totalLiabilities;
+      },
+      async getTotalAmountByCategory(category: Category): Promise<number> {
+        await this.populate("assets");
+
+        const assets = this.assets as unknown as AssetDoc[];
+        return assets
+          .filter((asset) => asset.category === category)
+          .reduce((acc, cur) => acc + cur.amount, 0);
+      },
+      async getPercentOfAssetsByCategory(category: Category): Promise<number> {
+        const totalAmountInCategory = await this.getTotalAmountByCategory(
+          category
+        );
+        const totalAssets = await this.getTotalAssetAmount();
+        return totalAmountInCategory / totalAssets;
       },
     },
     toJSON: { virtuals: true },
