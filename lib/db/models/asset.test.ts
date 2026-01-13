@@ -8,14 +8,14 @@ describe("Asset", () => {
   });
 
   describe("growthFromAppreciation", () => {
-    it("undefined if contribution and amountOneYearAgo are not set", () => {
+    it("undefined if amountOneYearAgo is not set", () => {
       expect(asset.growthFromAppreciation).toBeUndefined();
     });
 
-    it("undefined if contribution is not set", () => {
+    it("defaults to zero contribution if contribution is not set", () => {
       asset.amountOneYearAgo = 50;
 
-      expect(asset.growthFromAppreciation).toBeUndefined();
+      expect(asset.growthFromAppreciation).toEqual(50);
     });
 
     it("undefined if amountOneYearAgo is not set", () => {
@@ -27,7 +27,7 @@ describe("Asset", () => {
       expect(asset.growthFromAppreciation).toBeUndefined();
     });
 
-    it("calculated correctly", () => {
+    it("accounts for contributions made", () => {
       asset.amountOneYearAgo = 50;
       asset.contribution = {
         amount: 10,
