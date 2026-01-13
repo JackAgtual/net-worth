@@ -11,22 +11,6 @@ interface StatementDoc extends MongoDocument {
 }
 
 interface StatementVirtuals {
-  totalAssets?: number;
-  totalLiabilities?: number;
-  netWorth?: number;
-
-  cashAmount?: number;
-  afterTaxAmount?: number;
-  taxFreeAmount?: number;
-  taxDeferredAmount?: number;
-  propertyAmount?: number;
-
-  cashPercent?: number;
-  afterTaxPercent?: number;
-  taxFreePercent?: number;
-  taxDeferredPercent?: number;
-  propertyPercent?: number;
-
   lastYearLiquidAssetGrowth?: number;
   liquidAssetGrowthPercentOfSalary?: number;
 
