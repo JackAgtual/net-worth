@@ -5,7 +5,7 @@ import { AssetDoc, LiabilityDoc } from "@/lib/db/models";
 
 interface StatementDoc extends MongoDocument {
   year: number;
-  lastYearSalary: number;
+  lastYearSalary?: number;
   assets: Types.ObjectId[];
   liabilities: Types.ObjectId[];
 }
@@ -49,7 +49,7 @@ const statementSchema = new Schema<
 >(
   {
     year: { type: Number, required },
-    lastYearSalary: { type: Number, required },
+    lastYearSalary: Number,
     assets: [
       {
         type: Types.ObjectId,
