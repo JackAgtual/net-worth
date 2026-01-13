@@ -24,12 +24,22 @@ interface StatementVirtuals {
   taxDeferredRetirementAssets?: number;
 }
 
+export enum Contributor {
+  Self,
+  NonSelf,
+  All,
+}
+
 interface StatementMethods {
   getTotalAssetAmount(): Promise<number>;
   getTotalLiabilityAmount(): Promise<number>;
   getNetWorth(): Promise<number>;
   getTotalAmountByCategory(category: Category): Promise<number>;
   getPercentOfAssetsByCategory(category: Category): Promise<number>;
+  getContributionAmountByContributor(contributor: Contributor): Promise<number>;
+  getContributioPercentOfSalaryByContributor(
+    contributor: Contributor
+  ): Promise<number | undefined>;
 }
 type StatementModelType = Model<
   StatementDoc,
@@ -76,27 +86,6 @@ const statementSchema = new Schema<
         },
       },
       liquidAssetGrowthPercentOfSalary: {
-        get() {
-          return 1;
-        },
-      },
-
-      selfContribution: {
-        get() {
-          return 1;
-        },
-      },
-      totalContribution: {
-        get() {
-          return 1;
-        },
-      },
-      selfContributionsPercentOfSalary: {
-        get() {
-          return 1;
-        },
-      },
-      totalContributionsPercentOfSalary: {
         get() {
           return 1;
         },
@@ -152,6 +141,41 @@ const statementSchema = new Schema<
         );
         const totalAssets = await this.getTotalAssetAmount();
         return totalAmountInCategory / totalAssets;
+      },
+      async getContributionAmountByContributor(
+        contributor: Contributor
+      ): Promise<number> {
+        await this.populate("assets");
+
+        const assets = this.assets as unknown as AssetDoc[];
+        return assets
+          .filter((asset) => {
+            if (asset.contribution === undefined) return false;
+            const contribution = asset.contribution;
+
+            switch (contributor) {
+              case Contributor.All:
+                return true;
+              case Contributor.Self:
+                return contribution.selfContribution;
+              case Contributor.NonSelf:
+                return !contribution.selfContribution;
+              default:
+                return false;
+            }
+          })
+          .reduce((acc, cur) => {
+            if (cur.contribution === undefined) return acc;
+            return acc + cur.contribution.amount;
+          }, 0);
+      },
+      async getContributioPercentOfSalaryByContributor(
+        contributor: Contributor
+      ): Promise<number | undefined> {
+        if (this.lastYearSalary === undefined) return undefined;
+        const contributionAmount =
+          await this.getContributionAmountByContributor(contributor);
+        return contributionAmount / this.lastYearSalary;
       },
     },
     toJSON: { virtuals: true },

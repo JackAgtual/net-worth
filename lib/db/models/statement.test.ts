@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { Asset, Liability, Statement } from ".";
 import { AssetTestDoc, Category } from "./asset";
 import { LiabilitiesTestDoc } from "./liability";
+import { Contributor } from "./statement";
 
 describe("Statement", () => {
   let mongoServer: MongoMemoryServer;
@@ -116,7 +117,7 @@ describe("Statement", () => {
 
     statement = await Statement.create({
       year: 2026,
-      lastYearSalary: 100000,
+      lastYearSalary: 100_000,
       assets: assets.map((asset) => asset._id),
       liabilities: liabilities.map((liability) => liability._id),
     });
@@ -139,25 +140,90 @@ describe("Statement", () => {
     expect(await statement.getNetWorth()).toEqual(150_266);
   });
 
-  it("getTotalAmountByCategory gets correct amount", async () => {
-    expect(await statement.getTotalAmountByCategory(Category.Cash)).toEqual(
-      12_000
-    );
+  describe("getTotalAmountByCategory", () => {
+    it("calculates cash category", async () => {
+      expect(await statement.getTotalAmountByCategory(Category.Cash)).toEqual(
+        12_000
+      );
+    });
 
-    expect(await statement.getTotalAmountByCategory(Category.AfterTax)).toEqual(
-      20_000
-    );
+    it("calculates after tax category", async () => {
+      expect(
+        await statement.getTotalAmountByCategory(Category.AfterTax)
+      ).toEqual(20_000);
+    });
 
-    expect(
-      await statement.getTotalAmountByCategory(Category.TaxDeferred)
-    ).toEqual(10_000);
+    it("calculates tax deferred category", async () => {
+      expect(
+        await statement.getTotalAmountByCategory(Category.TaxDeferred)
+      ).toEqual(10_000);
+    });
 
-    expect(await statement.getTotalAmountByCategory(Category.TaxFree)).toEqual(
-      110_000
-    );
+    it("calculates tax free category", async () => {
+      expect(
+        await statement.getTotalAmountByCategory(Category.TaxFree)
+      ).toEqual(110_000);
+    });
 
-    expect(await statement.getTotalAmountByCategory(Category.Property)).toEqual(
-      0
-    );
+    it("calculates property category", async () => {
+      expect(
+        await statement.getTotalAmountByCategory(Category.Property)
+      ).toEqual(0);
+    });
+  });
+
+  describe("getContributionAmountByContributor", () => {
+    it("getContributionAmountByContributor calculates contributions", async () => {
+      expect(
+        await statement.getContributionAmountByContributor(Contributor.Self)
+      ).toEqual(36_500);
+    });
+
+    it("calculates non self contributions", async () => {
+      expect(
+        await statement.getContributionAmountByContributor(Contributor.NonSelf)
+      ).toEqual(1_000);
+    });
+
+    it("calculates all contributions", async () => {
+      expect(
+        await statement.getContributionAmountByContributor(Contributor.All)
+      ).toEqual(37_500);
+    });
+  });
+
+  describe("getContributioPercentOfSalaryByContributor", () => {
+    it("returns undefined if lastYearSalary is undefined", async () => {
+      statement.lastYearSalary = undefined;
+      expect(
+        await statement.getContributioPercentOfSalaryByContributor(
+          Contributor.All
+        )
+      ).toBeUndefined();
+    });
+
+    it("calculates contribution percent of salary for self contributions", async () => {
+      expect(
+        await statement.getContributioPercentOfSalaryByContributor(
+          Contributor.Self
+        )
+      ).toBeCloseTo(0.365, 3);
+    });
+
+    it("calculates contribution percent of salary for non self contributions", async () => {
+      expect(
+        await statement.getContributioPercentOfSalaryByContributor(
+          Contributor.NonSelf
+        )
+      ).toBeCloseTo(0.01, 3);
+    });
+
+    it("calculates contribution percent of salary for all contributions", async () => {
+      expect(
+        await statement.getContributioPercentOfSalaryByContributor(
+          Contributor.All
+        )
+      ).toBeCloseTo(0.375, 3);
+    });
   });
 });
