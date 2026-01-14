@@ -102,7 +102,7 @@ const statementSchema = new Schema<
         const assets = this.assets as unknown as AssetHydrated[];
         return assets
           .filter((asset) => {
-            if (asset.contribution === undefined) return false;
+            if (!asset.contribution) return false;
             const contribution = asset.contribution;
 
             switch (contributor) {
@@ -117,14 +117,14 @@ const statementSchema = new Schema<
             }
           })
           .reduce((acc, cur) => {
-            if (cur.contribution === undefined) return acc;
+            if (!cur.contribution) return acc;
             return acc + cur.contribution.amount;
           }, 0);
       },
       async getContributioPercentOfSalaryByContributor(
         contributor: Contributor
       ): Promise<number | undefined> {
-        if (this.lastYearSalary === undefined) return undefined;
+        if (!this.lastYearSalary) return undefined;
         const contributionAmount =
           await this.getContributionAmountByContributor(contributor);
         return contributionAmount / this.lastYearSalary;
@@ -145,7 +145,7 @@ const statementSchema = new Schema<
       async getLastYearAssetGrowthPercentOfSalary(): Promise<
         number | undefined
       > {
-        if (this.lastYearSalary === undefined) return undefined;
+        if (!this.lastYearSalary) return undefined;
 
         const lastYearAssetGrowth = await this.getLastYearAssetGrowth();
         return lastYearAssetGrowth / this.lastYearSalary;

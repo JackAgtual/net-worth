@@ -59,10 +59,11 @@ const assetSchema = new Schema<AssetDoc, AssetModelType, {}, {}, AssetVirtuals>(
     virtuals: {
       growthFromAppreciation: {
         get() {
-          if (this.amountOneYearAgo === undefined) return undefined;
+          if (!this.amountOneYearAgo) return undefined;
 
-          const contribution =
-            this.contribution === undefined ? 0 : this.contribution.amount;
+          const contribution = !this.contribution
+            ? 0
+            : this.contribution.amount;
 
           return this.amount - this.amountOneYearAgo - contribution;
         },
