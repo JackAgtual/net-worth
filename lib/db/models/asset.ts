@@ -1,4 +1,4 @@
-import mongoose, { Model, Schema } from "mongoose";
+import mongoose, { HydratedDocument, Model, Schema } from "mongoose";
 import { Entry } from "../types";
 
 export enum Category {
@@ -27,6 +27,8 @@ export type AssetTestDoc = Omit<AssetDoc, "_id">;
 interface AssetVirtuals {
   growthFromAppreciation?: number;
 }
+
+export type AssetHydrated = HydratedDocument<AssetDoc, AssetVirtuals>;
 
 type AssetModelType = Model<AssetDoc, {}, {}, AssetVirtuals>;
 

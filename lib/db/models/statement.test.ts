@@ -226,4 +226,101 @@ describe("Statement", () => {
       ).toBeCloseTo(0.375, 3);
     });
   });
+
+  describe("getLastYearAssetGrowth", () => {
+    it("calculates last year asset growth", async () => {
+      expect(await statement.getLastYearAssetGrowth()).toEqual(9_000);
+    });
+
+    describe("specific cases", () => {
+      let asset: AssetTestDoc;
+
+      const buildAsset = async () => {
+        const assets = await Asset.insertMany([asset]);
+        statement.assets = assets.map((asset) => asset._id);
+      };
+
+      beforeEach(async () => {
+        asset = {
+          title: "Savings",
+          amount: 2_000,
+          category: Category.Cash,
+          includeInGrowthCalculation: true,
+          amountOneYearAgo: 1_000,
+          contribution: {
+            amount: 100,
+            selfContribution: true,
+          },
+        };
+      });
+
+      it("returns 0 if amountOneYearAgo is undefined", async () => {
+        asset.amountOneYearAgo = undefined;
+        await buildAsset();
+        expect(await statement.getLastYearAssetGrowth()).toEqual(0);
+      });
+
+      it("calculates without contribution", async () => {
+        asset.contribution = undefined;
+        await buildAsset();
+        expect(await statement.getLastYearAssetGrowth()).toEqual(1_000);
+      });
+
+      it("checks for include in growth", async () => {
+        asset.includeInGrowthCalculation = false;
+        await buildAsset();
+        expect(await statement.getLastYearAssetGrowth()).toEqual(0);
+
+        asset.includeInGrowthCalculation = undefined;
+        await buildAsset();
+        expect(await statement.getLastYearAssetGrowth()).toEqual(0);
+      });
+
+      it("accounts for negative contribution and decrease in amount", async () => {
+        asset.contribution = {
+          amount: -100,
+          selfContribution: true,
+        };
+        asset.amountOneYearAgo = 3_000;
+        await buildAsset();
+        expect(await statement.getLastYearAssetGrowth()).toEqual(-900);
+      });
+
+      it("accounts for negative contribution and increase in amount", async () => {
+        asset.contribution = {
+          amount: -100,
+          selfContribution: true,
+        };
+        await buildAsset();
+        expect(await statement.getLastYearAssetGrowth()).toEqual(1_100);
+      });
+
+      it("accounts for positive contribution and increase in amount", async () => {
+        await buildAsset();
+        expect(await statement.getLastYearAssetGrowth()).toEqual(900);
+      });
+
+      it("accounts for positive contribution and decrease in amount", async () => {
+        asset.amount = 800;
+        await buildAsset();
+        expect(await statement.getLastYearAssetGrowth()).toEqual(-300);
+      });
+    });
+  });
+
+  describe("getLastYearAssetGrowthPercentOfSalary", () => {
+    it("returns undefined if last year salary is undefined", async () => {
+      statement.lastYearSalary = undefined;
+
+      expect(
+        await statement.getLastYearAssetGrowthPercentOfSalary()
+      ).toBeUndefined();
+    });
+
+    it("calculates correct value", async () => {
+      expect(
+        await statement.getLastYearAssetGrowthPercentOfSalary()
+      ).toBeCloseTo(0.09, 2);
+    });
+  });
 });

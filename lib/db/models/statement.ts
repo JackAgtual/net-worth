@@ -1,7 +1,7 @@
 import mongoose, { Model, Schema, Types } from "mongoose";
 import { MongoDocument } from "../types";
 import { Category } from "@/lib/db/models/asset";
-import { AssetDoc, LiabilityDoc } from "@/lib/db/models";
+import { AssetHydrated, LiabilityHydrated } from "@/lib/db/models";
 
 interface StatementDoc extends MongoDocument {
   year: number;
@@ -11,14 +11,6 @@ interface StatementDoc extends MongoDocument {
 }
 
 interface StatementVirtuals {
-  lastYearLiquidAssetGrowth?: number;
-  liquidAssetGrowthPercentOfSalary?: number;
-
-  selfContribution?: number;
-  totalContribution?: number;
-  selfContributionsPercentOfSalary?: number;
-  totalContributionsPercentOfSalary?: number;
-
   totalRetirementAssets?: number;
   taxFreeRetirementAssets?: number;
   taxDeferredRetirementAssets?: number;
@@ -40,6 +32,8 @@ interface StatementMethods {
   getContributioPercentOfSalaryByContributor(
     contributor: Contributor
   ): Promise<number | undefined>;
+  getLastYearAssetGrowth(): Promise<number>;
+  getLastYearAssetGrowthPercentOfSalary(): Promise<number | undefined>;
 }
 type StatementModelType = Model<
   StatementDoc,
@@ -79,18 +73,6 @@ const statementSchema = new Schema<
   },
   {
     virtuals: {
-      lastYearLiquidAssetGrowth: {
-        get() {
-          // include if last year amount is not undefined
-          return 1;
-        },
-      },
-      liquidAssetGrowthPercentOfSalary: {
-        get() {
-          return 1;
-        },
-      },
-
       totalRetirementAssets: {
         get() {
           return 1;
@@ -112,12 +94,12 @@ const statementSchema = new Schema<
     methods: {
       async getTotalAssetAmount(): Promise<number> {
         await this.populate("assets");
-        const assets = this.assets as unknown as AssetDoc[];
+        const assets = this.assets as unknown as AssetHydrated[];
         return assets.reduce((acc, cur) => acc + cur.amount, 0);
       },
       async getTotalLiabilityAmount(): Promise<number> {
         await this.populate("liabilities");
-        const liabilities = this.liabilities as unknown as LiabilityDoc[];
+        const liabilities = this.liabilities as unknown as LiabilityHydrated[];
         return liabilities.reduce((acc, cur) => acc + cur.amount, 0);
       },
       async getNetWorth(): Promise<number> {
@@ -130,7 +112,7 @@ const statementSchema = new Schema<
       async getTotalAmountByCategory(category: Category): Promise<number> {
         await this.populate("assets");
 
-        const assets = this.assets as unknown as AssetDoc[];
+        const assets = this.assets as unknown as AssetHydrated[];
         return assets
           .filter((asset) => asset.category === category)
           .reduce((acc, cur) => acc + cur.amount, 0);
@@ -147,7 +129,7 @@ const statementSchema = new Schema<
       ): Promise<number> {
         await this.populate("assets");
 
-        const assets = this.assets as unknown as AssetDoc[];
+        const assets = this.assets as unknown as AssetHydrated[];
         return assets
           .filter((asset) => {
             if (asset.contribution === undefined) return false;
@@ -176,6 +158,27 @@ const statementSchema = new Schema<
         const contributionAmount =
           await this.getContributionAmountByContributor(contributor);
         return contributionAmount / this.lastYearSalary;
+      },
+      async getLastYearAssetGrowth(): Promise<number> {
+        await this.populate("assets");
+
+        const assets = this.assets as unknown as AssetHydrated[];
+        return assets
+          .filter((asset) => {
+            return (
+              asset.includeInGrowthCalculation === true &&
+              asset.amountOneYearAgo !== undefined
+            );
+          })
+          .reduce((acc, cur) => acc + (cur.growthFromAppreciation ?? 0), 0);
+      },
+      async getLastYearAssetGrowthPercentOfSalary(): Promise<
+        number | undefined
+      > {
+        if (this.lastYearSalary === undefined) return undefined;
+
+        const lastYearAssetGrowth = await this.getLastYearAssetGrowth();
+        return lastYearAssetGrowth / this.lastYearSalary;
       },
     },
     toJSON: { virtuals: true },
