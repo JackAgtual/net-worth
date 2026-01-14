@@ -59,7 +59,7 @@ describe("Statement", () => {
       },
       {
         title: "401k company match",
-        amount: 10000,
+        amount: 10_000,
         category: Category.TaxDeferred,
         amountOneYearAgo: 7000,
         includeInGrowthCalculation: true,
@@ -67,6 +67,7 @@ describe("Statement", () => {
           amount: 1000,
           selfContribution: false,
         },
+        retirement: true,
       },
       {
         title: "Roth IRA",
@@ -78,6 +79,7 @@ describe("Statement", () => {
           amount: 6_500,
           selfContribution: true,
         },
+        retirement: true,
       },
       {
         title: "Roth 401k",
@@ -89,6 +91,7 @@ describe("Statement", () => {
           amount: 25_000,
           selfContribution: true,
         },
+        retirement: true,
       },
       // {
       //   title: "Car",
@@ -321,6 +324,26 @@ describe("Statement", () => {
       expect(
         await statement.getLastYearAssetGrowthPercentOfSalary()
       ).toBeCloseTo(0.09, 2);
+    });
+  });
+
+  describe("getTotalRetirementAssets", () => {
+    it("calcultes correct value", async () => {
+      expect(await statement.getTotalRetirementAssets()).toEqual(120_000);
+    });
+  });
+
+  describe("getRetirementAssetsByCategory", () => {
+    it("returns 0 for category that does not exist as reitrement asset", async () => {
+      expect(
+        await statement.getRetirementAssetsByCategory(Category.Property)
+      ).toEqual(0);
+    });
+
+    it("calculates total amount for category that exists as retirement asset(s)", async () => {
+      expect(
+        await statement.getRetirementAssetsByCategory(Category.TaxFree)
+      ).toEqual(110_000);
     });
   });
 });

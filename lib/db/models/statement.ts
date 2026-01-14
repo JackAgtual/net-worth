@@ -10,12 +10,6 @@ interface StatementDoc extends MongoDocument {
   liabilities: Types.ObjectId[];
 }
 
-interface StatementVirtuals {
-  totalRetirementAssets?: number;
-  taxFreeRetirementAssets?: number;
-  taxDeferredRetirementAssets?: number;
-}
-
 export enum Contributor {
   Self,
   NonSelf,
@@ -34,22 +28,17 @@ interface StatementMethods {
   ): Promise<number | undefined>;
   getLastYearAssetGrowth(): Promise<number>;
   getLastYearAssetGrowthPercentOfSalary(): Promise<number | undefined>;
+  getTotalRetirementAssets(): Promise<number>;
+  getRetirementAssetsByCategory(category: Category): Promise<number>;
 }
-type StatementModelType = Model<
-  StatementDoc,
-  {},
-  StatementMethods,
-  StatementVirtuals
->;
+type StatementModelType = Model<StatementDoc, {}, StatementMethods>;
 
 const required = true;
 
 const statementSchema = new Schema<
   StatementDoc,
   StatementModelType,
-  StatementMethods,
-  {},
-  StatementVirtuals
+  StatementMethods
 >(
   {
     year: { type: Number, required },
@@ -72,25 +61,6 @@ const statementSchema = new Schema<
     ],
   },
   {
-    virtuals: {
-      totalRetirementAssets: {
-        get() {
-          return 1;
-        },
-      },
-      taxFreeRetirementAssets: {
-        // make instance method
-        get() {
-          return 1;
-        },
-      },
-      taxDeferredRetirementAssets: {
-        // make instance method
-        get() {
-          return 1;
-        },
-      },
-    },
     methods: {
       async getTotalAssetAmount(): Promise<number> {
         await this.populate("assets");
@@ -179,6 +149,21 @@ const statementSchema = new Schema<
 
         const lastYearAssetGrowth = await this.getLastYearAssetGrowth();
         return lastYearAssetGrowth / this.lastYearSalary;
+      },
+      async getTotalRetirementAssets(): Promise<number> {
+        await this.populate("assets");
+
+        const assets = this.assets as unknown as AssetHydrated[];
+        return assets
+          .filter((asset) => asset.retirement)
+          .reduce((acc, cur) => acc + cur.amount, 0);
+      },
+      async getRetirementAssetsByCategory(category: Category): Promise<number> {
+        await this.populate("assets");
+        const assets = this.assets as unknown as AssetHydrated[];
+        return assets
+          .filter((asset) => asset.retirement && asset.category === category)
+          .reduce((acc, cur) => acc + cur.amount, 0);
       },
     },
     toJSON: { virtuals: true },
