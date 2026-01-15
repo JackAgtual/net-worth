@@ -1,9 +1,8 @@
 import mongoose, { Model, Schema, Types } from "mongoose";
-import { MongoDocument } from "../types";
 import { Category } from "@/lib/db/models/asset";
 import { AssetHydrated, LiabilityHydrated } from "@/lib/db/models";
 
-interface StatementDoc extends MongoDocument {
+interface StatementDoc {
   year: number;
   lastYearSalary?: number;
   assets: Types.ObjectId[];

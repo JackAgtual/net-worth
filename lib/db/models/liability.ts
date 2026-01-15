@@ -14,6 +14,7 @@ const required = true;
 const liabilitySchema = new Schema<LiabilityDoc, LiabilityModelType>({
   title: { type: String, trim: true, required },
   amount: { type: Number, required },
+  notes: String,
 });
 
 export const Liability: LiabilityModelType =
