@@ -19,7 +19,7 @@ interface StatementMethods {
   getTotalAssetAmount(): Promise<number>;
   getTotalLiabilityAmount(): Promise<number>;
   getNetWorth(): Promise<number>;
-  getTotalAmountByCategory(category: Category): Promise<number>;
+  getTotalAssetAmountByCategory(category: Category): Promise<number>;
   getPercentOfAssetsByCategory(category: Category): Promise<number>;
   getContributionAmountByContributor(contributor: Contributor): Promise<number>;
   getContributioPercentOfSalaryByContributor(
@@ -78,7 +78,7 @@ const statementSchema = new Schema<
         ]);
         return totalAssets - totalLiabilities;
       },
-      async getTotalAmountByCategory(category: Category): Promise<number> {
+      async getTotalAssetAmountByCategory(category: Category): Promise<number> {
         await this.populate("assets");
 
         const assets = this.assets as unknown as AssetHydrated[];
@@ -87,7 +87,7 @@ const statementSchema = new Schema<
           .reduce((acc, cur) => acc + cur.amount, 0);
       },
       async getPercentOfAssetsByCategory(category: Category): Promise<number> {
-        const totalAmountInCategory = await this.getTotalAmountByCategory(
+        const totalAmountInCategory = await this.getTotalAssetAmountByCategory(
           category
         );
         const totalAssets = await this.getTotalAssetAmount();

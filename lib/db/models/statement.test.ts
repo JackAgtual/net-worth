@@ -143,34 +143,34 @@ describe("Statement", () => {
     expect(await statement.getNetWorth()).toEqual(150_266);
   });
 
-  describe("getTotalAmountByCategory", () => {
+  describe("getTotalAssetAmountByCategory", () => {
     it("calculates cash category", async () => {
-      expect(await statement.getTotalAmountByCategory(Category.Cash)).toEqual(
-        12_000
-      );
+      expect(
+        await statement.getTotalAssetAmountByCategory(Category.Cash)
+      ).toEqual(12_000);
     });
 
     it("calculates after tax category", async () => {
       expect(
-        await statement.getTotalAmountByCategory(Category.AfterTax)
+        await statement.getTotalAssetAmountByCategory(Category.AfterTax)
       ).toEqual(20_000);
     });
 
     it("calculates tax deferred category", async () => {
       expect(
-        await statement.getTotalAmountByCategory(Category.TaxDeferred)
+        await statement.getTotalAssetAmountByCategory(Category.TaxDeferred)
       ).toEqual(10_000);
     });
 
     it("calculates tax free category", async () => {
       expect(
-        await statement.getTotalAmountByCategory(Category.TaxFree)
+        await statement.getTotalAssetAmountByCategory(Category.TaxFree)
       ).toEqual(110_000);
     });
 
     it("calculates property category", async () => {
       expect(
-        await statement.getTotalAmountByCategory(Category.Property)
+        await statement.getTotalAssetAmountByCategory(Category.Property)
       ).toEqual(0);
     });
   });
