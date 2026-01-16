@@ -1,6 +1,12 @@
 import mongoose, { Model, Schema, Types } from "mongoose";
 import { Category } from "@/lib/db/models/asset";
-import { AssetHydrated, LiabilityHydrated } from "@/lib/db/models";
+import {
+  AssetHydrated,
+  Liability,
+  LiabilityDoc,
+  LiabilityHydrated,
+  LiabilityUpdate,
+} from "@/lib/db/models";
 
 interface StatementDoc {
   year: number;
@@ -29,6 +35,12 @@ interface StatementMethods {
   getLastYearAssetGrowthPercentOfSalary(): Promise<number | undefined>;
   getTotalRetirementAssets(): Promise<number>;
   getRetirementAssetsByCategory(category: Category): Promise<number>;
+  addLiability(liability: LiabilityDoc): Promise<LiabilityHydrated>;
+  deleteLiability(id: Types.ObjectId): Promise<boolean>;
+  updateLiability(
+    id: Types.ObjectId,
+    changes: LiabilityUpdate
+  ): Promise<LiabilityHydrated | null>;
 }
 type StatementModelType = Model<StatementDoc, {}, StatementMethods>;
 
@@ -163,6 +175,37 @@ const statementSchema = new Schema<
         return assets
           .filter((asset) => asset.retirement && asset.category === category)
           .reduce((acc, cur) => acc + cur.amount, 0);
+      },
+      async addLiability(
+        liabilityParams: LiabilityDoc
+      ): Promise<LiabilityHydrated> {
+        const liability = await Liability.create(liabilityParams);
+        this.liabilities.push(liability._id);
+        return liability;
+      },
+      async deleteLiability(id: Types.ObjectId): Promise<boolean> {
+        this.liabilities = this.liabilities.filter(
+          (liabilityId) => liabilityId !== id
+        );
+
+        const deletedDoc = await Liability.findByIdAndDelete(id);
+        return !!deletedDoc;
+      },
+      async updateLiability(
+        id: Types.ObjectId,
+        changes: LiabilityUpdate
+      ): Promise<LiabilityHydrated | null> {
+        const liabilityId = this.liabilities.find((el) => el === id);
+
+        if (!liabilityId) return null;
+
+        const liability = await Liability.findById(id);
+
+        if (!liability) return null;
+
+        Object.assign(liability, changes);
+        await liability.save();
+        return liability;
       },
     },
     toJSON: { virtuals: true },

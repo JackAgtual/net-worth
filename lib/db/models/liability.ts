@@ -7,6 +7,8 @@ export type LiabilityHydrated = HydratedDocument<LiabilityDoc>;
 
 export type LiabilitiesTestDoc = Omit<LiabilityDoc, "_id">;
 
+export type LiabilityUpdate = Partial<LiabilitiesTestDoc>;
+
 type LiabilityModelType = Model<LiabilityDoc>;
 
 const required = true;

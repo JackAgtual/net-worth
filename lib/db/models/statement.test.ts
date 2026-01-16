@@ -346,4 +346,115 @@ describe("Statement", () => {
       ).toEqual(110_000);
     });
   });
+
+  describe("CRUD assets and liabilities", () => {
+    beforeEach(async () => {
+      const assetsInput: AssetTestDoc[] = [
+        {
+          title: "Asset 1",
+          amount: 100,
+          category: Category.Cash,
+        },
+      ];
+      const assets = await Asset.insertMany(assetsInput);
+
+      const liabilitiesInput: LiabilitiesTestDoc[] = [
+        {
+          title: "Liability 1",
+          amount: 500,
+        },
+        {
+          title: "Liability 2",
+          amount: 1000,
+        },
+      ];
+      const liabilities = await Liability.insertMany(liabilitiesInput);
+
+      statement = await Statement.create({
+        year: 2026,
+        lastYearSalary: 100_000,
+        assets: assets.map((asset) => asset._id),
+        liabilities: liabilities.map((liability) => liability._id),
+      });
+    });
+
+    it("adds liability", async () => {
+      const liability = {
+        amount: 100,
+        title: "liability 3",
+        notes: "my notes",
+      };
+      const addedLiability = await statement.addLiability(liability);
+      const id = addedLiability._id;
+
+      expect(addedLiability).toMatchObject(liability);
+      expect(statement.liabilities.length).toEqual(3);
+      expect(statement.liabilities.at(-1)).toEqual(id);
+    });
+
+    it("deletes liability", async () => {
+      const liabilityIds = statement.liabilities;
+      const idToNotDelete = liabilityIds.at(0);
+      const id = liabilityIds.at(-1);
+      if (id === undefined || idToNotDelete === undefined) {
+        fail("id is undefined. Test needs valid ids to start.");
+      }
+
+      id.toString();
+
+      const deleted = await statement.deleteLiability(id);
+
+      const newLiabilities = statement.liabilities;
+      expect(newLiabilities.length).toEqual(1);
+      expect(newLiabilities.includes(id)).toBeFalsy();
+      expect(newLiabilities.includes(idToNotDelete)).toBeTruthy();
+      expect(deleted).toBeTruthy();
+    });
+
+    it("delete liability returns false if liability id does not exist", async () => {
+      const invalidId = new mongoose.Types.ObjectId();
+
+      const deleted = await statement.deleteLiability(invalidId);
+
+      expect(statement.liabilities.length).toEqual(2);
+      expect(deleted).toBeFalsy();
+    });
+
+    it("updates liability", async () => {
+      const updateIndex = 0;
+      const idToUpdate = statement.liabilities.at(updateIndex);
+
+      if (!idToUpdate) {
+        fail("Need valid id for this test");
+      }
+      const updatedLiability = await statement.updateLiability(idToUpdate, {
+        amount: 600,
+        notes: "an updated liability",
+      });
+
+      const updatedLiabilityId = statement.liabilities.at(updateIndex);
+
+      if (!updatedLiability) {
+        fail("This test requires a valid id to update");
+      }
+      expect(updatedLiabilityId).toEqual(updatedLiability._id);
+      expect(updatedLiabilityId).toEqual(idToUpdate);
+      expect(updatedLiability).toMatchObject({
+        amount: 600,
+        notes: "an updated liability",
+        title: "Liability 1",
+      });
+    });
+
+    it("returns null for invalid id", async () => {
+      const invalidId = new mongoose.Types.ObjectId();
+
+      const updatedLiability = await statement.updateLiability(invalidId, {
+        amount: 600,
+        notes: "an updated liability",
+      });
+
+      expect(updatedLiability).toBeNull();
+    });
+  });
 });
