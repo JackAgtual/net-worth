@@ -1,4 +1,4 @@
-import mongoose, { Model, Schema, Types } from "mongoose";
+import mongoose, { HydratedDocument, Model, Schema, Types } from "mongoose";
 import {
   Asset,
   AssetUpdate,
@@ -19,12 +19,14 @@ interface StatementDoc {
 }
 
 export enum Contributor {
-  Self,
-  NonSelf,
-  All,
+  Self = "Self",
+  NonSelf = "Non self",
+  All = "All",
 }
 
 interface StatementMethods {
+  getAssets(): Promise<AssetHydrated[]>;
+  getLiabilities(): Promise<LiabilityHydrated[]>;
   getTotalAssetAmount(): Promise<number>;
   getTotalLiabilityAmount(): Promise<number>;
   getNetWorth(): Promise<number>;
@@ -52,6 +54,11 @@ interface StatementMethods {
   ): Promise<AssetHydrated | null>;
 }
 type StatementModelType = Model<StatementDoc, {}, StatementMethods>;
+
+export type StatementHydrated = HydratedDocument<
+  StatementDoc,
+  StatementMethods
+>;
 
 const required = true;
 
@@ -82,9 +89,16 @@ const statementSchema = new Schema<
   },
   {
     methods: {
-      async getTotalAssetAmount(): Promise<number> {
+      async getAssets(): Promise<AssetHydrated[]> {
         await this.populate("assets");
-        const assets = this.assets as unknown as AssetHydrated[];
+        return this.assets as unknown as AssetHydrated[];
+      },
+      async getLiabilities(): Promise<LiabilityHydrated[]> {
+        await this.populate("liabilities");
+        return this.liabilities as unknown as LiabilityHydrated[];
+      },
+      async getTotalAssetAmount(): Promise<number> {
+        const assets = await this.getAssets();
         return assets.reduce((acc, cur) => acc + cur.amount, 0);
       },
       async getTotalLiabilityAmount(): Promise<number> {
@@ -100,9 +114,7 @@ const statementSchema = new Schema<
         return totalAssets - totalLiabilities;
       },
       async getTotalAssetAmountByCategory(category: Category): Promise<number> {
-        await this.populate("assets");
-
-        const assets = this.assets as unknown as AssetHydrated[];
+        const assets = await this.getAssets();
         return assets
           .filter((asset) => asset.category === category)
           .reduce((acc, cur) => acc + cur.amount, 0);
@@ -117,9 +129,7 @@ const statementSchema = new Schema<
       async getContributionAmountByContributor(
         contributor: Contributor
       ): Promise<number> {
-        await this.populate("assets");
-
-        const assets = this.assets as unknown as AssetHydrated[];
+        const assets = await this.getAssets();
         return assets
           .filter((asset) => {
             if (!asset.contribution) return false;
@@ -150,9 +160,7 @@ const statementSchema = new Schema<
         return contributionAmount / this.lastYearSalary;
       },
       async getLastYearAssetGrowth(): Promise<number> {
-        await this.populate("assets");
-
-        const assets = this.assets as unknown as AssetHydrated[];
+        const assets = await this.getAssets();
         return assets
           .filter((asset) => {
             return (
@@ -171,16 +179,13 @@ const statementSchema = new Schema<
         return lastYearAssetGrowth / this.lastYearSalary;
       },
       async getTotalRetirementAssets(): Promise<number> {
-        await this.populate("assets");
-
-        const assets = this.assets as unknown as AssetHydrated[];
+        const assets = await this.getAssets();
         return assets
           .filter((asset) => asset.retirement)
           .reduce((acc, cur) => acc + cur.amount, 0);
       },
       async getRetirementAssetsByCategory(category: Category): Promise<number> {
-        await this.populate("assets");
-        const assets = this.assets as unknown as AssetHydrated[];
+        const assets = await this.getAssets();
         return assets
           .filter((asset) => asset.retirement && asset.category === category)
           .reduce((acc, cur) => acc + cur.amount, 0);
