@@ -18,7 +18,7 @@ async function seed() {
   await Liability.deleteMany();
   await Statement.deleteMany();
 
-  const assetsInput: AssetDoc[] = [
+  const assetsInput1: AssetDoc[] = [
     {
       title: "Asset 1",
       amount: 100,
@@ -46,9 +46,37 @@ async function seed() {
       },
     },
   ];
-  const assets = await Asset.insertMany(assetsInput);
 
-  const liabilitiesInput: LiabilityDoc[] = [
+  const assetsInput2: AssetDoc[] = [
+    {
+      title: "Asset 1",
+      amount: 200,
+      category: Category.AfterTax,
+    },
+    {
+      title: "Asset 2",
+      amount: 9000,
+      category: Category.Cash,
+    },
+    {
+      title: "Asset 3",
+      amount: 120000,
+      category: Category.Property,
+    },
+    {
+      title: "Asset 4",
+      amount: 1300,
+      category: Category.TaxFree,
+      amountOneYearAgo: 1200,
+      includeInGrowthCalculation: true,
+      contribution: {
+        amount: 400,
+        selfContribution: false,
+      },
+    },
+  ];
+
+  const liabilitiesInput1: LiabilityDoc[] = [
     {
       title: "Liability 1",
       amount: 500,
@@ -58,15 +86,36 @@ async function seed() {
       amount: 1234,
     },
   ];
-  const liabilities = await Liability.insertMany(liabilitiesInput);
+  const liabilitiesInput2: LiabilityDoc[] = [
+    {
+      title: "Liability 1",
+      amount: 300,
+    },
+    {
+      title: "Liability 2",
+      amount: 1200,
+    },
+  ];
 
+  const assets1 = await Asset.insertMany(assetsInput1);
+  const liabilities1 = await Liability.insertMany(liabilitiesInput1);
   await Statement.create({
-    year: 2026,
+    year: 2025,
     lastYearSalary: 100000,
-    assets: assets.map((asset) => asset._id),
-    liabilities: liabilities.map((liability) => liability._id),
+    assets: assets1.map((asset) => asset._id),
+    liabilities: liabilities1.map((liability) => liability._id),
   });
 
+  const assets2 = await Asset.insertMany(assetsInput2);
+  const liabilities2 = await Liability.insertMany(liabilitiesInput2);
+  await Statement.create({
+    year: 2026,
+    lastYearSalary: 105000,
+    assets: assets2.map((asset) => asset._id),
+    liabilities: liabilities2.map((liability) => liability._id),
+  });
+
+  console.log("seeded db");
   process.exit(0);
 }
 
