@@ -1,9 +1,16 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
-import { Asset, Liability, Statement } from ".";
-import { AssetDoc, AssetTestDoc, AssetUpdate, Category } from "./asset";
-import { LiabilitiesTestDoc, LiabilityUpdate } from "./liability";
-import { Contributor } from "./statement";
+import {
+  Asset,
+  Liability,
+  Statement,
+  AssetDoc,
+  AssetUpdate,
+  Category,
+  LiabilityUpdate,
+  LiabilityDoc,
+  Contributor,
+} from ".";
 
 describe("Statement", () => {
   let mongoServer: MongoMemoryServer;
@@ -25,7 +32,7 @@ describe("Statement", () => {
       await collections[key].deleteMany();
     }
 
-    const assetsInput: AssetTestDoc[] = [
+    const assetsInput: AssetDoc[] = [
       {
         title: "Savings",
         amount: 2_000,
@@ -106,7 +113,7 @@ describe("Statement", () => {
     ];
     const assets = await Asset.insertMany(assetsInput);
 
-    const liabilitiesInput: LiabilitiesTestDoc[] = [
+    const liabilitiesInput: LiabilityDoc[] = [
       {
         title: "Liability 1",
         amount: 500,
@@ -236,7 +243,7 @@ describe("Statement", () => {
     });
 
     describe("specific cases", () => {
-      let asset: AssetTestDoc;
+      let asset: AssetDoc;
 
       const buildAsset = async () => {
         const assets = await Asset.insertMany([asset]);
@@ -349,7 +356,7 @@ describe("Statement", () => {
 
   describe("CRUD assets and liabilities", () => {
     beforeEach(async () => {
-      const assetsInput: AssetTestDoc[] = [
+      const assetsInput: AssetDoc[] = [
         {
           title: "Asset 1",
           amount: 100,
@@ -363,7 +370,7 @@ describe("Statement", () => {
       ];
       const assets = await Asset.insertMany(assetsInput);
 
-      const liabilitiesInput: LiabilitiesTestDoc[] = [
+      const liabilitiesInput: LiabilityDoc[] = [
         {
           title: "Liability 1",
           amount: 500,

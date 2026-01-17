@@ -2,9 +2,14 @@ import dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 
 import dbConnect from "./mongodb";
-import { Asset, Liability, Statement } from "./models";
-import { AssetTestDoc, Category } from "./models/asset";
-import { LiabilitiesTestDoc } from "./models/liability";
+import {
+  Asset,
+  Liability,
+  Statement,
+  Category,
+  AssetDoc,
+  LiabilityDoc,
+} from "./models";
 
 async function seed() {
   await dbConnect();
@@ -13,7 +18,7 @@ async function seed() {
   await Liability.deleteMany();
   await Statement.deleteMany();
 
-  const assetsInput: AssetTestDoc[] = [
+  const assetsInput: AssetDoc[] = [
     {
       title: "Asset 1",
       amount: 100,
@@ -43,7 +48,7 @@ async function seed() {
   ];
   const assets = await Asset.insertMany(assetsInput);
 
-  const liabilitiesInput: LiabilitiesTestDoc[] = [
+  const liabilitiesInput: LiabilityDoc[] = [
     {
       title: "Liability 1",
       amount: 500,
@@ -55,18 +60,13 @@ async function seed() {
   ];
   const liabilities = await Liability.insertMany(liabilitiesInput);
 
-  const statement = await Statement.create({
+  await Statement.create({
     year: 2026,
     lastYearSalary: 100000,
     assets: assets.map((asset) => asset._id),
     liabilities: liabilities.map((liability) => liability._id),
   });
 
-  await statement.populate("assets");
-  await statement.populate("liabilities");
-
-  console.log(statement);
-  console.log("Seeded db");
   process.exit(0);
 }
 

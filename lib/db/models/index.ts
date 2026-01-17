@@ -6,4 +6,4 @@ export type {
   LiabilityHydrated,
   LiabilityUpdate,
 } from "./liability";
-export { Statement } from "./statement";
+export { Statement, Contributor } from "./statement";

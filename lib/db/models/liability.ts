@@ -5,9 +5,7 @@ export interface LiabilityDoc extends Entry {}
 
 export type LiabilityHydrated = HydratedDocument<LiabilityDoc>;
 
-export type LiabilitiesTestDoc = Omit<LiabilityDoc, "_id">;
-
-export type LiabilityUpdate = Partial<LiabilitiesTestDoc>;
+export type LiabilityUpdate = Partial<LiabilityDoc>;
 
 type LiabilityModelType = Model<LiabilityDoc>;
 

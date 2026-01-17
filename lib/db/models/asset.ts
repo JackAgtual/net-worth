@@ -21,10 +21,7 @@ export interface AssetDoc extends Entry {
   contribution?: Contribution;
   includeInGrowthCalculation?: boolean;
 }
-
-export type AssetTestDoc = Omit<AssetDoc, "_id">;
-
-export type AssetUpdate = Partial<AssetTestDoc>;
+export type AssetUpdate = Partial<AssetDoc>;
 
 interface AssetVirtuals {
   growthFromAppreciation?: number;
