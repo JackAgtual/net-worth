@@ -1,7 +1,10 @@
 import mongoose, { Model, Schema, Types } from "mongoose";
-import { Category } from "@/lib/db/models/asset";
 import {
+  Asset,
+  AssetUpdate,
   AssetHydrated,
+  AssetDoc,
+  Category,
   Liability,
   LiabilityDoc,
   LiabilityHydrated,
@@ -41,6 +44,12 @@ interface StatementMethods {
     id: Types.ObjectId,
     changes: LiabilityUpdate
   ): Promise<LiabilityHydrated | null>;
+  addAsset(asset: AssetDoc): Promise<AssetHydrated>;
+  deleteAsset(id: Types.ObjectId): Promise<boolean>;
+  updateAsset(
+    id: Types.ObjectId,
+    changes: AssetUpdate
+  ): Promise<AssetHydrated | null>;
 }
 type StatementModelType = Model<StatementDoc, {}, StatementMethods>;
 
@@ -206,6 +215,33 @@ const statementSchema = new Schema<
         Object.assign(liability, changes);
         await liability.save();
         return liability;
+      },
+      async addAsset(asset: AssetDoc): Promise<AssetHydrated> {
+        const createdAsset = await Asset.create(asset);
+        this.assets.push(createdAsset._id);
+        return createdAsset;
+      },
+      async deleteAsset(id: Types.ObjectId): Promise<boolean> {
+        this.assets = this.assets.filter((assetId) => assetId !== id);
+
+        const deletedDoc = await Asset.findByIdAndDelete(id);
+        return !!deletedDoc;
+      },
+      async updateAsset(
+        id: Types.ObjectId,
+        changes: AssetUpdate
+      ): Promise<AssetHydrated | null> {
+        const assetId = this.assets.find((el) => el === id);
+
+        if (!assetId) return null;
+
+        const asset = await Asset.findById(id);
+
+        if (!asset) return null;
+
+        Object.assign(asset, changes);
+        await asset.save();
+        return asset;
       },
     },
     toJSON: { virtuals: true },

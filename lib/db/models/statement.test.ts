@@ -1,8 +1,8 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 import { Asset, Liability, Statement } from ".";
-import { AssetTestDoc, Category } from "./asset";
-import { LiabilitiesTestDoc } from "./liability";
+import { AssetDoc, AssetTestDoc, AssetUpdate, Category } from "./asset";
+import { LiabilitiesTestDoc, LiabilityUpdate } from "./liability";
 import { Contributor } from "./statement";
 
 describe("Statement", () => {
@@ -355,6 +355,11 @@ describe("Statement", () => {
           amount: 100,
           category: Category.Cash,
         },
+        {
+          title: "Asset 2",
+          amount: 300,
+          category: Category.TaxFree,
+        },
       ];
       const assets = await Asset.insertMany(assetsInput);
 
@@ -400,8 +405,6 @@ describe("Statement", () => {
         fail("id is undefined. Test needs valid ids to start.");
       }
 
-      id.toString();
-
       const deleted = await statement.deleteLiability(id);
 
       const newLiabilities = statement.liabilities;
@@ -427,10 +430,14 @@ describe("Statement", () => {
       if (!idToUpdate) {
         fail("Need valid id for this test");
       }
-      const updatedLiability = await statement.updateLiability(idToUpdate, {
+      const liabilityUpdates: LiabilityUpdate = {
         amount: 600,
         notes: "an updated liability",
-      });
+      };
+      const updatedLiability = await statement.updateLiability(
+        idToUpdate,
+        liabilityUpdates
+      );
 
       const updatedLiabilityId = statement.liabilities.at(updateIndex);
 
@@ -439,19 +446,102 @@ describe("Statement", () => {
       }
       expect(updatedLiabilityId).toEqual(updatedLiability._id);
       expect(updatedLiabilityId).toEqual(idToUpdate);
-      expect(updatedLiability).toMatchObject({
-        amount: 600,
-        notes: "an updated liability",
-        title: "Liability 1",
-      });
+      expect(updatedLiability).toMatchObject(liabilityUpdates);
     });
 
-    it("returns null for invalid id", async () => {
+    it("returns null when trying to update invalid liability id", async () => {
       const invalidId = new mongoose.Types.ObjectId();
 
       const updatedLiability = await statement.updateLiability(invalidId, {
         amount: 600,
         notes: "an updated liability",
+      });
+
+      expect(updatedLiability).toBeNull();
+    });
+
+    it("adds asset", async () => {
+      const assetToAdd: AssetDoc = {
+        title: "a new asset",
+        amount: 1000,
+        category: Category.Cash,
+        contribution: { amount: 100, selfContribution: true },
+        retirement: false,
+        amountOneYearAgo: 500,
+        includeInGrowthCalculation: true,
+        notes: "i added this asset",
+      };
+
+      const addedAsset = await statement.addAsset(assetToAdd);
+
+      expect(addedAsset).toMatchObject(assetToAdd);
+      expect(statement.assets.length).toEqual(3);
+      expect(statement.assets.at(-1)).toEqual(addedAsset._id);
+    });
+
+    it("deletes asset", async () => {
+      const assetIds = statement.assets;
+      const idToNotDelete = assetIds.at(0);
+      const id = assetIds.at(-1);
+      if (id === undefined || idToNotDelete === undefined) {
+        fail("id is undefined. Test needs valid ids to start.");
+      }
+
+      const deleted = await statement.deleteAsset(id);
+
+      const newAssets = statement.assets;
+      expect(newAssets.length).toEqual(1);
+      expect(newAssets.includes(id)).toBeFalsy();
+      expect(newAssets.includes(idToNotDelete)).toBeTruthy();
+      expect(deleted).toBeTruthy();
+    });
+
+    it("delete asset returns false if asset id does not exist", async () => {
+      const invalidId = new mongoose.Types.ObjectId();
+
+      const deleted = await statement.deleteAsset(invalidId);
+
+      expect(statement.liabilities.length).toEqual(2);
+      expect(deleted).toBeFalsy();
+    });
+
+    it("updates asset", async () => {
+      const updateIndex = 0;
+      const idToUpdate = statement.assets.at(updateIndex);
+
+      if (!idToUpdate) {
+        fail("Need valid id for this test");
+      }
+
+      const assetUpdates: AssetUpdate = {
+        amount: 600,
+        notes: "an updated asset",
+        contribution: { amount: 100, selfContribution: false },
+        amountOneYearAgo: 0,
+        includeInGrowthCalculation: true,
+      };
+
+      const updatedAsset = await statement.updateAsset(
+        idToUpdate,
+        assetUpdates
+      );
+
+      const updatedAssetId = statement.assets.at(updateIndex);
+
+      if (!updatedAsset) {
+        fail("This test requires a valid id to update");
+      }
+      expect(updatedAssetId).toEqual(updatedAsset._id);
+      expect(updatedAssetId).toEqual(idToUpdate);
+      expect(updatedAsset).toMatchObject(assetUpdates);
+    });
+
+    it("returns null when trying to update invalid asset id", async () => {
+      const invalidId = new mongoose.Types.ObjectId();
+
+      const updatedLiability = await statement.updateAsset(invalidId, {
+        amount: 600,
+        notes: "an updated asset",
       });
 
       expect(updatedLiability).toBeNull();

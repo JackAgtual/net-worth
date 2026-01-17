@@ -24,6 +24,8 @@ export interface AssetDoc extends Entry {
 
 export type AssetTestDoc = Omit<AssetDoc, "_id">;
 
+export type AssetUpdate = Partial<AssetTestDoc>;
+
 interface AssetVirtuals {
   growthFromAppreciation?: number;
 }
