@@ -9,8 +9,6 @@ export default async function ContributionTable({
     Contributor.All
   );
 
-  console.log({ allCont });
-
   const contents = await Promise.all(
     Object.keys(Contributor).map(async (contributor) => {
       const contributorEnum =
