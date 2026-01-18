@@ -12,7 +12,7 @@ export default async function Home() {
     <div>
       <main>
         <h1 className="flex justify-center">Net worth tracker</h1>
-        <h2>Assets</h2>
+        {/* <h2>Assets</h2>
         <ol>
           {assets.map((asset) => {
             return (
@@ -32,7 +32,7 @@ export default async function Home() {
               </li>
             );
           })}
-        </ol>
+        </ol> */}
       </main>
     </div>
   );

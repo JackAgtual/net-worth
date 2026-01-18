@@ -12,7 +12,9 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
+    "better-auth": "^1.4.14",
     "dotenv": "^17.2.3",
+    "mongodb": "^7.0.0",
     "mongoose": "^9.1.2",
     "next": "16.1.1",
     "react": "19.2.3",
