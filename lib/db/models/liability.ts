@@ -12,6 +12,7 @@ type LiabilityModelType = Model<LiabilityDoc>;
 const required = true;
 
 const liabilitySchema = new Schema<LiabilityDoc, LiabilityModelType>({
+  userId: { type: String, required },
   title: { type: String, trim: true, required },
   amount: { type: Number, required },
   notes: String,

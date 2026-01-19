@@ -40,6 +40,7 @@ const contributionSchema = new Schema<Contribution>({
 
 const assetSchema = new Schema<AssetDoc, AssetModelType, {}, {}, AssetVirtuals>(
   {
+    userId: { type: String, required },
     title: { type: String, trim: true, required },
     category: {
       type: String,

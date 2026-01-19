@@ -10,8 +10,9 @@ import {
   LiabilityHydrated,
   LiabilityUpdate,
 } from "@/lib/db/models";
+import { UserItem } from "../types";
 
-interface StatementDoc {
+interface StatementDoc extends UserItem {
   year: number;
   lastYearSalary?: number;
   assets: Types.ObjectId[];
@@ -68,6 +69,7 @@ const statementSchema = new Schema<
   StatementMethods
 >(
   {
+    userId: { type: String, required },
     year: { type: Number, required },
     lastYearSalary: Number,
     assets: [

@@ -12,6 +12,8 @@ import {
   Contributor,
 } from ".";
 
+const userId = process.env.TEST_USER_ID as string;
+
 describe("Statement", () => {
   let mongoServer: MongoMemoryServer;
   let statement: InstanceType<typeof Statement>;
@@ -34,11 +36,13 @@ describe("Statement", () => {
 
     const assetsInput: AssetDoc[] = [
       {
+        userId,
         title: "Savings",
         amount: 2_000,
         category: Category.Cash,
       },
       {
+        userId,
         title: "Emergency fund",
         amount: 10_000,
         category: Category.Cash,
@@ -49,6 +53,7 @@ describe("Statement", () => {
         },
       },
       {
+        userId,
         title: "Tabxable individual",
         amount: 10_000,
         category: Category.AfterTax,
@@ -60,11 +65,13 @@ describe("Statement", () => {
         },
       },
       {
+        userId,
         title: "Crypto",
         amount: 10_000,
         category: Category.AfterTax,
       },
       {
+        userId,
         title: "401k company match",
         amount: 10_000,
         category: Category.TaxDeferred,
@@ -77,6 +84,7 @@ describe("Statement", () => {
         retirement: true,
       },
       {
+        userId,
         title: "Roth IRA",
         amount: 30_000,
         category: Category.TaxFree,
@@ -89,6 +97,7 @@ describe("Statement", () => {
         retirement: true,
       },
       {
+        userId,
         title: "Roth 401k",
         amount: 80_000,
         category: Category.TaxFree,
@@ -101,11 +110,13 @@ describe("Statement", () => {
         retirement: true,
       },
       // {
+      //   userId,
       //   title: "Car",
       //   amount: 10_000,
       //   category: Category.Property,
       // },
       // {
+      //   userId,
       //   title: "house",
       //   amount: 500_000,
       //   category: Category.Property,
@@ -115,10 +126,12 @@ describe("Statement", () => {
 
     const liabilitiesInput: LiabilityDoc[] = [
       {
+        userId,
         title: "Liability 1",
         amount: 500,
       },
       {
+        userId,
         title: "Liability 2",
         amount: 1234,
       },
@@ -126,6 +139,7 @@ describe("Statement", () => {
     const liabilities = await Liability.insertMany(liabilitiesInput);
 
     statement = await Statement.create({
+      userId,
       year: 2026,
       lastYearSalary: 100_000,
       assets: assets.map((asset) => asset._id),
@@ -252,6 +266,7 @@ describe("Statement", () => {
 
       beforeEach(async () => {
         asset = {
+          userId,
           title: "Savings",
           amount: 2_000,
           category: Category.Cash,
@@ -358,11 +373,13 @@ describe("Statement", () => {
     beforeEach(async () => {
       const assetsInput: AssetDoc[] = [
         {
+          userId,
           title: "Asset 1",
           amount: 100,
           category: Category.Cash,
         },
         {
+          userId,
           title: "Asset 2",
           amount: 300,
           category: Category.TaxFree,
@@ -372,10 +389,12 @@ describe("Statement", () => {
 
       const liabilitiesInput: LiabilityDoc[] = [
         {
+          userId,
           title: "Liability 1",
           amount: 500,
         },
         {
+          userId,
           title: "Liability 2",
           amount: 1000,
         },
@@ -383,6 +402,7 @@ describe("Statement", () => {
       const liabilities = await Liability.insertMany(liabilitiesInput);
 
       statement = await Statement.create({
+        userId,
         year: 2026,
         lastYearSalary: 100_000,
         assets: assets.map((asset) => asset._id),
@@ -393,6 +413,7 @@ describe("Statement", () => {
     it("adds liability", async () => {
       const liability = {
         amount: 100,
+        userId,
         title: "liability 3",
         notes: "my notes",
       };
@@ -469,6 +490,7 @@ describe("Statement", () => {
 
     it("adds asset", async () => {
       const assetToAdd: AssetDoc = {
+        userId,
         title: "a new asset",
         amount: 1000,
         category: Category.Cash,
