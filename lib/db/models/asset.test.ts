@@ -22,8 +22,8 @@ describe("Asset", () => {
 
     it("undefined if amountOneYearAgo is not set", () => {
       asset.contribution = {
-        amount: 10,
-        selfContribution: true,
+        self: 10,
+        nonSelf: 0,
       };
 
       expect(asset.growthFromAppreciation).toBeUndefined();
@@ -32,10 +32,25 @@ describe("Asset", () => {
     it("accounts for contributions made", () => {
       asset.amountOneYearAgo = 50;
       asset.contribution = {
-        amount: 10,
-        selfContribution: true,
+        self: 5,
+        nonSelf: 5,
       };
       expect(asset.growthFromAppreciation).toEqual(40);
+    });
+  });
+
+  describe("totalContributions", () => {
+    it("return zero if contributions are undefined", () => {
+      expect(asset.totalContributions).toEqual(0);
+    });
+
+    it("adds self and non self contributions", () => {
+      asset.contribution = {
+        self: 100,
+        nonSelf: 200,
+      };
+
+      expect(asset.totalContributions).toEqual(300);
     });
   });
 });

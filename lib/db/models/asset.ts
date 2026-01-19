@@ -10,8 +10,8 @@ export enum Category {
 }
 
 interface Contribution {
-  amount: number;
-  selfContribution: boolean;
+  self: number;
+  nonSelf: number;
 }
 
 export interface AssetDoc extends Entry {
@@ -25,6 +25,7 @@ export type AssetUpdate = Partial<AssetDoc>;
 
 interface AssetVirtuals {
   growthFromAppreciation?: number;
+  totalContributions: number;
 }
 
 export type AssetHydrated = HydratedDocument<AssetDoc, AssetVirtuals>;
@@ -34,8 +35,8 @@ type AssetModelType = Model<AssetDoc, {}, {}, AssetVirtuals>;
 const required = true;
 
 const contributionSchema = new Schema<Contribution>({
-  amount: { type: Number, required },
-  selfContribution: { type: Boolean, required },
+  self: { type: Number, required },
+  nonSelf: { type: Number, required },
 });
 
 const assetSchema = new Schema<AssetDoc, AssetModelType, {}, {}, AssetVirtuals>(
@@ -57,13 +58,21 @@ const assetSchema = new Schema<AssetDoc, AssetModelType, {}, {}, AssetVirtuals>(
   },
   {
     virtuals: {
+      totalContributions: {
+        get() {
+          const { contribution } = this;
+          if (!contribution) return 0;
+
+          return contribution.self + contribution.nonSelf;
+        },
+      },
       growthFromAppreciation: {
         get() {
           if (!this.amountOneYearAgo) return undefined;
 
           const contribution = !this.contribution
             ? 0
-            : this.contribution.amount;
+            : this.contribution.self + this.contribution.nonSelf;
 
           return this.amount - this.amountOneYearAgo - contribution;
         },

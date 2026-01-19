@@ -132,26 +132,19 @@ const statementSchema = new Schema<
         contributor: Contributor
       ): Promise<number> {
         const assets = await this.getAssets();
-        return assets
-          .filter((asset) => {
-            if (!asset.contribution) return false;
-            const contribution = asset.contribution;
-
-            switch (contributor) {
-              case Contributor.All:
-                return true;
-              case Contributor.Self:
-                return contribution.selfContribution;
-              case Contributor.NonSelf:
-                return !contribution.selfContribution;
-              default:
-                return false;
-            }
-          })
-          .reduce((acc, cur) => {
-            if (!cur.contribution) return acc;
-            return acc + cur.contribution.amount;
-          }, 0);
+        return assets.reduce((acc, cur) => {
+          if (!cur.contribution) return acc;
+          switch (contributor) {
+            case Contributor.All:
+              return acc + cur.totalContributions;
+            case Contributor.Self:
+              return acc + cur.contribution.self;
+            case Contributor.NonSelf:
+              return acc + cur.contribution.nonSelf;
+            default:
+              return acc;
+          }
+        }, 0);
       },
       async getContributioPercentOfSalaryByContributor(
         contributor: Contributor

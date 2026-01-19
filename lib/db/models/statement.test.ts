@@ -48,8 +48,8 @@ describe("Statement", () => {
         category: Category.Cash,
         amountOneYearAgo: 9_000,
         contribution: {
-          amount: 500,
-          selfContribution: true,
+          self: 250,
+          nonSelf: 250,
         },
       },
       {
@@ -60,8 +60,8 @@ describe("Statement", () => {
         amountOneYearAgo: 5_000,
         includeInGrowthCalculation: true,
         contribution: {
-          amount: 4_500,
-          selfContribution: true,
+          self: 4_500,
+          nonSelf: 0,
         },
       },
       {
@@ -78,8 +78,8 @@ describe("Statement", () => {
         amountOneYearAgo: 7000,
         includeInGrowthCalculation: true,
         contribution: {
-          amount: 1000,
-          selfContribution: false,
+          self: 0,
+          nonSelf: 1000,
         },
         retirement: true,
       },
@@ -91,8 +91,8 @@ describe("Statement", () => {
         includeInGrowthCalculation: true,
         amountOneYearAgo: 22_000,
         contribution: {
-          amount: 6_500,
-          selfContribution: true,
+          self: 6_500,
+          nonSelf: 0,
         },
         retirement: true,
       },
@@ -104,8 +104,8 @@ describe("Statement", () => {
         amountOneYearAgo: 50_000,
         includeInGrowthCalculation: true,
         contribution: {
-          amount: 25_000,
-          selfContribution: true,
+          self: 25_000,
+          nonSelf: 0,
         },
         retirement: true,
       },
@@ -200,13 +200,13 @@ describe("Statement", () => {
     it("getContributionAmountByContributor calculates contributions", async () => {
       expect(
         await statement.getContributionAmountByContributor(Contributor.Self)
-      ).toEqual(36_500);
+      ).toEqual(36_250);
     });
 
     it("calculates non self contributions", async () => {
       expect(
         await statement.getContributionAmountByContributor(Contributor.NonSelf)
-      ).toEqual(1_000);
+      ).toEqual(1_250);
     });
 
     it("calculates all contributions", async () => {
@@ -231,7 +231,7 @@ describe("Statement", () => {
         await statement.getContributioPercentOfSalaryByContributor(
           Contributor.Self
         )
-      ).toBeCloseTo(0.365, 3);
+      ).toBeCloseTo(0.3625, 4);
     });
 
     it("calculates contribution percent of salary for non self contributions", async () => {
@@ -239,7 +239,7 @@ describe("Statement", () => {
         await statement.getContributioPercentOfSalaryByContributor(
           Contributor.NonSelf
         )
-      ).toBeCloseTo(0.01, 3);
+      ).toBeCloseTo(0.0125, 4);
     });
 
     it("calculates contribution percent of salary for all contributions", async () => {
@@ -273,8 +273,8 @@ describe("Statement", () => {
           includeInGrowthCalculation: true,
           amountOneYearAgo: 1_000,
           contribution: {
-            amount: 100,
-            selfContribution: true,
+            self: 100,
+            nonSelf: 0,
           },
         };
       });
@@ -303,8 +303,8 @@ describe("Statement", () => {
 
       it("accounts for negative contribution and decrease in amount", async () => {
         asset.contribution = {
-          amount: -100,
-          selfContribution: true,
+          self: -100,
+          nonSelf: 0,
         };
         asset.amountOneYearAgo = 3_000;
         await buildAsset();
@@ -313,8 +313,8 @@ describe("Statement", () => {
 
       it("accounts for negative contribution and increase in amount", async () => {
         asset.contribution = {
-          amount: -100,
-          selfContribution: true,
+          self: -100,
+          nonSelf: 0,
         };
         await buildAsset();
         expect(await statement.getLastYearAssetGrowth()).toEqual(1_100);
@@ -494,7 +494,7 @@ describe("Statement", () => {
         title: "a new asset",
         amount: 1000,
         category: Category.Cash,
-        contribution: { amount: 100, selfContribution: true },
+        contribution: { self: 100, nonSelf: 0 },
         retirement: false,
         amountOneYearAgo: 500,
         includeInGrowthCalculation: true,
@@ -545,7 +545,7 @@ describe("Statement", () => {
       const assetUpdates: AssetUpdate = {
         amount: 600,
         notes: "an updated asset",
-        contribution: { amount: 100, selfContribution: false },
+        contribution: { nonSelf: 100, self: 0 },
         amountOneYearAgo: 0,
         includeInGrowthCalculation: true,
       };
