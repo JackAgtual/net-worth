@@ -1,13 +1,5 @@
 import mongoose, { HydratedDocument, Model, Schema } from "mongoose";
-import { Entry } from "../types";
-
-export enum Category {
-  Cash = "Cash",
-  AfterTax = "After Tax",
-  TaxFree = "Tax free",
-  TaxDeferred = "Tax deferred",
-  Property = "Property",
-}
+import { Category, Entry } from "../types";
 
 interface Contribution {
   self: number;

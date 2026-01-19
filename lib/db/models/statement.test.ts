@@ -6,11 +6,11 @@ import {
   Statement,
   AssetDoc,
   AssetUpdate,
-  Category,
   LiabilityUpdate,
   LiabilityDoc,
   Contributor,
 } from ".";
+import { Category } from "../types";
 
 const userId = process.env.TEST_USER_ID as string;
 

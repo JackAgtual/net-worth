@@ -4,13 +4,12 @@ import {
   AssetUpdate,
   AssetHydrated,
   AssetDoc,
-  Category,
   Liability,
   LiabilityDoc,
   LiabilityHydrated,
   LiabilityUpdate,
 } from "@/lib/db/models";
-import { UserItem } from "../types";
+import { Category, UserItem } from "../types";
 
 interface StatementDoc extends UserItem {
   year: number;

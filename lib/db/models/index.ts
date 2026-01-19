@@ -1,4 +1,4 @@
-export { Asset, Category } from "./asset";
+export { Asset } from "./asset";
 export type { AssetDoc, AssetHydrated, AssetUpdate } from "./asset";
 export { Liability } from "./liability";
 export type {
