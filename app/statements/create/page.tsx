@@ -17,6 +17,8 @@ export default function Page() {
     assets.length,
     liabilities.length
   );
+
+  // CONTINUE HERE: Use arrays for name instead of hard coding index
   return (
     <form action={createStatementWithCounts} className="flex-col">
       <h1>General info</h1>

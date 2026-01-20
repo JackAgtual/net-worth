@@ -2,8 +2,8 @@ import mongoose, { HydratedDocument, Model, Schema } from "mongoose";
 import { Category, Entry } from "../types";
 
 interface Contribution {
-  self: number;
-  nonSelf: number;
+  self?: number;
+  nonSelf?: number;
 }
 
 export interface AssetDoc extends Entry {
@@ -15,14 +15,14 @@ export interface AssetDoc extends Entry {
 }
 export type AssetUpdate = Partial<AssetDoc>;
 
-interface AssetVirtuals {
-  growthFromAppreciation?: number;
-  totalContributions: number;
+interface AssetMethods {
+  getTotalContributions(): number;
+  getGrowthFromAppreciation(): number | undefined;
 }
 
-export type AssetHydrated = HydratedDocument<AssetDoc, AssetVirtuals>;
+export type AssetHydrated = HydratedDocument<AssetDoc, AssetMethods>;
 
-type AssetModelType = Model<AssetDoc, {}, {}, AssetVirtuals>;
+type AssetModelType = Model<AssetDoc, {}, AssetMethods>;
 
 const required = true;
 
@@ -31,7 +31,7 @@ const contributionSchema = new Schema<Contribution>({
   nonSelf: { type: Number, required },
 });
 
-const assetSchema = new Schema<AssetDoc, AssetModelType, {}, {}, AssetVirtuals>(
+const assetSchema = new Schema<AssetDoc, AssetModelType, AssetMethods>(
   {
     userId: { type: String, required },
     title: { type: String, trim: true, required },
@@ -49,25 +49,19 @@ const assetSchema = new Schema<AssetDoc, AssetModelType, {}, {}, AssetVirtuals>(
     notes: String,
   },
   {
-    virtuals: {
-      totalContributions: {
-        get() {
-          const { contribution } = this;
-          if (!contribution) return 0;
+    methods: {
+      getTotalContributions(): number {
+        const { contribution } = this;
+        if (!contribution) return 0;
 
-          return contribution.self + contribution.nonSelf;
-        },
+        return (contribution.self ?? 0) + (contribution.nonSelf ?? 0);
       },
-      growthFromAppreciation: {
-        get() {
-          if (!this.amountOneYearAgo) return undefined;
+      getGrowthFromAppreciation(): number | undefined {
+        if (!this.amountOneYearAgo) return undefined;
 
-          const contribution = !this.contribution
-            ? 0
-            : this.contribution.self + this.contribution.nonSelf;
-
-          return this.amount - this.amountOneYearAgo - contribution;
-        },
+        return (
+          this.amount - this.amountOneYearAgo - this.getTotalContributions()
+        );
       },
     },
     toJSON: { virtuals: true },

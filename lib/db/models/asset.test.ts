@@ -11,22 +11,21 @@ describe("Asset", () => {
 
   describe("growthFromAppreciation", () => {
     it("undefined if amountOneYearAgo is not set", () => {
-      expect(asset.growthFromAppreciation).toBeUndefined();
+      expect(asset.getGrowthFromAppreciation()).toBeUndefined();
     });
 
     it("defaults to zero contribution if contribution is not set", () => {
       asset.amountOneYearAgo = 50;
 
-      expect(asset.growthFromAppreciation).toEqual(50);
+      expect(asset.getGrowthFromAppreciation()).toEqual(50);
     });
 
     it("undefined if amountOneYearAgo is not set", () => {
       asset.contribution = {
         self: 10,
-        nonSelf: 0,
       };
 
-      expect(asset.growthFromAppreciation).toBeUndefined();
+      expect(asset.getGrowthFromAppreciation()).toBeUndefined();
     });
 
     it("accounts for contributions made", () => {
@@ -35,13 +34,13 @@ describe("Asset", () => {
         self: 5,
         nonSelf: 5,
       };
-      expect(asset.growthFromAppreciation).toEqual(40);
+      expect(asset.getGrowthFromAppreciation()).toEqual(40);
     });
   });
 
   describe("totalContributions", () => {
     it("return zero if contributions are undefined", () => {
-      expect(asset.totalContributions).toEqual(0);
+      expect(asset.getTotalContributions()).toEqual(0);
     });
 
     it("adds self and non self contributions", () => {
@@ -50,7 +49,7 @@ describe("Asset", () => {
         nonSelf: 200,
       };
 
-      expect(asset.totalContributions).toEqual(300);
+      expect(asset.getTotalContributions()).toEqual(300);
     });
   });
 });

@@ -135,11 +135,11 @@ const statementSchema = new Schema<
           if (!cur.contribution) return acc;
           switch (contributor) {
             case Contributor.All:
-              return acc + cur.totalContributions;
+              return acc + cur.getTotalContributions();
             case Contributor.Self:
-              return acc + cur.contribution.self;
+              return acc + (cur.contribution?.self ?? 0);
             case Contributor.NonSelf:
-              return acc + cur.contribution.nonSelf;
+              return acc + (cur.contribution?.nonSelf ?? 0);
             default:
               return acc;
           }
@@ -162,7 +162,10 @@ const statementSchema = new Schema<
               asset.amountOneYearAgo !== undefined
             );
           })
-          .reduce((acc, cur) => acc + (cur.growthFromAppreciation ?? 0), 0);
+          .reduce(
+            (acc, cur) => acc + (cur.getGrowthFromAppreciation() ?? 0),
+            0
+          );
       },
       async getLastYearAssetGrowthPercentOfSalary(): Promise<
         number | undefined
