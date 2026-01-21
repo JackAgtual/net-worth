@@ -3,7 +3,12 @@
 import { redirect } from "next/navigation";
 import { auth } from "../auth/auth";
 import { headers } from "next/headers";
-import { CreateAccountResponse, createAccountSchema } from "../types";
+import {
+  CreateAccountResponse,
+  createAccountSchema,
+  LoginResponse,
+  loginSchema,
+} from "../types";
 import { APIError } from "better-auth";
 
 export async function createAccount(
@@ -44,27 +49,40 @@ export async function createAccount(
   };
 }
 
-export async function signIn(formData: FormData) {
-  const email = formData.get("email");
-  const password = formData.get("password");
+export async function logIn(formData: unknown): Promise<LoginResponse> {
+  const result = loginSchema.safeParse(formData);
+  const badResult = {
+    success: false,
+    error: "Incorrect username or password",
+  };
 
-  if (typeof email !== "string" || typeof password !== "string") {
-    throw new Error("Invalid form data");
-  }
-  const response = await auth.api.signInEmail({
-    body: {
-      email,
-      password,
-    },
-    asResponse: true,
-    headers: await headers(),
-  });
-
-  if (!response.ok) {
-    return;
+  if (!result.success) {
+    return badResult;
   }
 
-  redirect("/dashboard");
+  const { email, password } = result.data;
+
+  try {
+    const response = await auth.api.signInEmail({
+      body: {
+        email,
+        password,
+      },
+      asResponse: true,
+      headers: await headers(),
+    });
+
+    if (response.ok) {
+      return { success: true };
+    }
+  } catch {
+    return {
+      success: false,
+      error: "Something went wrong",
+    };
+  }
+
+  return badResult;
 }
 
 export async function signOut() {

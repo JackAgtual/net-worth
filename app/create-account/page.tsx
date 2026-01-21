@@ -41,6 +41,7 @@ export default function Page() {
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
         <label htmlFor="name">Name</label>
         <input {...register("name")} type="string" className="border-2" />
+        {errors.name && <p>{errors.name.message}</p>}
         <label htmlFor="email">Email</label>
         <input {...register("email")} type="email" className="border-2" />
         {errors.email && <p>{errors.email.message}</p>}
