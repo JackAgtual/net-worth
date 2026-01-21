@@ -9,7 +9,7 @@ import {
   LiabilityHydrated,
   LiabilityUpdate,
 } from "@/lib/db/models";
-import { Category, UserItem } from "../types";
+import { Category, UserItem } from "../../types";
 
 interface StatementDoc extends UserItem {
   year: number;

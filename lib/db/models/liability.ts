@@ -1,5 +1,5 @@
 import mongoose, { HydratedDocument, Model, model, Schema } from "mongoose";
-import { Entry } from "../types";
+import { Entry } from "../../types";
 
 export interface LiabilityDoc extends Entry {}
 

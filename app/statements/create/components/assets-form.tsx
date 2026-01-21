@@ -2,7 +2,7 @@
 
 import { Dispatch, SetStateAction } from "react";
 import { add, remove } from "../util";
-import { Category } from "@/lib/db/types";
+import { Category } from "@/lib/types";
 
 interface AssetsFormProps {
   assets: string[];
