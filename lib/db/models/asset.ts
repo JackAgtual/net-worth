@@ -1,18 +1,24 @@
 import mongoose, { HydratedDocument, Model, Schema } from "mongoose";
-import { Category, Entry } from "@/types/types";
+import { z } from "zod";
+import { Category, Entry, entrySchema } from "@/types/types";
 
-type Contribution = {
-  self?: number;
-  nonSelf?: number;
-};
+const contributionSchema = z.object({
+  self: z.number().optional(),
+  nonSelf: z.number().optional(),
+});
 
-export type AssetDoc = Entry & {
-  category: Category;
-  retirement?: boolean;
-  amountOneYearAgo?: number;
-  contribution?: Contribution;
-  includeInGrowthCalculation?: boolean;
-};
+type Contribution = z.infer<typeof contributionSchema>;
+
+export const assetSchema = entrySchema.extend({
+  category: z.enum(Category),
+  retirement: z.boolean().optional(),
+  amountOneYearAgo: z.number().optional(),
+  contribution: contributionSchema.optional(),
+  includeInGrowthCalculation: z.boolean().optional(),
+});
+
+export type AssetDoc = z.infer<typeof assetSchema>;
+
 export type AssetUpdate = Partial<AssetDoc>;
 
 type AssetMethods = {
@@ -26,12 +32,12 @@ type AssetModelType = Model<AssetDoc, {}, AssetMethods>;
 
 const required = true;
 
-const contributionSchema = new Schema<Contribution>({
+const contributionMongooseSchema = new Schema<Contribution>({
   self: { type: Number, required },
   nonSelf: { type: Number, required },
 });
 
-const assetSchema = new Schema<AssetDoc, AssetModelType, AssetMethods>(
+const assetMongooseSchema = new Schema<AssetDoc, AssetModelType, AssetMethods>(
   {
     userId: { type: String, required },
     title: { type: String, trim: true, required },
@@ -44,7 +50,7 @@ const assetSchema = new Schema<AssetDoc, AssetModelType, AssetMethods>(
 
     includeInGrowthCalculation: { type: Boolean, default: false },
     amountOneYearAgo: Number,
-    contribution: contributionSchema,
+    contribution: contributionMongooseSchema,
     retirement: Boolean,
     notes: String,
   },
@@ -70,4 +76,5 @@ const assetSchema = new Schema<AssetDoc, AssetModelType, AssetMethods>(
 );
 
 export const Asset: AssetModelType =
-  mongoose.models.Asset || mongoose.model<AssetDoc>("Asset", assetSchema);
+  mongoose.models.Asset ||
+  mongoose.model<AssetDoc>("Asset", assetMongooseSchema);

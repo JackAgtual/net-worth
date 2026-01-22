@@ -1,4 +1,5 @@
 import mongoose, { HydratedDocument, Model, Schema, Types } from "mongoose";
+import { z } from "zod";
 import {
   Asset,
   AssetUpdate,
@@ -9,20 +10,24 @@ import {
   LiabilityHydrated,
   LiabilityUpdate,
 } from "@/lib/db/models";
-import { Category, UserItem } from "@/types/types";
+import { Category, Contributor, UserItem, userItemSchema } from "@/types/types";
+import { assetSchema } from "./asset";
+import { liabilitySchema } from "./liability";
 
+export const statementSchema = userItemSchema.extend({
+  year: z.int(),
+  lastYearSalary: z.number().optional(),
+  assets: z.array(assetSchema),
+  liabilities: z.array(liabilitySchema),
+});
+
+// not infering type form zod because I need to reference ObjectId
 type StatementDoc = UserItem & {
   year: number;
   lastYearSalary?: number;
   assets: Types.ObjectId[];
   liabilities: Types.ObjectId[];
 };
-
-export enum Contributor {
-  Self = "Self",
-  NonSelf = "Non self",
-  All = "All",
-}
 
 type StatementMethods = {
   getAssets(): Promise<AssetHydrated[]>;
@@ -62,7 +67,7 @@ export type StatementHydrated = HydratedDocument<
 
 const required = true;
 
-const statementSchema = new Schema<
+const statementMongooseSchema = new Schema<
   StatementDoc,
   StatementModelType,
   StatementMethods
@@ -251,11 +256,11 @@ const statementSchema = new Schema<
   }
 );
 
-statementSchema.pre("find", function () {
+statementMongooseSchema.pre("find", function () {
   this.populate("assets");
   this.populate("liabilities");
 });
 
 export const Statement: StatementModelType =
   mongoose.models.Statement ||
-  mongoose.model<StatementDoc>("Statement", statementSchema);
+  mongoose.model<StatementDoc>("Statement", statementMongooseSchema);

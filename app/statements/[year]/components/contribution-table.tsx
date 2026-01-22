@@ -1,4 +1,5 @@
-import { Contributor, StatementHydrated } from "@/lib/db/models/statement";
+import { StatementHydrated } from "@/lib/db/models/statement";
+import { Contributor } from "@/lib/types/types";
 
 export default async function ContributionTable({
   statement,

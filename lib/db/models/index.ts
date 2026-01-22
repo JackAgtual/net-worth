@@ -6,5 +6,5 @@ export type {
   LiabilityHydrated,
   LiabilityUpdate,
 } from "./liability";
-export { Statement, Contributor } from "./statement";
+export { Statement } from "./statement";
 export type { StatementHydrated } from "./statement";

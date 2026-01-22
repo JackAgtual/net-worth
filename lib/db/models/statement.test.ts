@@ -8,9 +8,8 @@ import {
   AssetUpdate,
   LiabilityUpdate,
   LiabilityDoc,
-  Contributor,
 } from ".";
-import { Category } from "@/types/types";
+import { Category, Contributor } from "@/types/types";
 
 const userId = process.env.TEST_USER_ID as string;
 
