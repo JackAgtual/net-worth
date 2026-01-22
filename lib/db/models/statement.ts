@@ -9,7 +9,7 @@ import {
   LiabilityHydrated,
   LiabilityUpdate,
 } from "@/lib/db/models";
-import { Category, UserItem } from "../../types";
+import { Category, UserItem } from "@/types/types";
 
 type StatementDoc = UserItem & {
   year: number;

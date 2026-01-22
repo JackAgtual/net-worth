@@ -1,5 +1,5 @@
 import mongoose, { HydratedDocument, Model, Schema } from "mongoose";
-import { Category, Entry } from "../../types";
+import { Category, Entry } from "@/types/types";
 
 type Contribution = {
   self?: number;

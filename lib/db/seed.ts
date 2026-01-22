@@ -2,14 +2,8 @@ import dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 
 import dbConnect from "./mongodb";
-import {
-  Asset,
-  Liability,
-  Statement,
-  Category,
-  AssetDoc,
-  LiabilityDoc,
-} from "./models";
+import { Asset, Liability, Statement, AssetDoc, LiabilityDoc } from "./models";
+import { Category } from "@/types/types";
 
 const userId = process.env.TEST_USER_ID as string;
 
@@ -47,8 +41,7 @@ async function seed() {
       amountOneYearAgo: 1000,
       includeInGrowthCalculation: true,
       contribution: {
-        amount: 500,
-        selfContribution: false,
+        nonSelf: 500,
       },
     },
   ];
@@ -80,8 +73,7 @@ async function seed() {
       amountOneYearAgo: 1200,
       includeInGrowthCalculation: true,
       contribution: {
-        amount: 400,
-        selfContribution: false,
+        nonSelf: 400,
       },
     },
   ];

@@ -1,7 +1,7 @@
 "use client";
 
 import { createAccount } from "@/lib/actions/auth-actions";
-import { CreateAccount, createAccountSchema } from "@/lib/types";
+import { CreateAccount, createAccountSchema } from "@/types/auth-types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { redirect } from "next/navigation";
 import { useForm } from "react-hook-form";

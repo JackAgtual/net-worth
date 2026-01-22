@@ -8,7 +8,7 @@ import {
   createAccountSchema,
   LoginResponse,
   loginSchema,
-} from "../types";
+} from "@/types/auth-types";
 import { APIError } from "better-auth";
 
 export async function createAccount(

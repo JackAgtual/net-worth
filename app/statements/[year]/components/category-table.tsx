@@ -1,4 +1,4 @@
-import { Category } from "@/lib/db/models";
+import { Category } from "@/types/types";
 import { StatementHydrated } from "@/lib/db/models/statement";
 
 export default async function CategoryTable({

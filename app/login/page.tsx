@@ -1,7 +1,7 @@
 "use client";
 
 import { logIn } from "@/lib/actions/auth-actions";
-import { Login, loginSchema } from "@/lib/types";
+import { Login, loginSchema } from "@/types/auth-types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { redirect } from "next/navigation";
 import { useForm } from "react-hook-form";

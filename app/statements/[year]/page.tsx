@@ -1,4 +1,4 @@
-import { Category, Statement } from "@/lib/db/models";
+import { Statement } from "@/lib/db/models";
 import dbConnect from "@/lib/db/mongodb";
 import NetWorthTable from "./components/net-worth-table";
 import AssetTable from "./components/asset-table";
