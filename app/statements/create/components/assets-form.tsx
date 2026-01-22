@@ -4,10 +4,10 @@ import { Dispatch, SetStateAction } from "react";
 import { add, remove } from "../util";
 import { Category } from "@/lib/types";
 
-interface AssetsFormProps {
+type AssetsFormProps = {
   assets: string[];
   setAssets: Dispatch<SetStateAction<string[]>>;
-}
+};
 
 export default function AssetsForm({ assets, setAssets }: AssetsFormProps) {
   const addAsset = () => {

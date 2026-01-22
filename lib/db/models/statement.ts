@@ -11,12 +11,12 @@ import {
 } from "@/lib/db/models";
 import { Category, UserItem } from "../../types";
 
-interface StatementDoc extends UserItem {
+type StatementDoc = UserItem & {
   year: number;
   lastYearSalary?: number;
   assets: Types.ObjectId[];
   liabilities: Types.ObjectId[];
-}
+};
 
 export enum Contributor {
   Self = "Self",
@@ -24,7 +24,7 @@ export enum Contributor {
   All = "All",
 }
 
-interface StatementMethods {
+type StatementMethods = {
   getAssets(): Promise<AssetHydrated[]>;
   getLiabilities(): Promise<LiabilityHydrated[]>;
   getTotalAssetAmount(): Promise<number>;
@@ -52,7 +52,7 @@ interface StatementMethods {
     id: Types.ObjectId,
     changes: AssetUpdate
   ): Promise<AssetHydrated | null>;
-}
+};
 type StatementModelType = Model<StatementDoc, {}, StatementMethods>;
 
 export type StatementHydrated = HydratedDocument<

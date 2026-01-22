@@ -1,24 +1,24 @@
 import mongoose, { HydratedDocument, Model, Schema } from "mongoose";
 import { Category, Entry } from "../../types";
 
-interface Contribution {
+type Contribution = {
   self?: number;
   nonSelf?: number;
-}
+};
 
-export interface AssetDoc extends Entry {
+export type AssetDoc = Entry & {
   category: Category;
   retirement?: boolean;
   amountOneYearAgo?: number;
   contribution?: Contribution;
   includeInGrowthCalculation?: boolean;
-}
+};
 export type AssetUpdate = Partial<AssetDoc>;
 
-interface AssetMethods {
+type AssetMethods = {
   getTotalContributions(): number;
   getGrowthFromAppreciation(): number | undefined;
-}
+};
 
 export type AssetHydrated = HydratedDocument<AssetDoc, AssetMethods>;
 

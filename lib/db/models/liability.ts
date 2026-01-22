@@ -1,7 +1,7 @@
 import mongoose, { HydratedDocument, Model, model, Schema } from "mongoose";
 import { Entry } from "../../types";
 
-export interface LiabilityDoc extends Entry {}
+export type LiabilityDoc = Entry;
 
 export type LiabilityHydrated = HydratedDocument<LiabilityDoc>;
 

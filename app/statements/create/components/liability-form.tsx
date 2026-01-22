@@ -3,10 +3,10 @@
 import { Dispatch, SetStateAction } from "react";
 import { add, remove } from "../util";
 
-interface LiabilitiesFormProps {
+type LiabilitiesFormProps = {
   liabilities: string[];
   setLiabilities: Dispatch<SetStateAction<string[]>>;
-}
+};
 
 export default function LiabilitiesForm({
   liabilities,

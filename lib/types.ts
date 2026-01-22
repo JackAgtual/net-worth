@@ -1,15 +1,15 @@
 import { setPassword } from "better-auth/api";
 import z from "zod";
 
-export interface UserItem {
+export type UserItem = {
   userId: string;
-}
+};
 
-export interface Entry extends UserItem {
+export type Entry = UserItem & {
   title: string;
   amount: number;
   notes?: string;
-}
+};
 
 export enum Category {
   Cash = "Cash",
