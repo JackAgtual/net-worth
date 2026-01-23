@@ -22,9 +22,10 @@ export const statementSchema = userItemSchema.extend({
 });
 
 // not infering type form zod because I need to reference ObjectId
-type StatementDoc = UserItem & {
-  year: number;
-  lastYearSalary?: number;
+type StatementDoc = Omit<
+  z.infer<typeof statementSchema>,
+  "assets" | "liabilities"
+> & {
   assets: Types.ObjectId[];
   liabilities: Types.ObjectId[];
 };
