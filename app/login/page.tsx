@@ -1,18 +1,37 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { logIn } from "@/lib/actions/auth-actions";
 import { Login, loginSchema } from "@/types/auth-types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { redirect } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 export default function Page() {
   const {
-    register,
     handleSubmit,
     formState: { errors },
     setError,
-  } = useForm<Login>({ resolver: zodResolver(loginSchema) });
+    control,
+  } = useForm<Login>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "" },
+    mode: "onSubmit",
+  });
 
   const onSubmit = async (data: Login) => {
     const response = await logIn(data);
@@ -25,20 +44,62 @@ export default function Page() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <label htmlFor="email">Email</label>
-      <input {...register("email")} type="email" className="border-2" />
-      {errors.email && <p>{errors.email.message}</p>}
-      <label htmlFor="password">Password</label>
-      <input
-        {...register("password")}
-        type="password"
-        name="password"
-        className="border-2"
-      />
-      {errors.password && <p>{errors.password.message}</p>}
-      {errors.root && <p>{errors.root.message}</p>}
-      <button type="submit">Log in</button>
-    </form>
+    <Card>
+      <CardHeader>
+        <CardTitle>Login</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <FieldGroup>
+            <Controller
+              name="email"
+              control={control}
+              render={({ field, fieldState }) => (
+                <Field>
+                  <FieldLabel>Email</FieldLabel>
+                  <Input
+                    {...field}
+                    id="email"
+                    aria-invalid={fieldState.invalid}
+                    placeholder="johndoe@gmail.com"
+                    autoComplete="off"
+                    type="email"
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+            <Controller
+              name="password"
+              control={control}
+              render={({ field, fieldState }) => (
+                <Field>
+                  <FieldLabel>Password</FieldLabel>
+                  <Input
+                    {...field}
+                    id="password"
+                    aria-invalid={fieldState.invalid}
+                    type="password"
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </FieldGroup>
+          {errors.root && (
+            <FieldError errors={[{ message: errors.root.message }]} />
+          )}
+        </form>
+      </CardContent>
+      <CardFooter>
+        <Field>
+          <Button type="submit">Login</Button>
+        </Field>
+      </CardFooter>
+    </Card>
   );
 }
