@@ -14,16 +14,18 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { createAccount } from "@/lib/actions/auth-actions";
 import { CreateAccount, createAccountSchema } from "@/types/auth-types";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 
 export default function Page() {
   const {
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     setError,
     control,
   } = useForm<CreateAccount>({
@@ -57,7 +59,7 @@ export default function Page() {
     <Card>
       <CardHeader>Create account</CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
+        <form onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
             <Controller
               name="email"
@@ -138,7 +140,14 @@ export default function Page() {
               )}
             />
             <Field>
-              <Button type="submit">Create account</Button>
+              <Button
+                type="submit"
+                className="cursor-pointer"
+                disabled={isSubmitting}
+              >
+                {isSubmitting && <Spinner />}
+                Create account
+              </Button>
             </Field>
             {errors.root && (
               <FieldError errors={[{ message: "Something went wrong" }]} />
@@ -146,6 +155,14 @@ export default function Page() {
           </FieldGroup>
         </form>
       </CardContent>
+      <CardFooter>
+        <p className="text-center w-full">
+          Already have an account?{" "}
+          <Link href="/login" className="underline">
+            Login
+          </Link>
+        </p>
+      </CardFooter>
     </Card>
   );
 }

@@ -15,16 +15,18 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { logIn } from "@/lib/actions/auth-actions";
 import { Login, loginSchema } from "@/types/auth-types";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 
 export default function Page() {
   const {
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     setError,
     control,
   } = useForm<Login>({
@@ -83,22 +85,30 @@ export default function Page() {
                     aria-invalid={fieldState.invalid}
                     type="password"
                   />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
                 </Field>
               )}
             />
+            <Button
+              type="submit"
+              className="cursor-pointer"
+              disabled={isSubmitting}
+            >
+              {isSubmitting && <Spinner />}
+              Login
+            </Button>
           </FieldGroup>
           {errors.root && (
             <FieldError errors={[{ message: errors.root.message }]} />
           )}
         </form>
       </CardContent>
-      <CardFooter>
-        <Field>
-          <Button type="submit">Login</Button>
-        </Field>
+      <CardFooter className="flex flex-col">
+        <p>
+          Don't have an account?{" "}
+          <Link href="/create-account" className="underline ">
+            Create an account.
+          </Link>
+        </p>
       </CardFooter>
     </Card>
   );

@@ -31,10 +31,7 @@ export type CreateAccountResponse =
 
 export const loginSchema = z.object({
   email: z.email().toLowerCase().trim().nonempty("Eamail required"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .nonempty("Password required"),
+  password: z.string().nonempty("Password required"),
 });
 
 export type Login = z.infer<typeof loginSchema>;
