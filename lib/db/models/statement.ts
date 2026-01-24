@@ -10,61 +10,12 @@ import {
   LiabilityHydrated,
   LiabilityUpdate,
 } from "@/lib/db/models";
-import { Category, Contributor, UserItem, userItemSchema } from "@/types/types";
-import { assetSchema } from "./asset";
-import { liabilitySchema } from "./liability";
-
-export const statementSchema = userItemSchema.extend({
-  year: z.int(),
-  lastYearSalary: z.number().optional(),
-  assets: z.array(assetSchema),
-  liabilities: z.array(liabilitySchema),
-});
-
-// not infering type form zod because I need to reference ObjectId
-type StatementDoc = Omit<
-  z.infer<typeof statementSchema>,
-  "assets" | "liabilities"
-> & {
-  assets: Types.ObjectId[];
-  liabilities: Types.ObjectId[];
-};
-
-type StatementMethods = {
-  getAssets(): Promise<AssetHydrated[]>;
-  getLiabilities(): Promise<LiabilityHydrated[]>;
-  getTotalAssetAmount(): Promise<number>;
-  getTotalLiabilityAmount(): Promise<number>;
-  getNetWorth(): Promise<number>;
-  getTotalAssetAmountByCategory(category: Category): Promise<number>;
-  getPercentOfAssetsByCategory(category: Category): Promise<number>;
-  getContributionAmountByContributor(contributor: Contributor): Promise<number>;
-  getContributioPercentOfSalaryByContributor(
-    contributor: Contributor
-  ): Promise<number | undefined>;
-  getLastYearAssetGrowth(): Promise<number>;
-  getLastYearAssetGrowthPercentOfSalary(): Promise<number | undefined>;
-  getTotalRetirementAssets(): Promise<number>;
-  getRetirementAssetsByCategory(category: Category): Promise<number>;
-  addLiability(liability: LiabilityDoc): Promise<LiabilityHydrated>;
-  deleteLiability(id: Types.ObjectId): Promise<boolean>;
-  updateLiability(
-    id: Types.ObjectId,
-    changes: LiabilityUpdate
-  ): Promise<LiabilityHydrated | null>;
-  addAsset(asset: AssetDoc): Promise<AssetHydrated>;
-  deleteAsset(id: Types.ObjectId): Promise<boolean>;
-  updateAsset(
-    id: Types.ObjectId,
-    changes: AssetUpdate
-  ): Promise<AssetHydrated | null>;
-};
-type StatementModelType = Model<StatementDoc, {}, StatementMethods>;
-
-export type StatementHydrated = HydratedDocument<
+import { Category, Contributor } from "@/types/types";
+import {
   StatementDoc,
-  StatementMethods
->;
+  StatementMethods,
+  StatementModelType,
+} from "@/lib/types/statement-types";
 
 const required = true;
 

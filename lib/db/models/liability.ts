@@ -1,16 +1,5 @@
-import mongoose, { HydratedDocument, Model, model, Schema } from "mongoose";
-import { z } from "zod";
-import { entrySchema } from "@/types/types";
-
-export const liabilitySchema = entrySchema;
-
-export type LiabilityDoc = z.infer<typeof liabilitySchema>;
-
-export type LiabilityHydrated = HydratedDocument<LiabilityDoc>;
-
-export type LiabilityUpdate = Partial<LiabilityDoc>;
-
-type LiabilityModelType = Model<LiabilityDoc>;
+import mongoose, { model, Schema } from "mongoose";
+import { LiabilityDoc, LiabilityModelType } from "@/lib/types/liability-types";
 
 const required = true;
 
