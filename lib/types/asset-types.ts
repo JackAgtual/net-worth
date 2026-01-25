@@ -17,6 +17,8 @@ export const assetSchema = entrySchema.extend({
   includeInGrowthCalculation: z.boolean().optional(),
 });
 
+export const assetFormSchema = assetSchema.omit({ userId: true });
+
 export type AssetDoc = z.infer<typeof assetSchema>;
 
 export type AssetUpdate = Partial<AssetDoc>;

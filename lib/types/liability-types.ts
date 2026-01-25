@@ -4,6 +4,8 @@ import { HydratedDocument, Model } from "mongoose";
 
 export const liabilitySchema = entrySchema;
 
+export const liabilityFormSchema = liabilitySchema.omit({ userId: true });
+
 export type LiabilityDoc = z.infer<typeof liabilitySchema>;
 
 export type LiabilityHydrated = HydratedDocument<LiabilityDoc>;

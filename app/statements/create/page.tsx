@@ -5,48 +5,124 @@ import { checkSessionClient } from "@/lib/auth/auth-client";
 import { useState } from "react";
 import LiabilitiesForm from "./components/liability-form";
 import AssetsForm from "./components/assets-form";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {
+  Field,
+  FieldContent,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "@/components/ui/field";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { Input } from "@/components/ui/input";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  statementFormSchema,
+  statementSchema,
+  StatementForm,
+} from "@/lib/types/statement-types";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText,
+} from "@/components/ui/input-group";
+import { Button } from "@/components/ui/button";
+import { redirect } from "next/navigation";
 
 export default function Page() {
-  //   const session = checkSessionClient();
+  // const session = checkSessionClient();
 
-  const [liabilities, setLiabilities] = useState<string[]>([]);
-  const [assets, setAssets] = useState<string[]>([]);
+  // TODO: check session
+  // if (!session) {
+  //   redirect("/login");
+  // }
 
-  const createStatementWithCounts = createStatement.bind(
-    null,
-    assets.length,
-    liabilities.length
-  );
+  // CONTINUE HERE:
+  // putting 0 as default value for number input
+  // checking session in client not working
+  // add/remove liability styling
+  // if year is blank error says expected number received string. Should say year is required
 
-  // CONTINUE HERE: Use arrays for name instead of hard coding index
+  const { control, handleSubmit } = useForm<StatementForm>({
+    resolver: zodResolver(statementFormSchema),
+  });
+
+  const onSubmit = async (data: StatementForm) => {
+    console.log("submitting");
+    console.log(data);
+  };
+
   return (
-    <form action={createStatementWithCounts} className="flex-col">
-      <h1>General info</h1>
-      <div>
-        <label htmlFor="year">Year</label>
-        <input
-          id="year"
-          name="year"
-          type="number"
-          required
-          className="border-2"
-        />
-        <label htmlFor="lastYearSalary">Last year salary</label>
-        <input
-          id="lastYearSalary"
-          name="lastYearSalary"
-          type="number"
-          className="border-2"
-        />
-      </div>
-      <AssetsForm assets={assets} setAssets={setAssets} />
-      <LiabilitiesForm
-        liabilities={liabilities}
-        setLiabilities={setLiabilities}
-      />
-      <button type="submit" className="border-2">
-        Create
-      </button>
-    </form>
+    <Card>
+      <CardHeader>Add a statement</CardHeader>
+      <CardContent>
+        <form
+          className="flex-col"
+          onSubmit={handleSubmit(onSubmit, (err) => {
+            console.error(err);
+          })}
+        >
+          <Controller
+            name="year"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Field>
+                <FieldLabel>Year</FieldLabel>
+                <Input
+                  {...field}
+                  id="year"
+                  aria-invalid={fieldState.invalid}
+                  placeholder="2023"
+                  type="number"
+                  onChange={(e) => {
+                    const val = e.target.valueAsNumber;
+                    field.onChange(Number.isFinite(val) ? val : undefined);
+                  }}
+                  value={field.value ?? ""}
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+          <Controller
+            name="lastYearSalary"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Field>
+                <FieldLabel>Last year salary</FieldLabel>
+                <InputGroup>
+                  <InputGroupAddon>
+                    <InputGroupText>$</InputGroupText>
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    {...field}
+                    id="lastYearSalary"
+                    aria-invalid={fieldState.invalid}
+                    placeholder="50,000"
+                    type="number"
+                    onChange={(e) => {
+                      const val = e.target.valueAsNumber;
+                      field.onChange(Number.isFinite(val) ? val : undefined);
+                    }}
+                    value={field.value ?? ""}
+                  />
+                </InputGroup>
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+          <LiabilitiesForm control={control} />
+          <Button type="submit">Create</Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 }
