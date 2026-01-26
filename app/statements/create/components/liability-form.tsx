@@ -1,5 +1,6 @@
 "use client";
 
+import DollarInput from "@/components/shared/DollarInput";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -21,6 +22,7 @@ import {
   StatementForm,
   StatementFormControl,
 } from "@/lib/types/statement-types";
+import { basename } from "path";
 import { Controller, FieldPath, useFieldArray } from "react-hook-form";
 
 type LiabilitiesFormProps = {
@@ -60,39 +62,10 @@ export default function LiabilitiesForm({ control }: LiabilitiesFormProps) {
                   </Field>
                 )}
               />
-              <Controller
-                name={`${baseName}.amount`}
+              <DollarInput
                 control={control}
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel>Amount</FieldLabel>
-                    <InputGroup>
-                      <InputGroupAddon>
-                        <InputGroupText>$</InputGroupText>
-                      </InputGroupAddon>
-                      <InputGroupInput
-                        {...field}
-                        id={`${baseName}.amount`}
-                        aria-invalid={fieldState.invalid}
-                        placeholder="1,500"
-                        type="number"
-                        value={field.value ?? ""}
-                        // onChange={(e) =>
-                        //   field.onChange(e.target.valueAsNumber ?? undefined)
-                        // }
-                        onChange={(e) => {
-                          const val = e.target.valueAsNumber;
-                          field.onChange(
-                            Number.isFinite(val) ? val : undefined
-                          );
-                        }}
-                      />
-                    </InputGroup>
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
+                label="Amount"
+                name={`${baseName}.amount`}
               />
               <Controller
                 name={`${baseName}.notes`}

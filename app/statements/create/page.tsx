@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/input-group";
 import { Button } from "@/components/ui/button";
 import { redirect } from "next/navigation";
+import DollarInput from "@/components/shared/DollarInput";
 
 export default function Page() {
   // const session = checkSessionClient();
@@ -90,35 +91,12 @@ export default function Page() {
               </Field>
             )}
           />
-          <Controller
-            name="lastYearSalary"
+          <DollarInput
             control={control}
-            render={({ field, fieldState }) => (
-              <Field>
-                <FieldLabel>Last year salary</FieldLabel>
-                <InputGroup>
-                  <InputGroupAddon>
-                    <InputGroupText>$</InputGroupText>
-                  </InputGroupAddon>
-                  <InputGroupInput
-                    {...field}
-                    id="lastYearSalary"
-                    aria-invalid={fieldState.invalid}
-                    placeholder="50,000"
-                    type="number"
-                    onChange={(e) => {
-                      const val = e.target.valueAsNumber;
-                      field.onChange(Number.isFinite(val) ? val : undefined);
-                    }}
-                    value={field.value ?? ""}
-                  />
-                </InputGroup>
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
+            label="Last year salary"
+            name="lastYearSalary"
           />
+          <AssetsForm control={control} />
           <LiabilitiesForm control={control} />
           <Button type="submit">Create</Button>
         </form>
