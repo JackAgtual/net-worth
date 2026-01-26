@@ -15,12 +15,14 @@ type DollarInputProps<TName extends FieldPath<StatementForm>> = {
   name: TName;
   label: string;
   control: StatementFormControl;
+  placeholder?: string;
 };
 
 export default function DollarInput<TName extends FieldPath<StatementForm>>({
   name,
   label,
   control,
+  placeholder = "1,500",
 }: DollarInputProps<TName>) {
   return (
     <Controller
@@ -40,7 +42,7 @@ export default function DollarInput<TName extends FieldPath<StatementForm>>({
                 {...field}
                 id={name}
                 aria-invalid={fieldState.invalid}
-                placeholder="1,500"
+                placeholder={placeholder}
                 type="number"
                 value={val ?? ""}
                 onChange={(e) => {

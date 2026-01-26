@@ -95,6 +95,7 @@ export default function Page() {
             control={control}
             label="Last year salary"
             name="lastYearSalary"
+            placeholder="70,000"
           />
           <AssetsForm control={control} />
           <LiabilitiesForm control={control} />

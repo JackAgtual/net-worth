@@ -124,16 +124,19 @@ export default function AssetsForm({ control }: AssetsFormProps) {
                 control={control}
                 label="Amount one year ago"
                 name={`${baseName}.amountOneYearAgo`}
+                placeholder="10,000"
               />
               <DollarInput
                 control={control}
                 label="Self contribution"
                 name={`${baseName}.contribution.self`}
+                placeholder="1,000"
               />
               <DollarInput
                 control={control}
                 label="Non-self contribution"
                 name={`${baseName}.contribution.nonSelf`}
+                placeholder="500"
               />
               <Controller
                 name={`${baseName}.includeInGrowthCalculation`}
