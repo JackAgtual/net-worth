@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import DollarInput from "@/components/shared/DollarInput";
 
 type AssetsFormProps = {
@@ -190,6 +191,9 @@ export default function AssetsForm({ control }: AssetsFormProps) {
               >
                 Remove asset
               </Button>
+              {fields.length > 1 && index !== fields.length - 1 && (
+                <Separator />
+              )}
             </FieldGroup>
           );
         })}

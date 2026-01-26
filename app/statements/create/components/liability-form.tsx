@@ -17,6 +17,7 @@ import {
   InputGroupInput,
   InputGroupText,
 } from "@/components/ui/input-group";
+import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import {
   StatementForm,
@@ -94,6 +95,9 @@ export default function LiabilitiesForm({ control }: LiabilitiesFormProps) {
               >
                 Remove liability
               </Button>
+              {fields.length > 1 && index !== fields.length - 1 && (
+                <Separator />
+              )}
             </FieldGroup>
           );
         })}
