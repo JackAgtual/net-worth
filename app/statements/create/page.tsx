@@ -1,7 +1,7 @@
 "use client";
 
 import { createStatement } from "@/lib/actions/statement-actions";
-import { checkSessionClient } from "@/lib/auth/auth-client";
+import { authClient } from "@/lib/auth/auth-client";
 import { useState } from "react";
 import LiabilitiesForm from "./components/liability-form";
 import AssetsForm from "./components/assets-form";
@@ -35,22 +35,23 @@ import { redirect } from "next/navigation";
 import DollarInput from "@/components/shared/DollarInput";
 
 export default function Page() {
-  // const session = checkSessionClient();
-
-  // TODO: check session
-  // if (!session) {
-  //   redirect("/login");
-  // }
-
-  // CONTINUE HERE:
-  // putting 0 as default value for number input
-  // checking session in client not working
-  // add/remove liability styling
-  // if year is blank error says expected number received string. Should say year is required
+  const { data: session, isPending } = authClient.useSession();
 
   const { control, handleSubmit } = useForm<StatementForm>({
     resolver: zodResolver(statementFormSchema),
   });
+
+  if (isPending) {
+    return <p>Loading</p>;
+  }
+  if (!session) {
+    redirect("/login");
+  }
+
+  // CONTINUE HERE:
+  // putting 0 as default value for number input
+  // add/remove liability styling
+  // if year is blank error says expected number received string. Should say year is required
 
   const onSubmit = async (data: StatementForm) => {
     console.log("submitting");
