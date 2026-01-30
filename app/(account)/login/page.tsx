@@ -42,7 +42,10 @@ export default function Page() {
       redirect("/dashboard");
     }
 
-    setError("root", { message: response.error });
+    response.errors.forEach((error) => {
+      const { path, message } = error;
+      setError(path, { message });
+    });
   };
 
   return (

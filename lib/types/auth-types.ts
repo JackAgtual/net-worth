@@ -28,7 +28,3 @@ export const loginSchema = z.object({
 });
 
 export type Login = z.infer<typeof loginSchema>;
-
-export type LoginResponse =
-  | { success: true }
-  | { success: false; error: string };

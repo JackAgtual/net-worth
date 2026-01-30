@@ -3,7 +3,7 @@
 import {
   CreateAccount,
   createAccountSchema,
-  LoginResponse,
+  Login,
   loginSchema,
 } from "@/types/auth-types";
 import { APIError } from "better-auth";
@@ -46,12 +46,11 @@ export async function createAccount(
   };
 }
 
-// TODO: Change to aciton response
-export async function logIn(formData: unknown): Promise<LoginResponse> {
+export async function logIn(formData: unknown): Promise<ActionResponse<Login>> {
   const result = loginSchema.safeParse(formData);
-  const badResult = {
+  const badResult: ActionResponse<Login> = {
     success: false,
-    error: "Incorrect username or password",
+    errors: [{ path: "root", message: "Incorrect username or password" }],
   };
 
   if (!result.success) {
@@ -76,7 +75,7 @@ export async function logIn(formData: unknown): Promise<LoginResponse> {
   } catch {
     return {
       success: false,
-      error: "Something went wrong",
+      errors: [{ path: "root", message: "Something went wrong" }],
     };
   }
 
