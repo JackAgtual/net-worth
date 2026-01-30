@@ -22,13 +22,6 @@ export const createAccountSchema = z
 
 export type CreateAccount = z.infer<typeof createAccountSchema>;
 
-export type CreateAccountResponse =
-  | { success: true }
-  | {
-      success: false;
-      errors: { path: string; message: string }[];
-    };
-
 export const loginSchema = z.object({
   email: z.email().toLowerCase().trim().nonempty("Eamail required"),
   password: z.string().nonempty("Password required"),

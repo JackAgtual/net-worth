@@ -43,15 +43,7 @@ export default function Page() {
 
     response.errors.forEach((error) => {
       const { path, message } = error;
-      if (
-        path === "root" ||
-        path === "name" ||
-        path === "email" ||
-        path === "password" ||
-        path === "confirmPassword"
-      ) {
-        setError(path, { message });
-      }
+      setError(path, { message });
     });
   };
 

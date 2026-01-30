@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { createStatement } from "@/lib/actions/statement-actions";
 import { authClient } from "@/lib/auth/auth-client";
 import {
   StatementForm,
@@ -19,7 +20,7 @@ import LiabilitiesForm from "./components/liability-form";
 export default function Page() {
   const { data: session, isPending } = authClient.useSession();
 
-  const { control, handleSubmit } = useForm<StatementForm>({
+  const { control, handleSubmit, setError } = useForm<StatementForm>({
     resolver: zodResolver(statementFormSchema),
   });
 
@@ -35,8 +36,18 @@ export default function Page() {
   // if year is blank error says expected number received string. Should say year is required
 
   const onSubmit = async (data: StatementForm) => {
-    console.log("submitting");
-    console.log(data);
+    console.log("form submit");
+
+    const response = await createStatement(data);
+
+    if (response.success) {
+      console.log("success");
+      return; // redirect
+    }
+
+    response.errors.forEach((error) => {
+      setError(error.path, { message: error.message });
+    });
   };
 
   return (

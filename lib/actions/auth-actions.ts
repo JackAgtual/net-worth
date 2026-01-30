@@ -1,28 +1,25 @@
 "use server";
 
-import { redirect } from "next/navigation";
-import { auth } from "../auth/auth";
-import { headers } from "next/headers";
 import {
-  CreateAccountResponse,
+  CreateAccount,
   createAccountSchema,
   LoginResponse,
   loginSchema,
 } from "@/types/auth-types";
 import { APIError } from "better-auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { auth } from "../auth/auth";
+import { ActionResponse } from "./action-types";
+import { getErrors } from "./action-utils";
 
 export async function createAccount(
   formData: unknown
-): Promise<CreateAccountResponse> {
+): Promise<ActionResponse<CreateAccount>> {
   const result = createAccountSchema.safeParse(formData);
 
   if (!result.success) {
-    const errors = result.error.issues.map((issue) => {
-      return {
-        path: issue.path[0].toString(),
-        message: issue.message,
-      };
-    });
+    const errors = getErrors<CreateAccount>(result.error.issues);
     return { success: false, errors };
   }
 
@@ -49,6 +46,7 @@ export async function createAccount(
   };
 }
 
+// TODO: Change to aciton response
 export async function logIn(formData: unknown): Promise<LoginResponse> {
   const result = loginSchema.safeParse(formData);
   const badResult = {
