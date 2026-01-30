@@ -42,10 +42,12 @@ export default function DollarInput<TName extends FieldPath<StatementForm>>({
                 id={name}
                 aria-invalid={fieldState.invalid}
                 placeholder={placeholder}
-                type="number"
-                value={val ?? ""}
+                type="text"
+                value={val !== undefined ? val.toLocaleString("en-US") : ""}
                 onChange={(e) => {
-                  const val = e.target.value;
+                  const val = e.target.value.replaceAll(",", "");
+                  if (!/^\d*$/.test(val)) return;
+
                   field.onChange(val === "" ? undefined : Number(val));
                 }}
               />
