@@ -104,7 +104,7 @@ export default function LiabilitiesForm({ control }: LiabilitiesFormProps) {
         <Button
           type="button"
           onClick={() => {
-            append({ title: "", amount: 0 });
+            append({ title: "", amount: "" as unknown as number }); // bad practice but it works
           }}
         >
           Add liability

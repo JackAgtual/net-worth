@@ -29,8 +29,7 @@ export default function DollarInput<TName extends FieldPath<StatementForm>>({
       name={name}
       control={control}
       render={({ field, fieldState }) => {
-        const val = field.value as FieldPathValue<StatementForm, TName> &
-          (number | undefined);
+        const val = field.value as number | undefined;
         return (
           <Field>
             <FieldLabel>{label}</FieldLabel>
@@ -46,8 +45,8 @@ export default function DollarInput<TName extends FieldPath<StatementForm>>({
                 type="number"
                 value={val ?? ""}
                 onChange={(e) => {
-                  const val = e.target.valueAsNumber;
-                  field.onChange(Number.isFinite(val) ? val : undefined);
+                  const val = e.target.value;
+                  field.onChange(val === "" ? undefined : Number(val));
                 }}
               />
             </InputGroup>

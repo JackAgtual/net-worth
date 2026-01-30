@@ -202,11 +202,11 @@ export default function AssetsForm({ control }: AssetsFormProps) {
           onClick={() => {
             append({
               title: "",
-              amount: 0,
+              amount: "" as unknown as number, // bad practice but it works
               category: Category.Cash,
               retirement: false,
               includeInGrowthCalculation: false,
-            }); // TODO: Don't requrie default for amount, category,
+            });
           }}
         >
           Add asset
