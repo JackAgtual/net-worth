@@ -1,15 +1,15 @@
-import { Controller, FieldPath, FieldPathValue } from "react-hook-form";
-import { Field, FieldError, FieldLabel } from "../ui/field";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  InputGroupInput,
-} from "../ui/input-group";
 import {
   StatementForm,
   StatementFormControl,
 } from "@/lib/types/statement-types";
+import { Controller, FieldPath } from "react-hook-form";
+import { Field, FieldError, FieldLabel } from "../ui/field";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText,
+} from "../ui/input-group";
 
 type DollarInputProps<TName extends FieldPath<StatementForm>> = {
   name: TName;

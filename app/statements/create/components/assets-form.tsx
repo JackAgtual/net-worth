@@ -1,11 +1,8 @@
 "use client";
 
-import { Category } from "@/types/types";
-import {
-  StatementForm,
-  StatementFormControl,
-} from "@/lib/types/statement-types";
-import { Controller, FieldPath, useFieldArray } from "react-hook-form";
+import DollarInput from "@/components/shared/DollarInput";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Field,
   FieldContent,
@@ -15,28 +12,23 @@ import {
   FieldLabel,
   FieldLegend,
   FieldSet,
-  FieldTitle,
 } from "@/components/ui/field";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  InputGroupInput,
-} from "@/components/ui/input-group";
-import { Textarea } from "@/components/ui/textarea";
-import {
   Select,
-  SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import DollarInput from "@/components/shared/DollarInput";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  StatementForm,
+  StatementFormControl,
+} from "@/lib/types/statement-types";
+import { Category } from "@/types/types";
+import { Controller, FieldPath, useFieldArray } from "react-hook-form";
 
 type AssetsFormProps = {
   control: StatementFormControl;

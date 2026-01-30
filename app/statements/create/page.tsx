@@ -1,38 +1,20 @@
 "use client";
 
-import { createStatement } from "@/lib/actions/statement-actions";
-import { authClient } from "@/lib/auth/auth-client";
-import { useState } from "react";
-import LiabilitiesForm from "./components/liability-form";
-import AssetsForm from "./components/assets-form";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import {
-  Field,
-  FieldContent,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-  FieldLegend,
-  FieldSet,
-} from "@/components/ui/field";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  statementFormSchema,
-  statementSchema,
-  StatementForm,
-} from "@/lib/types/statement-types";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-  InputGroupText,
-} from "@/components/ui/input-group";
-import { Button } from "@/components/ui/button";
-import { redirect } from "next/navigation";
 import DollarInput from "@/components/shared/DollarInput";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { authClient } from "@/lib/auth/auth-client";
+import {
+  StatementForm,
+  statementFormSchema,
+} from "@/lib/types/statement-types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { redirect } from "next/navigation";
+import { Controller, useForm } from "react-hook-form";
+import AssetsForm from "./components/assets-form";
+import LiabilitiesForm from "./components/liability-form";
 
 export default function Page() {
   const { data: session, isPending } = authClient.useSession();
@@ -49,7 +31,6 @@ export default function Page() {
   }
 
   // CONTINUE HERE:
-  // putting 0 as default value for number input
   // add/remove liability styling
   // if year is blank error says expected number received string. Should say year is required
 
