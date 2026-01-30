@@ -10,8 +10,8 @@ import {
 const required = true;
 
 const contributionMongooseSchema = new Schema<Contribution>({
-  self: { type: Number, required },
-  nonSelf: { type: Number, required },
+  self: { type: Number, required: false },
+  nonSelf: { type: Number, required: false },
 });
 
 const assetMongooseSchema = new Schema<AssetDoc, AssetModelType, AssetMethods>(
@@ -27,7 +27,7 @@ const assetMongooseSchema = new Schema<AssetDoc, AssetModelType, AssetMethods>(
 
     includeInGrowthCalculation: { type: Boolean, default: false },
     amountOneYearAgo: Number,
-    contribution: contributionMongooseSchema,
+    contribution: { type: contributionMongooseSchema, required: false },
     retirement: Boolean,
     notes: String,
   },
