@@ -20,7 +20,12 @@ import LiabilitiesForm from "./components/liability-form";
 export default function Page() {
   const { data: session, isPending } = authClient.useSession();
 
-  const { control, handleSubmit, setError } = useForm<StatementForm>({
+  const {
+    control,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<StatementForm>({
     resolver: zodResolver(statementFormSchema),
   });
 
@@ -92,7 +97,11 @@ export default function Page() {
           />
           <AssetsForm control={control} />
           <LiabilitiesForm control={control} />
+
           <Button type="submit">Create</Button>
+          {errors.root && (
+            <FieldError errors={[{ message: errors.root.message }]} />
+          )}
         </form>
       </CardContent>
     </Card>

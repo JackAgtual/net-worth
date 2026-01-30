@@ -40,27 +40,34 @@ export async function createStatement(
     };
   }
 
-  const assetIds = await Promise.all(
-    statementData.assets?.map(async (asset) => {
-      const assetDoc = await Asset.create({ userId, ...asset });
-      return assetDoc._id;
-    }) ?? []
-  );
+  try {
+    const assetIds = await Promise.all(
+      statementData.assets?.map(async (asset) => {
+        const assetDoc = await Asset.create({ userId, ...asset });
+        return assetDoc._id;
+      }) ?? []
+    );
 
-  const liabilityIds = await Promise.all(
-    statementData.liabilities?.map(async (liability) => {
-      const liabilityDoc = await Liability.create({ userId, ...liability });
-      return liabilityDoc._id;
-    }) ?? []
-  );
+    const liabilityIds = await Promise.all(
+      statementData.liabilities?.map(async (liability) => {
+        const liabilityDoc = await Liability.create({ userId, ...liability });
+        return liabilityDoc._id;
+      }) ?? []
+    );
 
-  await Statement.create({
-    userId,
-    year: statementData.year,
-    lastYearSalary: statementData.lastYearSalary,
-    assets: assetIds,
-    liabilities: liabilityIds,
-  });
+    await Statement.create({
+      userId,
+      year: statementData.year,
+      lastYearSalary: statementData.lastYearSalary,
+      assets: assetIds,
+      liabilities: liabilityIds,
+    });
 
-  return { success: true };
+    return { success: true };
+  } catch {
+    return {
+      success: false,
+      errors: [{ path: "root", message: "Something went wrong" }],
+    };
+  }
 }
