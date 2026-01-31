@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/table";
 import { StatementHydrated } from "@/lib/types/statement-types";
 import { Contributor } from "@/lib/types/types";
+import { formatAsDollar, formatAsPercent } from "@/lib/utils/format-utils";
 
 export default async function ContributionTable({
   statement,
@@ -22,13 +23,14 @@ export default async function ContributionTable({
       const contributorEnum =
         Contributor[contributor as keyof typeof Contributor];
 
-      const amount = await statement.getContributionAmountByContributor(
-        contributorEnum
+      const amount = formatAsDollar(
+        await statement.getContributionAmountByContributor(contributorEnum)
       );
-      const percentOfIncome =
+      const percentOfIncome = formatAsPercent(
         await statement.getContributioPercentOfSalaryByContributor(
           contributorEnum
-        );
+        )
+      );
       return {
         contributor: contributorEnum,
         amount,

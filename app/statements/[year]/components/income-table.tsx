@@ -6,6 +6,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { StatementHydrated } from "@/lib/types/statement-types";
+import { formatAsDollar, formatAsPercent } from "@/lib/utils/format-utils";
 
 export default async function IncomeTable({
   statement,
@@ -15,15 +16,17 @@ export default async function IncomeTable({
   const contents = [
     {
       name: "Last year income",
-      value: statement.lastYearSalary,
+      value: formatAsDollar(statement.lastYearSalary),
     },
     {
       name: "Last year asset growth",
-      value: await statement.getLastYearAssetGrowth(),
+      value: formatAsDollar(await statement.getLastYearAssetGrowth()),
     },
     {
       name: "Last year asset growth percent of salary",
-      value: await statement.getLastYearAssetGrowthPercentOfSalary(),
+      value: formatAsPercent(
+        await statement.getLastYearAssetGrowthPercentOfSalary()
+      ),
     },
   ];
 

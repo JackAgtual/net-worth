@@ -7,6 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AssetHydrated } from "@/lib/types/asset-types";
+import { formatAsDollar } from "@/lib/utils/format-utils";
 
 export default async function AssetTable({
   assets,
@@ -35,11 +36,15 @@ export default async function AssetTable({
               <TableCell>{asset.title}</TableCell>
               <TableCell>{asset.category}</TableCell>
               <TableCell>{asset.retirement ? "Y" : "N"}</TableCell>
-              <TableCell>{asset.amount}</TableCell>
-              <TableCell>{asset.amountOneYearAgo}</TableCell>
-              <TableCell>{asset.contribution?.self}</TableCell>
-              <TableCell>{asset.contribution?.nonSelf}</TableCell>
-              <TableCell>{asset.getGrowthFromAppreciation()}</TableCell>
+              <TableCell>{formatAsDollar(asset.amount)}</TableCell>
+              <TableCell>{formatAsDollar(asset.amountOneYearAgo)}</TableCell>
+              <TableCell>{formatAsDollar(asset.contribution?.self)}</TableCell>
+              <TableCell>
+                {formatAsDollar(asset.contribution?.nonSelf)}
+              </TableCell>
+              <TableCell>
+                {formatAsDollar(asset.getGrowthFromAppreciation())}
+              </TableCell>
               <TableCell>{asset.notes}</TableCell>
             </TableRow>
           );

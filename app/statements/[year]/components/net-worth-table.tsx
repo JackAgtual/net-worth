@@ -1,12 +1,13 @@
 import {
   Table,
-  TableHeader,
-  TableRow,
-  TableHead,
   TableBody,
   TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { StatementHydrated } from "@/lib/types/statement-types";
+import { formatAsDollar } from "@/lib/utils/format-utils";
 
 export default async function NetWorthTable({
   statement,
@@ -16,15 +17,15 @@ export default async function NetWorthTable({
   const contents = [
     {
       name: "Net worth",
-      value: await statement.getNetWorth(),
+      value: formatAsDollar(await statement.getNetWorth()),
     },
     {
       name: "Total assets",
-      value: await statement.getTotalAssetAmount(),
+      value: formatAsDollar(await statement.getTotalAssetAmount()),
     },
     {
       name: "Total liabilities",
-      value: await statement.getTotalLiabilityAmount(),
+      value: formatAsDollar(await statement.getTotalLiabilityAmount()),
     },
   ];
 

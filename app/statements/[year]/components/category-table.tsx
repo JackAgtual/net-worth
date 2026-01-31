@@ -6,6 +6,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { StatementHydrated } from "@/lib/types/statement-types";
+import { formatAsDollar, formatAsPercent } from "@/lib/utils/format-utils";
 import { Category } from "@/types/types";
 
 export default async function CategoryTable({
@@ -16,11 +17,11 @@ export default async function CategoryTable({
   const contents = await Promise.all(
     Object.keys(Category).map(async (category) => {
       const categoryEnum = Category[category as keyof typeof Category];
-      const amount = await statement.getTotalAssetAmountByCategory(
-        categoryEnum
+      const amount = formatAsDollar(
+        await statement.getTotalAssetAmountByCategory(categoryEnum)
       );
-      const percent = await statement.getPercentOfAssetsByCategory(
-        categoryEnum
+      const percent = formatAsPercent(
+        await statement.getPercentOfAssetsByCategory(categoryEnum)
       );
       return {
         category,

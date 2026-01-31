@@ -7,6 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { LiabilityHydrated } from "@/lib/types/liability-types";
+import { formatAsDollar } from "@/lib/utils/format-utils";
 
 export default async function LiabilityTable({
   liabilities,
@@ -27,7 +28,7 @@ export default async function LiabilityTable({
           return (
             <TableRow key={liability._id.toString()}>
               <TableCell>{liability.title}</TableCell>
-              <TableCell>{liability.amount}</TableCell>
+              <TableCell>{formatAsDollar(liability.amount)}</TableCell>
               <TableCell>{liability.notes}</TableCell>
             </TableRow>
           );
