@@ -5,24 +5,24 @@ import {
 import { Category } from "@/lib/types/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import DollarInput from "./shared/DollarInput";
-import { Checkbox } from "./ui/checkbox";
+import DollarInput from "./DollarInput";
+import { Checkbox } from "../ui/checkbox";
 import {
   Field,
   FieldContent,
   FieldDescription,
   FieldError,
   FieldLabel,
-} from "./ui/field";
-import { Input } from "./ui/input";
+} from "../ui/field";
+import { Input } from "../ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
-import { Textarea } from "./ui/textarea";
+} from "../ui/select";
+import { Textarea } from "../ui/textarea";
 
 type AssetFormProps = {
   data?: TAssetForm;

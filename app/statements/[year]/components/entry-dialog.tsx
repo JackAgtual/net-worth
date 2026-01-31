@@ -1,7 +1,7 @@
 "use client";
 
-import AssetForm from "@/components/asset-form";
-import LiabilityForm from "@/components/liability-form";
+import AssetForm from "@/components/form/asset-form";
+import LiabilityForm from "@/components/form/liability-form";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

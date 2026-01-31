@@ -1,14 +1,13 @@
 import {
-  LiabilityHydrated,
   LiabilityForm as TLiabilityForm,
   liabilityFormSchema,
 } from "@/lib/types/liability-types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import DollarInput from "./shared/DollarInput";
-import { Field, FieldError, FieldLabel } from "./ui/field";
-import { Input } from "./ui/input";
-import { Textarea } from "./ui/textarea";
+import { Field, FieldError, FieldLabel } from "../ui/field";
+import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
+import DollarInput from "./DollarInput";
 
 type LiabilityFormProps = {
   data?: TLiabilityForm;

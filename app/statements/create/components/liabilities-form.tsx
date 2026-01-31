@@ -1,6 +1,6 @@
 "use client";
 
-import DollarInput from "@/components/shared/DollarInput";
+import DollarInput from "@/components/form/DollarInput";
 import { Button } from "@/components/ui/button";
 import {
   Field,

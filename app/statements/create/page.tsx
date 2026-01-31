@@ -1,6 +1,6 @@
 "use client";
 
-import DollarInput from "@/components/shared/DollarInput";
+import DollarInput from "@/components/form/DollarInput";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
@@ -15,7 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { redirect } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import AssetsForm from "./components/assets-form";
-import LiabilitiesForm from "./components/liability-form";
+import LiabilitiesForm from "./components/liabilities-form";
 
 export default function Page() {
   const { data: session, isPending } = authClient.useSession();
