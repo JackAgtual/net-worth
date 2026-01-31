@@ -76,10 +76,10 @@ export default function Page() {
                   id="year"
                   aria-invalid={fieldState.invalid}
                   placeholder="2023"
-                  type="number"
+                  type="text"
                   onChange={(e) => {
-                    const val = e.target.valueAsNumber;
-                    field.onChange(Number.isFinite(val) ? val : undefined);
+                    const val = e.target.value.replace(/\D/g, "");
+                    field.onChange(val === "" ? undefined : Number(val));
                   }}
                   value={field.value ?? ""}
                 />
