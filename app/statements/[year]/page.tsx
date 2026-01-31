@@ -8,6 +8,14 @@ import IncomeTable from "./components/income-table";
 import ContributionTable from "./components/contribution-table";
 import { getSession } from "@/lib/auth/auth-utils";
 import { redirect } from "next/navigation";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export default async function Page({
   params,

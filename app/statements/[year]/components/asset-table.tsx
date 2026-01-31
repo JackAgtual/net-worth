@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/table";
 import { AssetHydrated } from "@/lib/types/asset-types";
 import { formatAsDollar } from "@/lib/utils/format-utils";
+import EntryDropDown from "./entry-drop-down";
 
 export default async function AssetTable({
   assets,
@@ -27,12 +28,14 @@ export default async function AssetTable({
           <TableHead>Non-self contribution</TableHead>
           <TableHead>Growth from appreciation</TableHead>
           <TableHead>Notes</TableHead>
+          <TableHead className="text-right">Action</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {assets.map((asset) => {
+          const id = asset._id.toString();
           return (
-            <TableRow key={asset._id.toString()}>
+            <TableRow key={id}>
               <TableCell>{asset.title}</TableCell>
               <TableCell>{asset.category}</TableCell>
               <TableCell>{asset.retirement ? "Y" : "N"}</TableCell>
@@ -46,6 +49,9 @@ export default async function AssetTable({
                 {formatAsDollar(asset.getGrowthFromAppreciation())}
               </TableCell>
               <TableCell>{asset.notes}</TableCell>
+              <TableCell className="text-right">
+                <EntryDropDown id={id} />
+              </TableCell>
             </TableRow>
           );
         })}
