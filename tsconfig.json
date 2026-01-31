@@ -20,7 +20,8 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "@/types/*": ["./lib/types/*"]
+      "@/types/*": ["./lib/types/*"],
+      "@/lib/utils": ["./lib/utils/shadcn-utils"]
     }
   },
   "include": [
