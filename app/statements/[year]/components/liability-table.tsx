@@ -1,32 +1,38 @@
-import { LiabilityHydrated, StatementHydrated } from "@/lib/db/models";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { LiabilityHydrated } from "@/lib/types/liability-types";
 
 export default async function LiabilityTable({
-  statement,
+  liabilities,
 }: {
-  statement: StatementHydrated;
+  liabilities: LiabilityHydrated[];
 }) {
-  const liabilities = await statement.getLiabilities();
-
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>Liability</th>
-          <th>Amount</th>
-          <th>Notes</th>
-        </tr>
-      </thead>
-      <tbody>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Liability</TableHead>
+          <TableHead>Amount</TableHead>
+          <TableHead>Notes</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
         {liabilities.map((liability) => {
           return (
-            <tr key={liability._id.toString()}>
-              <td>{liability.title}</td>
-              <td>{liability.amount}</td>
-              <td>{liability.notes}</td>
-            </tr>
+            <TableRow key={liability._id.toString()}>
+              <TableCell>{liability.title}</TableCell>
+              <TableCell>{liability.amount}</TableCell>
+              <TableCell>{liability.notes}</TableCell>
+            </TableRow>
           );
         })}
-      </tbody>
-    </table>
+      </TableBody>
+    </Table>
   );
 }

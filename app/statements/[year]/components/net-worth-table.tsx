@@ -1,14 +1,18 @@
-import { StatementHydrated } from "@/lib/db/models/statement";
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+} from "@/components/ui/table";
+import { StatementHydrated } from "@/lib/types/statement-types";
 
 export default async function NetWorthTable({
   statement,
 }: {
   statement: StatementHydrated;
 }) {
-  const netWorth = await statement.getNetWorth();
-  const totalAssetAmount = await statement.getTotalAssetAmount();
-  const totalLiabilityAmount = await statement.getTotalLiabilityAmount();
-
   const contents = [
     {
       name: "Net worth",
@@ -25,23 +29,23 @@ export default async function NetWorthTable({
   ];
 
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>Metric</th>
-          <th>Value</th>
-        </tr>
-      </thead>
-      <tbody>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Metric</TableHead>
+          <TableHead>Value</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
         {contents.map((row, index) => {
           return (
-            <tr key={index}>
-              <td>{row.name}</td>
-              <td>{row.value}</td>
-            </tr>
+            <TableRow key={index}>
+              <TableCell>{row.name}</TableCell>
+              <TableCell>{row.value}</TableCell>
+            </TableRow>
           );
         })}
-      </tbody>
-    </table>
+      </TableBody>
+    </Table>
   );
 }

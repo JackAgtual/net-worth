@@ -27,6 +27,7 @@ export async function createStatement(
   const statementData = result.data;
   const userId = session.user.id;
 
+  console.log({ statementData });
   const existingStatements = await Statement.find({ year: statementData.year });
   if (existingStatements.length !== 0) {
     return {

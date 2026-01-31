@@ -1,44 +1,50 @@
-import { AssetHydrated, StatementHydrated } from "@/lib/db/models";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { AssetHydrated } from "@/lib/types/asset-types";
 
 export default async function AssetTable({
-  statement,
+  assets,
 }: {
-  statement: StatementHydrated;
+  assets: AssetHydrated[];
 }) {
-  const assets = await statement.getAssets();
-
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>Asset</th>
-          <th>Category</th>
-          <th>Retirement</th>
-          <th>Amount</th>
-          <th>Account value 1 year ago</th>
-          <th>Self contributions</th>
-          <th>Non-self contribution</th>
-          <th>Growth from appreciation</th>
-          <th>Notes</th>
-        </tr>
-      </thead>
-      <tbody>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Asset</TableHead>
+          <TableHead>Category</TableHead>
+          <TableHead>Retirement</TableHead>
+          <TableHead>Amount</TableHead>
+          <TableHead>Account value 1 year ago</TableHead>
+          <TableHead>Self contributions</TableHead>
+          <TableHead>Non-self contribution</TableHead>
+          <TableHead>Growth from appreciation</TableHead>
+          <TableHead>Notes</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
         {assets.map((asset) => {
           return (
-            <tr key={asset._id.toString()}>
-              <td>{asset.title}</td>
-              <td>{asset.category}</td>
-              <td>{asset.retirement ? "Y" : "N"}</td>
-              <td>{asset.amount}</td>
-              <td>{asset.amountOneYearAgo}</td>
-              <td>{asset.contribution?.self}</td>
-              <td>{asset.contribution?.nonSelf}</td>
-              <td>{asset.getGrowthFromAppreciation()}</td>
-              <td>{asset.notes}</td>
-            </tr>
+            <TableRow key={asset._id.toString()}>
+              <TableCell>{asset.title}</TableCell>
+              <TableCell>{asset.category}</TableCell>
+              <TableCell>{asset.retirement ? "Y" : "N"}</TableCell>
+              <TableCell>{asset.amount}</TableCell>
+              <TableCell>{asset.amountOneYearAgo}</TableCell>
+              <TableCell>{asset.contribution?.self}</TableCell>
+              <TableCell>{asset.contribution?.nonSelf}</TableCell>
+              <TableCell>{asset.getGrowthFromAppreciation()}</TableCell>
+              <TableCell>{asset.notes}</TableCell>
+            </TableRow>
           );
         })}
-      </tbody>
-    </table>
+      </TableBody>
+    </Table>
   );
 }

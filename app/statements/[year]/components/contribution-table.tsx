@@ -1,4 +1,11 @@
-import { StatementHydrated } from "@/lib/db/models/statement";
+import {
+  Table,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { StatementHydrated } from "@/lib/types/statement-types";
 import { Contributor } from "@/lib/types/types";
 
 export default async function ContributionTable({
@@ -30,25 +37,25 @@ export default async function ContributionTable({
     })
   );
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>Contributor</th>
-          <th>Amount</th>
-          <th>Percent of income</th>
-        </tr>
-      </thead>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Contributor</TableHead>
+          <TableHead>Amount</TableHead>
+          <TableHead>Percent of income</TableHead>
+        </TableRow>
+      </TableHeader>
       <tbody>
         {contents.map((row, index) => {
           return (
-            <tr key={index}>
-              <td>{row.contributor}</td>
-              <td>{row.amount}</td>
-              <td>{row.percentOfIncome}</td>
-            </tr>
+            <TableRow key={index}>
+              <TableCell>{row.contributor}</TableCell>
+              <TableCell>{row.amount}</TableCell>
+              <TableCell>{row.percentOfIncome}</TableCell>
+            </TableRow>
           );
         })}
       </tbody>
-    </table>
+    </Table>
   );
 }

@@ -6,12 +6,19 @@ import LiabilityTable from "./components/liability-table";
 import CategoryTable from "./components/category-table";
 import IncomeTable from "./components/income-table";
 import ContributionTable from "./components/contribution-table";
+import { getSession } from "@/lib/auth/auth-utils";
+import { redirect } from "next/navigation";
 
 export default async function Page({
   params,
 }: {
   params: Promise<{ year: number }>;
 }) {
+  const session = await getSession();
+  if (!session) {
+    redirect("/login");
+  }
+
   await dbConnect();
   const { year } = await params;
 
@@ -19,13 +26,20 @@ export default async function Page({
 
   if (!statement) return <div>Couldn't find that statement</div>;
 
+  if (statement.userId !== session.user.id) {
+    redirect("/login");
+  }
+
+  const assets = await statement.getAssets();
+  const liabilities = await statement.getLiabilities();
+
   return (
     <>
       <h1>{year} statement</h1>
       <h2>Assets</h2>
-      <AssetTable statement={statement} />
+      <AssetTable assets={assets} />
       <h2>Liabilities</h2>
-      <LiabilityTable statement={statement} />
+      <LiabilityTable liabilities={liabilities} />
       <h2>Net worth</h2>
       <NetWorthTable statement={statement} />
       <h2>Category analysis</h2>

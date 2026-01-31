@@ -1,21 +1,17 @@
-import mongoose, { HydratedDocument, Model, Schema, Types } from "mongoose";
-import { z } from "zod";
+import { Asset, Liability } from "@/lib/db/models";
+import { AssetDoc, AssetHydrated, AssetUpdate } from "@/lib/types/asset-types";
 import {
-  Asset,
-  AssetUpdate,
-  AssetHydrated,
-  AssetDoc,
-  Liability,
   LiabilityDoc,
   LiabilityHydrated,
   LiabilityUpdate,
-} from "@/lib/db/models";
-import { Category, Contributor } from "@/types/types";
+} from "@/lib/types/liability-types";
 import {
   StatementDoc,
   StatementMethods,
   StatementModelType,
 } from "@/lib/types/statement-types";
+import { Category, Contributor } from "@/types/types";
+import mongoose, { Schema, Types } from "mongoose";
 
 const required = true;
 

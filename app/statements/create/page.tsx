@@ -41,13 +41,10 @@ export default function Page() {
   // if year is blank error says expected number received string. Should say year is required
 
   const onSubmit = async (data: StatementForm) => {
-    console.log("form submit");
-
     const response = await createStatement(data);
 
     if (response.success) {
-      console.log("success");
-      return; // redirect
+      redirect(`/statements/${data.year}`);
     }
 
     response.errors.forEach((error) => {

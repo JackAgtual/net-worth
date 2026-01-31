@@ -1,4 +1,11 @@
-import { StatementHydrated } from "@/lib/db/models/statement";
+import {
+  Table,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { StatementHydrated } from "@/lib/types/statement-types";
 
 export default async function IncomeTable({
   statement,
@@ -21,23 +28,23 @@ export default async function IncomeTable({
   ];
 
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>Item</th>
-          <th>Value</th>
-        </tr>
-      </thead>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Item</TableHead>
+          <TableHead>Value</TableHead>
+        </TableRow>
+      </TableHeader>
       <tbody>
         {contents.map((row, index) => {
           return (
-            <tr key={index}>
-              <td>{row.name}</td>
-              <td>{row.value}</td>
-            </tr>
+            <TableRow key={index}>
+              <TableCell>{row.name}</TableCell>
+              <TableCell>{row.value}</TableCell>
+            </TableRow>
           );
         })}
       </tbody>
-    </table>
+    </Table>
   );
 }

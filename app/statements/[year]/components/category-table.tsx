@@ -1,5 +1,12 @@
+import {
+  Table,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { StatementHydrated } from "@/lib/types/statement-types";
 import { Category } from "@/types/types";
-import { StatementHydrated } from "@/lib/db/models/statement";
 
 export default async function CategoryTable({
   statement,
@@ -24,25 +31,25 @@ export default async function CategoryTable({
   );
 
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>Category</th>
-          <th>Amount</th>
-          <th>Percent of assets</th>
-        </tr>
-      </thead>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Category</TableHead>
+          <TableHead>Amount</TableHead>
+          <TableHead>Percent of assets</TableHead>
+        </TableRow>
+      </TableHeader>
       <tbody>
         {contents.map((row, index) => {
           return (
-            <tr key={index}>
-              <td>{row.category}</td>
-              <td>{row.amount}</td>
-              <td>{row.percent}</td>
-            </tr>
+            <TableRow key={index}>
+              <TableCell>{row.category}</TableCell>
+              <TableCell>{row.amount}</TableCell>
+              <TableCell>{row.percent}</TableCell>
+            </TableRow>
           );
         })}
       </tbody>
-    </table>
+    </Table>
   );
 }
