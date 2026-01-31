@@ -6,7 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { LiabilityHydrated } from "@/lib/types/liability-types";
+import { LiabilityForm, LiabilityHydrated } from "@/lib/types/liability-types";
 import { formatAsDollar } from "@/lib/utils/format-utils";
 import EntryDropDown from "./entry-drop-down";
 
@@ -28,13 +28,24 @@ export default async function LiabilityTable({
       <TableBody>
         {liabilities.map((liability) => {
           const id = liability._id.toString();
+
+          const liabilityFormData: LiabilityForm = {
+            title: liability.title,
+            amount: liability.amount,
+            notes: liability.notes,
+          };
+
           return (
             <TableRow key={id}>
               <TableCell>{liability.title}</TableCell>
               <TableCell>{formatAsDollar(liability.amount)}</TableCell>
               <TableCell>{liability.notes}</TableCell>
               <TableCell className="text-right">
-                <EntryDropDown id={id} />
+                <EntryDropDown
+                  id={id}
+                  entityType="liability"
+                  data={liabilityFormData}
+                />
               </TableCell>
             </TableRow>
           );

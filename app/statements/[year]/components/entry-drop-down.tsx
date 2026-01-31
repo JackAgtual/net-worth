@@ -7,15 +7,24 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { LiabilityForm } from "@/lib/types/liability-types";
 import { MoreHorizontalIcon } from "lucide-react";
 import { useState } from "react";
 import EntryDialog from "./entry-dialog";
+import { AssetForm } from "@/lib/types/asset-types";
 
 type EntryDropDownProps = {
   id: string;
-};
+} & (
+  | { entityType: "asset"; data: AssetForm }
+  | { entityType: "liability"; data: LiabilityForm }
+);
 
-export default function EntryDropDown({ id }: EntryDropDownProps) {
+export default function EntryDropDown({
+  id,
+  entityType,
+  data,
+}: EntryDropDownProps) {
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
@@ -41,13 +50,43 @@ export default function EntryDropDown({ id }: EntryDropDownProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <EntryDialog open={editOpen} setOpen={setEditOpen} id={id} title="Edit" />
-      <EntryDialog
-        open={deleteOpen}
-        setOpen={setDeleteOpen}
-        id={id}
-        title="Delete"
-      />
+      {entityType === "asset" ? ( // needed for TS
+        <>
+          <EntryDialog
+            open={editOpen}
+            setOpen={setEditOpen}
+            id={id}
+            entityType={entityType}
+            action="edit"
+            data={data}
+          />
+          <EntryDialog
+            open={deleteOpen}
+            setOpen={setDeleteOpen}
+            id={id}
+            entityType={entityType}
+            action="delete"
+          />
+        </>
+      ) : (
+        <>
+          <EntryDialog
+            open={editOpen}
+            setOpen={setEditOpen}
+            id={id}
+            entityType={entityType}
+            action="edit"
+            data={data}
+          />
+          <EntryDialog
+            open={deleteOpen}
+            setOpen={setDeleteOpen}
+            id={id}
+            entityType={entityType}
+            action="delete"
+          />
+        </>
+      )}
     </>
   );
 }

@@ -1,8 +1,4 @@
-import {
-  StatementForm,
-  StatementFormControl,
-} from "@/lib/types/statement-types";
-import { Controller, FieldPath } from "react-hook-form";
+import { Control, Controller, FieldPath, FieldValues } from "react-hook-form";
 import { Field, FieldError, FieldLabel } from "../ui/field";
 import {
   InputGroup,
@@ -11,19 +7,25 @@ import {
   InputGroupText,
 } from "../ui/input-group";
 
-type DollarInputProps<TName extends FieldPath<StatementForm>> = {
+type DollarInputProps<
+  TFormValues extends FieldValues,
+  TName extends FieldPath<TFormValues>
+> = {
   name: TName;
   label: string;
-  control: StatementFormControl;
+  control: Control<TFormValues>;
   placeholder?: string;
 };
 
-export default function DollarInput<TName extends FieldPath<StatementForm>>({
+export default function DollarInput<
+  TFormValues extends FieldValues,
+  TName extends FieldPath<TFormValues>
+>({
   name,
   label,
   control,
   placeholder = "1,500",
-}: DollarInputProps<TName>) {
+}: DollarInputProps<TFormValues, TName>) {
   return (
     <Controller
       name={name}

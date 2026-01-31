@@ -19,6 +19,8 @@ export const assetSchema = entrySchema.extend({
 
 export const assetFormSchema = assetSchema.omit({ userId: true });
 
+export type AssetForm = z.infer<typeof assetFormSchema>;
+
 export type AssetDoc = z.infer<typeof assetSchema>;
 
 export type AssetUpdate = Partial<AssetDoc>;

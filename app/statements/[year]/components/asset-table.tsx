@@ -6,7 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { AssetHydrated } from "@/lib/types/asset-types";
+import { AssetForm, AssetHydrated } from "@/lib/types/asset-types";
 import { formatAsDollar } from "@/lib/utils/format-utils";
 import EntryDropDown from "./entry-drop-down";
 
@@ -34,6 +34,21 @@ export default async function AssetTable({
       <TableBody>
         {assets.map((asset) => {
           const id = asset._id.toString();
+
+          const assetFormData: AssetForm = {
+            title: asset.title,
+            amount: asset.amount,
+            category: asset.category,
+            retirement: asset.retirement,
+            amountOneYearAgo: asset.amountOneYearAgo,
+            contribution: {
+              self: asset.contribution?.self,
+              nonSelf: asset.contribution?.nonSelf,
+            },
+            includeInGrowthCalculation: asset.includeInGrowthCalculation,
+            notes: asset.notes,
+          };
+
           return (
             <TableRow key={id}>
               <TableCell>{asset.title}</TableCell>
@@ -50,7 +65,11 @@ export default async function AssetTable({
               </TableCell>
               <TableCell>{asset.notes}</TableCell>
               <TableCell className="text-right">
-                <EntryDropDown id={id} />
+                <EntryDropDown
+                  id={id}
+                  entityType="asset"
+                  data={assetFormData}
+                />
               </TableCell>
             </TableRow>
           );

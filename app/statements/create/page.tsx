@@ -36,10 +36,6 @@ export default function Page() {
     redirect("/login");
   }
 
-  // CONTINUE HERE:
-  // add/remove liability styling
-  // if year is blank error says expected number received string. Should say year is required
-
   const onSubmit = async (data: StatementForm) => {
     const response = await createStatement(data);
 
