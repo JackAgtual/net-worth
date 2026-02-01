@@ -4,7 +4,13 @@ import {
 } from "@/lib/types/asset-types";
 import { Category } from "@/lib/types/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import {
+  Control,
+  Controller,
+  FieldPath,
+  FieldValues,
+  useForm,
+} from "react-hook-form";
 import DollarInput from "./DollarInput";
 import { Checkbox } from "../ui/checkbox";
 import {
@@ -24,13 +30,16 @@ import {
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
 
-type AssetFormProps = {
+type AssetFormProps<TForm extends FieldValues & TAssetForm = TAssetForm> = {
+  control?: Control<any>; // TODO: Fix types
+  baseName?: FieldPath<TForm>;
   data?: TAssetForm;
 };
 
-// TODO: Use this component in assets form (create statement)
-export default function AssetForm({ data }: AssetFormProps) {
-  const { control } = useForm<TAssetForm>({
+export default function AssetForm<
+  TForm extends FieldValues & TAssetForm = TAssetForm
+>({ control, baseName, data }: AssetFormProps<TForm>) {
+  const { control: localControl } = useForm<TAssetForm>({
     resolver: zodResolver(assetFormSchema),
     defaultValues: {
       title: data?.title,
@@ -46,17 +55,25 @@ export default function AssetForm({ data }: AssetFormProps) {
       notes: data?.notes,
     },
   });
+
+  function getName(name: FieldPath<TAssetForm>): FieldPath<TForm> {
+    if (!baseName) return name as FieldPath<TForm>;
+
+    return `${baseName}.${name}` as FieldPath<TForm>;
+  }
+
+  const usedControl = control ?? (localControl as unknown as Control<TForm>);
   return (
     <>
       <Controller
-        name="title"
-        control={control}
+        name={getName("title")}
+        control={usedControl}
         render={({ field: controllerField, fieldState }) => (
           <Field>
             <FieldLabel>Title</FieldLabel>
             <Input
               {...controllerField}
-              id="title"
+              id={getName("title")}
               placeholder="Investment account"
               type="string"
               aria-invalid={fieldState.invalid}
@@ -65,10 +82,14 @@ export default function AssetForm({ data }: AssetFormProps) {
           </Field>
         )}
       />
-      <DollarInput control={control} label="Amount" name="amount" />
+      <DollarInput
+        control={usedControl}
+        label="Amount"
+        name={getName("amount")}
+      />
       <Controller
-        name="category"
-        control={control}
+        name={getName("category")}
+        control={usedControl}
         render={({ field, fieldState }) => (
           <Field>
             <FieldLabel>Category</FieldLabel>
@@ -89,51 +110,53 @@ export default function AssetForm({ data }: AssetFormProps) {
         )}
       />
       <Controller
-        name="retirement"
-        control={control}
+        name={getName("retirement")}
+        control={usedControl}
         render={({ field }) => (
           <Field orientation="horizontal">
             <Checkbox
-              id="retirement"
+              id={getName("retirement")}
               name="retirement"
               checked={field.value}
               onCheckedChange={field.onChange}
             />
-            <FieldLabel htmlFor="retirement">Retirement asset</FieldLabel>
+            <FieldLabel htmlFor={getName("retirement")}>
+              Retirement asset
+            </FieldLabel>
           </Field>
         )}
       />
       <DollarInput
-        control={control}
+        control={usedControl}
         label="Amount one year ago"
-        name="amountOneYearAgo"
+        name={getName("amountOneYearAgo")}
         placeholder="10,000"
       />
       <DollarInput
-        control={control}
+        control={usedControl}
         label="Self contribution"
-        name="contribution.self"
+        name={getName("contribution.self")}
         placeholder="1,000"
       />
       <DollarInput
-        control={control}
+        control={usedControl}
         label="Non-self contribution"
-        name="contribution.nonSelf"
+        name={getName("contribution.nonSelf")}
         placeholder="500"
       />
       <Controller
-        name="includeInGrowthCalculation"
-        control={control}
+        name={getName("includeInGrowthCalculation")}
+        control={usedControl}
         render={({ field }) => (
           <Field orientation="horizontal">
             <Checkbox
-              id="includeInGrowthCalculation"
-              name="includeInGrowthCalculation"
+              id={getName("includeInGrowthCalculation")}
+              name={getName("includeInGrowthCalculation")}
               checked={field.value}
               onCheckedChange={field.onChange}
             />
             <FieldContent>
-              <FieldLabel htmlFor="includeInGrowthCalculation">
+              <FieldLabel htmlFor={getName("includeInGrowthCalculation")}>
                 Include in growth calculation
               </FieldLabel>
               <FieldDescription>
@@ -145,14 +168,14 @@ export default function AssetForm({ data }: AssetFormProps) {
         )}
       />
       <Controller
-        name="notes"
-        control={control}
+        name={getName("notes")}
+        control={usedControl}
         render={({ field: controllerField, fieldState }) => (
           <Field>
             <FieldLabel>Notes</FieldLabel>
             <Textarea
               {...controllerField}
-              id="notes"
+              id={getName("notes")}
               placeholder="Type your notes here."
               aria-invalid={fieldState.invalid}
             />

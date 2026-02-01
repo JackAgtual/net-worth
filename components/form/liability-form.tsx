@@ -1,21 +1,32 @@
 import {
-  LiabilityForm as TLiabilityForm,
   liabilityFormSchema,
+  LiabilityForm as TLiabilityForm,
 } from "@/lib/types/liability-types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import {
+  Control,
+  Controller,
+  FieldPath,
+  FieldValues,
+  useForm,
+} from "react-hook-form";
 import { Field, FieldError, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import DollarInput from "./DollarInput";
 
-type LiabilityFormProps = {
+type LiabilityFormProps<
+  TForm extends FieldValues & TLiabilityForm = TLiabilityForm
+> = {
+  control?: Control<any>; // TODO: Fix types
+  baseName?: FieldPath<TForm>;
   data?: TLiabilityForm;
 };
 
-// TODO: Use this component in liabilities form (create statement)
-export default function LiabilityForm({ data }: LiabilityFormProps) {
-  const { control } = useForm<TLiabilityForm>({
+export default function LiabilityForm<
+  TForm extends FieldValues & TLiabilityForm = TLiabilityForm
+>({ control, baseName, data }: LiabilityFormProps<TForm>) {
+  const { control: localControl } = useForm<TLiabilityForm>({
     resolver: zodResolver(liabilityFormSchema),
     defaultValues: {
       title: data?.title,
@@ -24,17 +35,25 @@ export default function LiabilityForm({ data }: LiabilityFormProps) {
     },
   });
 
+  function getName(name: FieldPath<TLiabilityForm>): FieldPath<TForm> {
+    if (!baseName) return name as FieldPath<TForm>;
+
+    return `${baseName}.${name}` as FieldPath<TForm>;
+  }
+
+  const usedControl = control ?? (localControl as unknown as Control<TForm>);
+
   return (
     <>
       <Controller
-        name="title"
-        control={control}
+        name={getName("title")}
+        control={usedControl}
         render={({ field: controllerField, fieldState }) => (
           <Field>
             <FieldLabel>Title</FieldLabel>
             <Input
               {...controllerField}
-              id="title"
+              id={getName("title")}
               placeholder="Credit card 1"
               type="string"
               aria-invalid={fieldState.invalid}
@@ -43,16 +62,20 @@ export default function LiabilityForm({ data }: LiabilityFormProps) {
           </Field>
         )}
       />
-      <DollarInput control={control} label="Amount" name="amount" />
+      <DollarInput
+        control={usedControl}
+        label="Amount"
+        name={getName("amount")}
+      />
       <Controller
-        name="notes"
-        control={control}
+        name={getName("notes")}
+        control={usedControl}
         render={({ field: controllerField, fieldState }) => (
           <Field>
             <FieldLabel>Notes</FieldLabel>
             <Textarea
               {...controllerField}
-              id="notes"
+              id={getName("notes")}
               placeholder="Type your notes here."
               aria-invalid={fieldState.invalid}
             />
