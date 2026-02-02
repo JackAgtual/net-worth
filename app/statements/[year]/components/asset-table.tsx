@@ -35,6 +35,7 @@ export default async function AssetTable({
         {assets.map((asset) => {
           const id = asset._id.toString();
 
+          // TODO: Find a better way to do this
           const assetFormData: AssetForm = {
             title: asset.title,
             amount: asset.amount,

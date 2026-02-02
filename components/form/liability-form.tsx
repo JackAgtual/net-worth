@@ -1,15 +1,5 @@
-import {
-  liabilityFormSchema,
-  LiabilityForm as TLiabilityForm,
-} from "@/lib/types/liability-types";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Control,
-  Controller,
-  FieldPath,
-  FieldValues,
-  useForm,
-} from "react-hook-form";
+import { LiabilityForm as TLiabilityForm } from "@/lib/types/liability-types";
+import { Control, Controller, FieldPath, FieldValues } from "react-hook-form";
 import { Field, FieldError, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
@@ -18,36 +8,24 @@ import DollarInput from "./DollarInput";
 type LiabilityFormProps<
   TForm extends FieldValues & TLiabilityForm = TLiabilityForm
 > = {
-  control?: Control<any>; // TODO: Fix types
+  control: Control<any>; // TODO: Fix types
   baseName?: FieldPath<TForm>;
-  data?: TLiabilityForm;
 };
 
 export default function LiabilityForm<
   TForm extends FieldValues & TLiabilityForm = TLiabilityForm
->({ control, baseName, data }: LiabilityFormProps<TForm>) {
-  const { control: localControl } = useForm<TLiabilityForm>({
-    resolver: zodResolver(liabilityFormSchema),
-    defaultValues: {
-      title: data?.title,
-      amount: data?.amount,
-      notes: data?.notes,
-    },
-  });
-
+>({ control, baseName }: LiabilityFormProps<TForm>) {
   function getName(name: FieldPath<TLiabilityForm>): FieldPath<TForm> {
     if (!baseName) return name as FieldPath<TForm>;
 
     return `${baseName}.${name}` as FieldPath<TForm>;
   }
 
-  const usedControl = control ?? (localControl as unknown as Control<TForm>);
-
   return (
     <>
       <Controller
         name={getName("title")}
-        control={usedControl}
+        control={control}
         render={({ field: controllerField, fieldState }) => (
           <Field>
             <FieldLabel>Title</FieldLabel>
@@ -62,14 +40,10 @@ export default function LiabilityForm<
           </Field>
         )}
       />
-      <DollarInput
-        control={usedControl}
-        label="Amount"
-        name={getName("amount")}
-      />
+      <DollarInput control={control} label="Amount" name={getName("amount")} />
       <Controller
         name={getName("notes")}
-        control={usedControl}
+        control={control}
         render={({ field: controllerField, fieldState }) => (
           <Field>
             <FieldLabel>Notes</FieldLabel>

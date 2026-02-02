@@ -29,6 +29,7 @@ export default async function LiabilityTable({
         {liabilities.map((liability) => {
           const id = liability._id.toString();
 
+          // TODO: Find a better way to do this
           const liabilityFormData: LiabilityForm = {
             title: liability.title,
             amount: liability.amount,

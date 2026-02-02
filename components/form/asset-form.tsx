@@ -31,43 +31,24 @@ import {
 import { Textarea } from "../ui/textarea";
 
 type AssetFormProps<TForm extends FieldValues & TAssetForm = TAssetForm> = {
-  control?: Control<any>; // TODO: Fix types
+  control: Control<any>; // TODO: Fix types
   baseName?: FieldPath<TForm>;
-  data?: TAssetForm;
 };
 
 export default function AssetForm<
   TForm extends FieldValues & TAssetForm = TAssetForm
->({ control, baseName, data }: AssetFormProps<TForm>) {
-  const { control: localControl } = useForm<TAssetForm>({
-    resolver: zodResolver(assetFormSchema),
-    defaultValues: {
-      title: data?.title,
-      amount: data?.amount,
-      category: data?.category,
-      retirement: data?.retirement,
-      amountOneYearAgo: data?.amountOneYearAgo,
-      contribution: {
-        self: data?.contribution?.self,
-        nonSelf: data?.contribution?.nonSelf,
-      },
-      includeInGrowthCalculation: data?.includeInGrowthCalculation,
-      notes: data?.notes,
-    },
-  });
-
+>({ control, baseName }: AssetFormProps<TForm>) {
   function getName(name: FieldPath<TAssetForm>): FieldPath<TForm> {
     if (!baseName) return name as FieldPath<TForm>;
 
     return `${baseName}.${name}` as FieldPath<TForm>;
   }
 
-  const usedControl = control ?? (localControl as unknown as Control<TForm>);
   return (
     <>
       <Controller
         name={getName("title")}
-        control={usedControl}
+        control={control}
         render={({ field: controllerField, fieldState }) => (
           <Field>
             <FieldLabel>Title</FieldLabel>
@@ -82,14 +63,10 @@ export default function AssetForm<
           </Field>
         )}
       />
-      <DollarInput
-        control={usedControl}
-        label="Amount"
-        name={getName("amount")}
-      />
+      <DollarInput control={control} label="Amount" name={getName("amount")} />
       <Controller
         name={getName("category")}
-        control={usedControl}
+        control={control}
         render={({ field, fieldState }) => (
           <Field>
             <FieldLabel>Category</FieldLabel>
@@ -111,7 +88,7 @@ export default function AssetForm<
       />
       <Controller
         name={getName("retirement")}
-        control={usedControl}
+        control={control}
         render={({ field }) => (
           <Field orientation="horizontal">
             <Checkbox
@@ -127,26 +104,26 @@ export default function AssetForm<
         )}
       />
       <DollarInput
-        control={usedControl}
+        control={control}
         label="Amount one year ago"
         name={getName("amountOneYearAgo")}
         placeholder="10,000"
       />
       <DollarInput
-        control={usedControl}
+        control={control}
         label="Self contribution"
         name={getName("contribution.self")}
         placeholder="1,000"
       />
       <DollarInput
-        control={usedControl}
+        control={control}
         label="Non-self contribution"
         name={getName("contribution.nonSelf")}
         placeholder="500"
       />
       <Controller
         name={getName("includeInGrowthCalculation")}
-        control={usedControl}
+        control={control}
         render={({ field }) => (
           <Field orientation="horizontal">
             <Checkbox
@@ -169,7 +146,7 @@ export default function AssetForm<
       />
       <Controller
         name={getName("notes")}
-        control={usedControl}
+        control={control}
         render={({ field: controllerField, fieldState }) => (
           <Field>
             <FieldLabel>Notes</FieldLabel>

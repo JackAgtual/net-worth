@@ -1,7 +1,5 @@
 "use client";
 
-import AssetForm from "@/components/form/asset-form";
-import LiabilityForm from "@/components/form/liability-form";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,37 +9,28 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { AssetForm as TAssetForm } from "@/lib/types/asset-types";
-import { LiabilityForm as TLiabilityForm } from "@/lib/types/liability-types";
 import { DialogClose } from "@radix-ui/react-dialog";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, ReactNode, SetStateAction } from "react";
 
-type BaseDialogProps = {
+type EntryDialogProps = {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
-  id: string;
   action: "edit" | "delete";
+  onSubmit: () => Promise<void>;
+  children?: ReactNode;
 };
-
-type DialogProps = BaseDialogProps &
-  (
-    | { entityType: "asset"; data?: TAssetForm }
-    | { entityType: "liability"; data?: TLiabilityForm }
-  );
 
 export default function EntryDialog({
   open,
   setOpen,
-  id,
-  entityType,
   action,
-  data,
-}: DialogProps) {
+  onSubmit,
+  children,
+}: EntryDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
-        {/* TODO: Form action */}
-        <form>
+        <form onSubmit={onSubmit}>
           <DialogHeader>
             <DialogTitle>{action === "delete" ? "Delete" : "Edit"}</DialogTitle>
             <DialogDescription>
@@ -50,12 +39,7 @@ export default function EntryDialog({
                 : "Make changes and click save when you're done."}
             </DialogDescription>
           </DialogHeader>
-          {action === "edit" &&
-            (entityType === "liability" ? (
-              <LiabilityForm data={data} />
-            ) : (
-              <AssetForm data={data} />
-            ))}
+          {children}
           <DialogFooter>
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>

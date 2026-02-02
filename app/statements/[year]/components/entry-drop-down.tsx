@@ -7,11 +7,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { AssetForm } from "@/lib/types/asset-types";
 import { LiabilityForm } from "@/lib/types/liability-types";
 import { MoreHorizontalIcon } from "lucide-react";
 import { useState } from "react";
-import EntryDialog from "./entry-dialog";
-import { AssetForm } from "@/lib/types/asset-types";
+import AssetDialog from "./asset-dialog";
+import LiabilityDialog from "./liability-dialog";
 
 type EntryDropDownProps = {
   id: string;
@@ -50,40 +51,38 @@ export default function EntryDropDown({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {entityType === "asset" ? ( // needed for TS
+      {entityType === "asset" ? (
         <>
-          <EntryDialog
+          <AssetDialog
             open={editOpen}
             setOpen={setEditOpen}
-            id={id}
-            entityType={entityType}
             action="edit"
+            id={id}
             data={data}
           />
-          <EntryDialog
+          <AssetDialog
             open={deleteOpen}
             setOpen={setDeleteOpen}
-            id={id}
-            entityType={entityType}
             action="delete"
+            id={id}
+            data={data}
           />
         </>
       ) : (
         <>
-          <EntryDialog
+          <LiabilityDialog
             open={editOpen}
             setOpen={setEditOpen}
-            id={id}
-            entityType={entityType}
             action="edit"
+            id={id}
             data={data}
           />
-          <EntryDialog
+          <LiabilityDialog
             open={deleteOpen}
             setOpen={setDeleteOpen}
-            id={id}
-            entityType={entityType}
             action="delete"
+            id={id}
+            data={data}
           />
         </>
       )}
