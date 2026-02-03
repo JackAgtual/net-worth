@@ -50,7 +50,7 @@ export default function DollarInput<
                   const val = e.target.value.replaceAll(",", "");
                   if (!/^\d*$/.test(val)) return;
 
-                  field.onChange(val === "" ? undefined : Number(val));
+                  field.onChange(val === "" ? "" : Number(val));
                 }}
               />
             </InputGroup>
