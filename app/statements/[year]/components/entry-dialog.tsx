@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Spinner } from "@/components/ui/spinner";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { Dispatch, ReactNode, SetStateAction } from "react";
 
@@ -17,6 +18,7 @@ type EntryDialogProps = {
   setOpen: Dispatch<SetStateAction<boolean>>;
   action: "edit" | "delete";
   onSubmit: () => Promise<void>;
+  isSubmitting: boolean;
   children?: ReactNode;
 };
 
@@ -25,6 +27,7 @@ export default function EntryDialog({
   setOpen,
   action,
   onSubmit,
+  isSubmitting,
   children,
 }: EntryDialogProps) {
   return (
@@ -45,11 +48,19 @@ export default function EntryDialog({
               <Button variant="outline">Cancel</Button>
             </DialogClose>
             {action === "delete" ? (
-              <Button type="submit" variant="destructive">
+              <Button
+                type="submit"
+                variant="destructive"
+                disabled={isSubmitting}
+              >
+                {isSubmitting && <Spinner />}
                 Delete
               </Button>
             ) : (
-              <Button type="submit">Save</Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting && <Spinner />}
+                Save
+              </Button>
             )}
           </DialogFooter>
         </form>

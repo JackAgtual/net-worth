@@ -1,4 +1,5 @@
 import { FieldPath, FieldValues } from "react-hook-form";
+import { z } from "zod";
 import { $ZodIssue } from "zod/v4/core";
 
 export function getErrors<T extends FieldValues>(issues: $ZodIssue[]) {
@@ -8,4 +9,20 @@ export function getErrors<T extends FieldValues>(issues: $ZodIssue[]) {
       message: issue.message,
     };
   });
+}
+
+export function validateId(id: unknown) {
+  const idParseResult = z.string().safeParse(id);
+  if (!idParseResult.success) {
+    throw new Error("Invalid ID");
+  }
+  return idParseResult;
+}
+
+export function validatePath(path: unknown) {
+  const pathParseResult = z.string().safeParse(path);
+  if (!pathParseResult.success) {
+    throw new Error("Invalid path");
+  }
+  return pathParseResult;
 }

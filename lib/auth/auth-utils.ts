@@ -9,6 +9,14 @@ export async function getSession() {
   });
 }
 
+export async function getValidSession() {
+  const session = await getSession();
+  if (!session) {
+    throw new Error("Invalid session");
+  }
+  return session;
+}
+
 export async function checkSession() {
   const session = await getSession();
   if (!session) {

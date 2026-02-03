@@ -1,15 +1,17 @@
 "use client";
 
 import AssetForm from "@/components/form/asset-form";
+import { FieldError } from "@/components/ui/field";
 import {
-  assetFormSchema,
   AssetForm as TAssetForm,
+  assetFormSchema,
 } from "@/lib/types/asset-types";
-import { LiabilityForm as TLiabilityForm } from "@/lib/types/liability-types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Dispatch, SetStateAction } from "react";
+import { usePathname } from "next/navigation";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import EntryDialog from "./entry-dialog";
+import { deleteAsset, updateAsset } from "@/lib/actions/asset-actions";
 
 type AssetDialogProps = {
   open: boolean;
@@ -26,18 +28,50 @@ export default function AssetDialog({
   id,
   data,
 }: AssetDialogProps) {
-  const { control, handleSubmit } = useForm<TAssetForm>({
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting, errors },
+    setError,
+    reset,
+  } = useForm<TAssetForm>({
     resolver: zodResolver(assetFormSchema),
     defaultValues: data,
   });
+  const pathname = usePathname();
 
-  const handleEdit = async (data: TLiabilityForm) => {
-    console.log(`edit ${id}`);
-    console.log(data);
+  useEffect(() => {
+    if (open) {
+      reset(data);
+    }
+  }, [open, data]);
+
+  const handleEdit = async (data: TAssetForm) => {
+    const result = await updateAsset(id, data, pathname);
+
+    // TODO: extract this to function to make it reuseable
+    if (!result.success) {
+      result.errors.forEach((error) => {
+        setError(error.path, { message: error.message });
+      });
+      return;
+    }
+
+    setOpen(false);
   };
 
   const handleDelete = async () => {
-    console.log(`delete ${id}`);
+    const result = await deleteAsset(id, pathname);
+
+    // TODO: extract this to function to make it reuseable
+    if (!result.success) {
+      result.errors.forEach((error) => {
+        setError(error.path, { message: error.message });
+      });
+      return;
+    }
+
+    setOpen(false);
   };
 
   const onSubmit =
@@ -49,8 +83,16 @@ export default function AssetDialog({
       setOpen={setOpen}
       action={action}
       onSubmit={onSubmit}
+      isSubmitting={isSubmitting}
     >
-      {action === "edit" && <AssetForm control={control} />}
+      {action === "edit" && (
+        <>
+          <AssetForm control={control} />
+          {errors.root && (
+            <FieldError errors={[{ message: errors.root.message }]} />
+          )}
+        </>
+      )}
     </EntryDialog>
   );
 }

@@ -6,9 +6,15 @@ import {
   LiabilityForm as TLiabilityForm,
 } from "@/lib/types/liability-types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import EntryDialog from "./entry-dialog";
+import {
+  deleteLiability,
+  updateLiability,
+} from "@/lib/actions/liability-actions";
+import { usePathname } from "next/navigation";
+import { FieldError } from "@/components/ui/field";
 
 type LiabilityDialogProps = {
   open: boolean;
@@ -25,18 +31,50 @@ export default function LiabilityDialog({
   id,
   data,
 }: LiabilityDialogProps) {
-  const { control, handleSubmit } = useForm<TLiabilityForm>({
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting, errors },
+    setError,
+    reset,
+  } = useForm<TLiabilityForm>({
     resolver: zodResolver(liabilityFormSchema),
     defaultValues: data,
   });
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (open) {
+      reset(data);
+    }
+  }, [open, data]);
 
   const handleEdit = async (data: TLiabilityForm) => {
-    console.log(`edit ${id}`);
-    console.log(data);
+    const result = await updateLiability(id, data, pathname);
+
+    // TODO: extract this to function to make it reuseable
+    if (!result.success) {
+      result.errors.forEach((error) => {
+        setError(error.path, { message: error.message });
+      });
+      return;
+    }
+
+    setOpen(false);
   };
 
   const handleDelete = async () => {
-    console.log(`delete ${id}`);
+    const result = await deleteLiability(id, pathname);
+
+    // TODO: extract this to function to make it reuseable
+    if (!result.success) {
+      result.errors.forEach((error) => {
+        setError(error.path, { message: error.message });
+      });
+      return;
+    }
+
+    setOpen(false);
   };
 
   const onSubmit =
@@ -48,8 +86,16 @@ export default function LiabilityDialog({
       setOpen={setOpen}
       action={action}
       onSubmit={onSubmit}
+      isSubmitting={isSubmitting}
     >
-      {action === "edit" && <LiabilityForm control={control} />}
+      {action === "edit" && (
+        <>
+          <LiabilityForm control={control} />
+          {errors.root && (
+            <FieldError errors={[{ message: errors.root.message }]} />
+          )}
+        </>
+      )}
     </EntryDialog>
   );
 }
