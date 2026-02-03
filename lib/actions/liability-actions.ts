@@ -5,7 +5,7 @@ import { getValidSession } from "../auth/auth-utils";
 import { Liability } from "../db/models";
 import dbConnect from "../db/mongodb";
 import { LiabilityForm, liabilityFormSchema } from "../types/liability-types";
-import { ActionResponse } from "./action-types";
+import { ActionResponse } from "../types/action-types";
 import { getErrors, validateId, validatePath } from "./action-utils";
 
 const liabilityNotFound: ActionResponse<LiabilityForm> = {

@@ -11,6 +11,7 @@ import {
   StatementForm,
   statementFormSchema,
 } from "@/lib/types/statement-types";
+import { setFormErrors } from "@/lib/utils/form-utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { redirect } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
@@ -42,10 +43,7 @@ export default function Page() {
     if (response.success) {
       redirect(`/statements/${data.year}`);
     }
-
-    response.errors.forEach((error) => {
-      setError(error.path, { message: error.message });
-    });
+    setFormErrors(response.errors, setError);
   };
 
   return (

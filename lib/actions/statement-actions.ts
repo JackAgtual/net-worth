@@ -4,7 +4,7 @@ import { getSession } from "../auth/auth-utils";
 import { Asset, Liability, Statement } from "../db/models";
 import dbConnect from "../db/mongodb";
 import { StatementForm, statementFormSchema } from "../types/statement-types";
-import { ActionResponse } from "./action-types";
+import { ActionResponse } from "../types/action-types";
 import { getErrors } from "./action-utils";
 
 export async function createStatement(

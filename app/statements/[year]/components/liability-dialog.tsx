@@ -1,20 +1,21 @@
 "use client";
 
 import LiabilityForm from "@/components/form/liability-form";
-import {
-  liabilityFormSchema,
-  LiabilityForm as TLiabilityForm,
-} from "@/lib/types/liability-types";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Dispatch, SetStateAction, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import EntryDialog from "./entry-dialog";
+import { FieldError } from "@/components/ui/field";
 import {
   deleteLiability,
   updateLiability,
 } from "@/lib/actions/liability-actions";
+import {
+  liabilityFormSchema,
+  LiabilityForm as TLiabilityForm,
+} from "@/lib/types/liability-types";
+import { setFormErrors } from "@/lib/utils/form-utils";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { usePathname } from "next/navigation";
-import { FieldError } from "@/components/ui/field";
+import { Dispatch, SetStateAction, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import EntryDialog from "./entry-dialog";
 
 type LiabilityDialogProps = {
   open: boolean;
@@ -52,11 +53,8 @@ export default function LiabilityDialog({
   const handleEdit = async (data: TLiabilityForm) => {
     const result = await updateLiability(id, data, pathname);
 
-    // TODO: extract this to function to make it reuseable
     if (!result.success) {
-      result.errors.forEach((error) => {
-        setError(error.path, { message: error.message });
-      });
+      setFormErrors(result.errors, setError);
       return;
     }
 
@@ -66,11 +64,8 @@ export default function LiabilityDialog({
   const handleDelete = async () => {
     const result = await deleteLiability(id, pathname);
 
-    // TODO: extract this to function to make it reuseable
     if (!result.success) {
-      result.errors.forEach((error) => {
-        setError(error.path, { message: error.message });
-      });
+      setFormErrors(result.errors, setError);
       return;
     }
 

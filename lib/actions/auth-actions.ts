@@ -10,7 +10,7 @@ import { APIError } from "better-auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "../auth/auth";
-import { ActionResponse } from "./action-types";
+import { ActionResponse } from "../types/action-types";
 import { getErrors } from "./action-utils";
 
 export async function createAccount(

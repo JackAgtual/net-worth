@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { logIn } from "@/lib/actions/auth-actions";
+import { setFormErrors } from "@/lib/utils/form-utils";
 import { Login, loginSchema } from "@/types/auth-types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -42,10 +43,7 @@ export default function Page() {
       redirect("/dashboard");
     }
 
-    response.errors.forEach((error) => {
-      const { path, message } = error;
-      setError(path, { message });
-    });
+    setFormErrors(response.errors, setError);
   };
 
   return (

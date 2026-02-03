@@ -4,8 +4,8 @@ import { revalidatePath } from "next/cache";
 import { getValidSession } from "../auth/auth-utils";
 import { Asset } from "../db/models";
 import dbConnect from "../db/mongodb";
+import { ActionResponse } from "../types/action-types";
 import { AssetForm, assetFormSchema } from "../types/asset-types";
-import { ActionResponse } from "./action-types";
 import { getErrors, validateId, validatePath } from "./action-utils";
 
 const assetNotFound: ActionResponse<AssetForm> = {

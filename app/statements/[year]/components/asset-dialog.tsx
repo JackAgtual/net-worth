@@ -12,6 +12,7 @@ import { Dispatch, SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import EntryDialog from "./entry-dialog";
 import { deleteAsset, updateAsset } from "@/lib/actions/asset-actions";
+import { setFormErrors } from "@/lib/utils/form-utils";
 
 type AssetDialogProps = {
   open: boolean;
@@ -49,11 +50,8 @@ export default function AssetDialog({
   const handleEdit = async (data: TAssetForm) => {
     const result = await updateAsset(id, data, pathname);
 
-    // TODO: extract this to function to make it reuseable
     if (!result.success) {
-      result.errors.forEach((error) => {
-        setError(error.path, { message: error.message });
-      });
+      setFormErrors(result.errors, setError);
       return;
     }
 
@@ -63,11 +61,8 @@ export default function AssetDialog({
   const handleDelete = async () => {
     const result = await deleteAsset(id, pathname);
 
-    // TODO: extract this to function to make it reuseable
     if (!result.success) {
-      result.errors.forEach((error) => {
-        setError(error.path, { message: error.message });
-      });
+      setFormErrors(result.errors, setError);
       return;
     }
 
