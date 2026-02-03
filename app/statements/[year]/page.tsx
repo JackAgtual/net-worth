@@ -1,21 +1,13 @@
+import { getSession } from "@/lib/auth/auth-utils";
 import { Statement } from "@/lib/db/models";
 import dbConnect from "@/lib/db/mongodb";
-import NetWorthTable from "./components/net-worth-table";
-import AssetTable from "./components/asset-table";
-import LiabilityTable from "./components/liability-table";
-import CategoryTable from "./components/category-table";
-import IncomeTable from "./components/income-table";
-import ContributionTable from "./components/contribution-table";
-import { getSession } from "@/lib/auth/auth-utils";
 import { redirect } from "next/navigation";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import AssetTable from "./components/asset-table";
+import CategoryTable from "./components/category-table";
+import ContributionTable from "./components/contribution-table";
+import IncomeTable from "./components/income-table";
+import LiabilityTable from "./components/liability-table";
+import NetWorthTable from "./components/net-worth-table";
 
 export default async function Page({
   params,
