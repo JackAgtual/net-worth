@@ -11,25 +11,36 @@ import {
 } from "@/components/ui/dialog";
 import { Spinner } from "@/components/ui/spinner";
 import { DialogClose } from "@radix-ui/react-dialog";
-import { Dispatch, ReactNode, SetStateAction } from "react";
+import { Dispatch, ReactNode, SetStateAction, useEffect } from "react";
+import { FieldValues, UseFormReset } from "react-hook-form";
 
-type EntryDialogProps = {
+type EntryDialogProps<T extends FieldValues> = {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
   action: "edit" | "delete";
   onSubmit: () => Promise<void>;
+  reset: UseFormReset<T>;
+  data: T;
   isSubmitting: boolean;
   children?: ReactNode;
 };
 
-export default function EntryDialog({
+export default function EntryDialog<T extends FieldValues>({
   open,
   setOpen,
   action,
   onSubmit,
+  reset,
+  data,
   isSubmitting,
   children,
-}: EntryDialogProps) {
+}: EntryDialogProps<T>) {
+  useEffect(() => {
+    if (open) {
+      reset(data);
+    }
+  }, [open, data]);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>

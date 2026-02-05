@@ -13,7 +13,7 @@ import {
 import { setFormErrors } from "@/lib/utils/form-utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { usePathname } from "next/navigation";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import EntryDialog from "./entry-dialog";
 
@@ -22,7 +22,7 @@ type LiabilityDialogProps = {
   setOpen: Dispatch<SetStateAction<boolean>>;
   action: "edit" | "delete";
   id: string;
-  data?: TLiabilityForm;
+  data: TLiabilityForm;
 };
 
 export default function LiabilityDialog({
@@ -43,12 +43,6 @@ export default function LiabilityDialog({
     defaultValues: data,
   });
   const pathname = usePathname();
-
-  useEffect(() => {
-    if (open) {
-      reset(data);
-    }
-  }, [open, data]);
 
   const handleEdit = async (data: TLiabilityForm) => {
     const result = await updateLiability(id, data, pathname);
@@ -81,6 +75,8 @@ export default function LiabilityDialog({
       setOpen={setOpen}
       action={action}
       onSubmit={onSubmit}
+      reset={reset}
+      data={data}
       isSubmitting={isSubmitting}
     >
       {action === "edit" && (
