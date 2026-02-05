@@ -30,8 +30,10 @@ export default async function Page({
     redirect("/login");
   }
 
-  const assets = await statement.getAssets();
-  const liabilities = await statement.getLiabilities();
+  const [assets, liabilities] = await Promise.all([
+    statement.getAssets(),
+    statement.getLiabilities(),
+  ]);
 
   return (
     <>

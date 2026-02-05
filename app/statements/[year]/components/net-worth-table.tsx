@@ -14,18 +14,24 @@ export default async function NetWorthTable({
 }: {
   statement: StatementHydrated;
 }) {
+  const [netWorth, totalAssetAmount, totalLiabilityAmount] = await Promise.all([
+    statement.getNetWorth(),
+    statement.getTotalAssetAmount(),
+    statement.getTotalLiabilityAmount(),
+  ]);
+
   const contents = [
     {
       name: "Net worth",
-      value: formatAsDollar(await statement.getNetWorth()),
+      value: formatAsDollar(netWorth),
     },
     {
       name: "Total assets",
-      value: formatAsDollar(await statement.getTotalAssetAmount()),
+      value: formatAsDollar(totalAssetAmount),
     },
     {
       name: "Total liabilities",
-      value: formatAsDollar(await statement.getTotalLiabilityAmount()),
+      value: formatAsDollar(totalLiabilityAmount),
     },
   ];
 

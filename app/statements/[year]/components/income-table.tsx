@@ -13,6 +13,11 @@ export default async function IncomeTable({
 }: {
   statement: StatementHydrated;
 }) {
+  const [lastYearAssetGrowth, lastYearAssetGrowthPercentOfSalary] =
+    await Promise.all([
+      statement.getLastYearAssetGrowth(),
+      statement.getLastYearAssetGrowthPercentOfSalary(),
+    ]);
   const contents = [
     {
       name: "Last year income",
@@ -20,13 +25,11 @@ export default async function IncomeTable({
     },
     {
       name: "Last year asset growth",
-      value: formatAsDollar(await statement.getLastYearAssetGrowth()),
+      value: formatAsDollar(lastYearAssetGrowth),
     },
     {
       name: "Last year asset growth percent of salary",
-      value: formatAsPercent(
-        await statement.getLastYearAssetGrowthPercentOfSalary()
-      ),
+      value: formatAsPercent(lastYearAssetGrowthPercentOfSalary),
     },
   ];
 
