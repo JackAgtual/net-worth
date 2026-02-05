@@ -47,21 +47,14 @@ export default function EntryDialog({
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            {action === "delete" ? (
-              <Button
-                type="submit"
-                variant="destructive"
-                disabled={isSubmitting}
-              >
-                {isSubmitting && <Spinner />}
-                Delete
-              </Button>
-            ) : (
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting && <Spinner />}
-                Save
-              </Button>
-            )}
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              variant={action === "delete" ? "destructive" : "default"}
+            >
+              {isSubmitting && <Spinner />}
+              {action === "delete" ? "Delete" : "Save"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
