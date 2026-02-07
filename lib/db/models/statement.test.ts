@@ -1,15 +1,9 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
-import {
-  Asset,
-  Liability,
-  Statement,
-  AssetDoc,
-  AssetUpdate,
-  LiabilityUpdate,
-  LiabilityDoc,
-} from ".";
+import { Asset, Liability, Statement } from ".";
 import { Category, Contributor } from "@/types/types";
+import { AssetDoc, AssetUpdate } from "@/lib/types/asset-types";
+import { LiabilityDoc, LiabilityUpdate } from "@/lib/types/liability-types";
 
 const userId = process.env.TEST_USER_ID as string;
 

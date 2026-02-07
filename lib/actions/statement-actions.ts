@@ -7,6 +7,11 @@ import { StatementForm, statementFormSchema } from "../types/statement-types";
 import { ActionResponse } from "../types/action-types";
 import { getErrors } from "./action-utils";
 
+const somethingWentWrong: ActionResponse<StatementForm> = {
+  success: false,
+  errors: [{ path: "root", message: "Something went wrong" }],
+};
+
 export async function createStatement(
   formData: unknown
 ): Promise<ActionResponse<StatementForm>> {
@@ -27,8 +32,10 @@ export async function createStatement(
   const statementData = result.data;
   const userId = session.user.id;
 
-  console.log({ statementData });
-  const existingStatements = await Statement.find({ year: statementData.year });
+  const existingStatements = await Statement.find({
+    userId,
+    year: statementData.year,
+  });
   if (existingStatements.length !== 0) {
     return {
       success: false,
@@ -42,33 +49,33 @@ export async function createStatement(
   }
 
   try {
-    const assetIds = await Promise.all(
-      statementData.assets?.map(async (asset) => {
-        const assetDoc = await Asset.create({ userId, ...asset });
-        return assetDoc._id;
-      }) ?? []
-    );
-
-    const liabilityIds = await Promise.all(
-      statementData.liabilities?.map(async (liability) => {
-        const liabilityDoc = await Liability.create({ userId, ...liability });
-        return liabilityDoc._id;
-      }) ?? []
-    );
-
-    await Statement.create({
+    const statementDoc = new Statement({
       userId,
       year: statementData.year,
       lastYearSalary: statementData.lastYearSalary,
-      assets: assetIds,
-      liabilities: liabilityIds,
     });
+    await statementDoc.save();
 
+    if (!statementDoc) {
+      return somethingWentWrong;
+    }
+
+    await Promise.all(
+      statementData.assets?.map((asset) => {
+        return statementDoc.addAsset({ userId, ...asset });
+      }) ?? []
+    );
+
+    await Promise.all(
+      statementData.liabilities?.map(async (liability) => {
+        return statementDoc.addLiability({ userId, ...liability });
+      }) ?? []
+    );
+
+    await statementDoc.save();
     return { success: true };
-  } catch {
-    return {
-      success: false,
-      errors: [{ path: "root", message: "Something went wrong" }],
-    };
+  } catch (error) {
+    console.error(error);
+    return somethingWentWrong;
   }
 }
