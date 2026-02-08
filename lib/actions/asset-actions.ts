@@ -18,36 +18,52 @@ const statementNotFound: ActionResponse<AssetForm> = {
   errors: [{ path: "root", message: "Could not find statement" }],
 };
 
-// export async function createAsset(
-//   data: unknown,
-//   path: unknown
-// ): Promise<ActionResponse<AssetForm>> {
-//   await dbConnect();
-//   const pathParseResult = validatePath(path);
+export async function createAsset({
+  statementId,
+  data,
+  path,
+}: {
+  statementId: unknown;
+  data: unknown;
+  path: unknown;
+}): Promise<ActionResponse<AssetForm>> {
+  await dbConnect();
+  const statementIdParseResult = validateId(statementId);
+  const pathParseResult = validatePath(path);
 
-//   const dataParseResult = assetFormSchema.safeParse(data);
-//   if (!dataParseResult.success) {
-//     const errors = getErrors<AssetForm>(dataParseResult.error.issues);
-//     return { success: false, errors };
-//   }
+  const dataParseResult = assetFormSchema.safeParse(data);
+  if (!dataParseResult.success) {
+    const errors = getErrors<AssetForm>(dataParseResult.error.issues);
+    return { success: false, errors };
+  }
 
-//   const session = await getValidSession();
+  const session = await getValidSession();
 
-//   const assetDoc = await Asset.create({
-//     userId: session.user.id,
-//     ...dataParseResult.data,
-//   });
+  const statementDoc = await Statement.findOne({
+    userId: session.user.id,
+    _id: statementIdParseResult.data,
+  });
 
-//   if (!assetDoc) {
-//     return {
-//       success: false,
-//       errors: [{ path: "root", message: "Something went wrong" }],
-//     };
-//   }
+  console.log("created statement");
+  if (!statementDoc) {
+    return statementNotFound;
+  }
+  console.log("found statement");
 
-//   revalidatePath(pathParseResult.data);
-//   return { success: true };
-// }
+  const assetDoc = await statementDoc.addAsset({
+    userId: session.user.id,
+    ...dataParseResult.data,
+  });
+  console.log("created asset");
+
+  if (!assetDoc) {
+    return assetNotFound;
+  }
+  console.log("found asset");
+
+  revalidatePath(pathParseResult.data);
+  return { success: true };
+}
 
 export async function deleteAsset({
   assetId,

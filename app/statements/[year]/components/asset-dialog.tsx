@@ -2,12 +2,15 @@
 
 import AssetForm from "@/components/form/asset-form";
 import { FieldError } from "@/components/ui/field";
-import { deleteAsset, updateAsset } from "@/lib/actions/asset-actions";
+import {
+  createAsset,
+  deleteAsset,
+  updateAsset,
+} from "@/lib/actions/asset-actions";
 import {
   AssetForm as TAssetForm,
   assetFormSchema,
 } from "@/lib/types/asset-types";
-import { EntryAction } from "@/lib/types/types";
 import { setFormErrors } from "@/lib/utils/form-utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { usePathname } from "next/navigation";
@@ -15,58 +18,55 @@ import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import EntryDialog from "./entry-dialog";
 
-type AssetDialogProps = {
+// TODO: combine this variable and EntryAction type
+const Action = {
+  CREATE: "create",
+  EDIT: "edit",
+  DELETE: "delete",
+} as const;
+
+type BaseAssetDialogProps = {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
-  action: EntryAction;
   statementId: string;
-  assetId?: string;
-  data?: TAssetForm;
 };
 
-// const Action = {
-//   CREATE: "create",
-//   EDIT: "edit",
-//   DELETE: "delete",
-// } as const;
+type CreateAssetDialogProps = BaseAssetDialogProps & {
+  action: typeof Action.CREATE;
+};
 
-// type BaseAssetDialogProps = {
-//   open: boolean;
-//   setOpen: Dispatch<SetStateAction<boolean>>;
-//   statementId: string;
-// };
+type EditAssetDialogProps = BaseAssetDialogProps & {
+  action: typeof Action.EDIT;
+  assetId: string;
+  data: TAssetForm;
+};
 
-// type CreateAssetDialogProps = BaseAssetDialogProps & {
-//   action: typeof Action.CREATE;
-//   data: TAssetForm;
-// };
+type DeleteAssetDialogProps = BaseAssetDialogProps & {
+  action: typeof Action.DELETE;
+  assetId: string;
+};
 
-// type EditAssetDialogProps = BaseAssetDialogProps & {
-//   action: typeof Action.EDIT;
-//   assetId: string;
-//   data: TAssetForm;
-// };
+type AssetDialogProps =
+  | CreateAssetDialogProps
+  | EditAssetDialogProps
+  | DeleteAssetDialogProps;
 
-// type DeleteAssetDialogProps = BaseAssetDialogProps & {
-//   action: typeof Action.DELETE;
-//   assetId: string;
-// };
+export default function AssetDialog(props: AssetDialogProps) {
+  const { open, setOpen, statementId, action } = props;
 
-// type AssetDialogProps =
-//   | CreateAssetDialogProps
-//   | EditAssetDialogProps
-//   | DeleteAssetDialogProps;
+  let data = undefined;
+  let assetId = undefined;
 
-// figure out prop typing with create/edit/delete
+  switch (action) {
+    case "edit":
+      assetId = props.assetId;
+      data = props.data;
+      break;
+    case "delete":
+      assetId = props.assetId;
+      break;
+  }
 
-export default function AssetDialog({
-  open,
-  setOpen,
-  action,
-  statementId,
-  assetId,
-  data,
-}: AssetDialogProps) {
   const {
     control,
     handleSubmit,
@@ -79,16 +79,16 @@ export default function AssetDialog({
   });
   const path = usePathname();
 
-  // const handleCreate = async (data: TAssetForm) => {
-  //   const result = await createAsset(data, pathname);
+  const handleCreate = async (data: TAssetForm) => {
+    const result = await createAsset({ statementId, data, path });
 
-  //   if (!result.success) {
-  //     setFormErrors(result.errors, setError);
-  //     return;
-  //   }
+    if (!result.success) {
+      setFormErrors(result.errors, setError);
+      return;
+    }
 
-  //   setOpen(false);
-  // };
+    setOpen(false);
+  };
 
   const handleEdit = async (data: TAssetForm) => {
     const result = await updateAsset({
@@ -117,22 +117,19 @@ export default function AssetDialog({
     setOpen(false);
   };
 
-  // let handler;
-  // switch (action) {
-  //   case "new":
-  //     handler = handleCreate;
-  //     break;
-  //   case "edit":
-  //     handler = handleEdit;
-  //     break;
-  //   case "delete":
-  //     handler = handleDelete;
-  //     break;
-  // }
-  // const onSubmit = handleSubmit(handler);
-
-  const onSubmit =
-    action === "edit" ? handleSubmit(handleEdit) : handleSubmit(handleDelete);
+  let handler;
+  switch (action) {
+    case "create":
+      handler = handleCreate;
+      break;
+    case "edit":
+      handler = handleEdit;
+      break;
+    case "delete":
+      handler = handleDelete;
+      break;
+  }
+  const onSubmit = handleSubmit(handler);
 
   return (
     <EntryDialog
@@ -144,7 +141,7 @@ export default function AssetDialog({
       data={data}
       isSubmitting={isSubmitting}
     >
-      {action === "edit" && ( //|| action === "new") && (
+      {(action === "edit" || action === "create") && (
         <>
           <AssetForm control={control} />
           {errors.root && (

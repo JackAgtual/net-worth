@@ -69,7 +69,6 @@ export default function EntryDropDown({
             action="delete"
             assetId={entryId}
             statementId={statementId}
-            data={data}
           />
         </>
       ) : (

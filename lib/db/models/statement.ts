@@ -149,6 +149,7 @@ const statementMongooseSchema = new Schema<
       ): Promise<LiabilityHydrated> {
         const liability = await Liability.create(liabilityParams);
         this.liabilities.push(liability._id);
+        await this.save();
         return liability;
       },
       async deleteLiability(id: Types.ObjectId | string): Promise<boolean> {
@@ -179,6 +180,7 @@ const statementMongooseSchema = new Schema<
       async addAsset(asset: AssetDoc): Promise<AssetHydrated> {
         const createdAsset = await Asset.create(asset);
         this.assets.push(createdAsset._id);
+        await this.save();
         return createdAsset;
       },
       async deleteAsset(id: Types.ObjectId | string): Promise<boolean> {

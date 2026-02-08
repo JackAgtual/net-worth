@@ -48,7 +48,7 @@ export default function EntryDialog<T extends FieldValues>({
   }, [open, data]);
 
   const contentsMap: Record<EntryAction, DialogContents> = {
-    new: {
+    create: {
       title: "Create",
       description: "Input values and click save when you're done.",
     },
