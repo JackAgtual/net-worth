@@ -44,15 +44,15 @@ export default function LiabilityDialog({
     resolver: zodResolver(liabilityFormSchema),
     defaultValues: data,
   });
-  const pathname = usePathname();
+  const path = usePathname();
 
   const handleEdit = async (data: TLiabilityForm) => {
-    const result = await updateLiability(
+    const result = await updateLiability({
       liabilityId,
       statementId,
       data,
-      pathname
-    );
+      path,
+    });
 
     if (!result.success) {
       setFormErrors(result.errors, setError);
@@ -63,7 +63,11 @@ export default function LiabilityDialog({
   };
 
   const handleDelete = async () => {
-    const result = await deleteLiability(liabilityId, statementId, pathname);
+    const result = await deleteLiability({
+      liabilityId,
+      statementId,
+      path,
+    });
 
     if (!result.success) {
       setFormErrors(result.errors, setError);

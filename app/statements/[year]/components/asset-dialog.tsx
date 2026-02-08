@@ -7,13 +7,13 @@ import {
   AssetForm as TAssetForm,
   assetFormSchema,
 } from "@/lib/types/asset-types";
+import { EntryAction } from "@/lib/types/types";
 import { setFormErrors } from "@/lib/utils/form-utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { usePathname } from "next/navigation";
 import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import EntryDialog from "./entry-dialog";
-import { EntryAction } from "@/lib/types/types";
 
 type AssetDialogProps = {
   open: boolean;
@@ -77,7 +77,7 @@ export default function AssetDialog({
     resolver: zodResolver(assetFormSchema),
     defaultValues: data,
   });
-  const pathname = usePathname();
+  const path = usePathname();
 
   // const handleCreate = async (data: TAssetForm) => {
   //   const result = await createAsset(data, pathname);
@@ -91,7 +91,12 @@ export default function AssetDialog({
   // };
 
   const handleEdit = async (data: TAssetForm) => {
-    const result = await updateAsset(assetId, statementId, data, pathname);
+    const result = await updateAsset({
+      assetId,
+      statementId,
+      data,
+      path,
+    });
 
     if (!result.success) {
       setFormErrors(result.errors, setError);
@@ -102,7 +107,7 @@ export default function AssetDialog({
   };
 
   const handleDelete = async () => {
-    const result = await deleteAsset(assetId, statementId, pathname);
+    const result = await deleteAsset({ assetId, statementId, path });
 
     if (!result.success) {
       setFormErrors(result.errors, setError);

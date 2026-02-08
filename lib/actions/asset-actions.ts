@@ -49,11 +49,15 @@ const statementNotFound: ActionResponse<AssetForm> = {
 //   return { success: true };
 // }
 
-export async function deleteAsset(
-  assetId: unknown,
-  statementId: unknown,
-  path: unknown
-): Promise<ActionResponse<AssetForm>> {
+export async function deleteAsset({
+  assetId,
+  statementId,
+  path,
+}: {
+  assetId: unknown;
+  statementId: unknown;
+  path: unknown;
+}): Promise<ActionResponse<AssetForm>> {
   await dbConnect();
 
   const assetIdParseResult = validateId(assetId);
@@ -80,12 +84,17 @@ export async function deleteAsset(
   return { success: true };
 }
 
-export async function updateAsset(
-  assetId: unknown,
-  statementId: unknown,
-  data: unknown,
-  path: unknown
-): Promise<ActionResponse<AssetForm>> {
+export async function updateAsset({
+  assetId,
+  statementId,
+  data,
+  path,
+}: {
+  assetId: unknown;
+  statementId: unknown;
+  data: unknown;
+  path: unknown;
+}): Promise<ActionResponse<AssetForm>> {
   await dbConnect();
 
   const assetIdParseResult = validateId(assetId);

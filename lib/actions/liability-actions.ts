@@ -2,10 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { getValidSession } from "../auth/auth-utils";
-import { Liability, Statement } from "../db/models";
+import { Statement } from "../db/models";
 import dbConnect from "../db/mongodb";
-import { LiabilityForm, liabilityFormSchema } from "../types/liability-types";
 import { ActionResponse } from "../types/action-types";
+import { LiabilityForm, liabilityFormSchema } from "../types/liability-types";
 import { getErrors, validateId, validatePath } from "./action-utils";
 
 const liabilityNotFound: ActionResponse<LiabilityForm> = {
@@ -18,11 +18,15 @@ const statementNotFound: ActionResponse<LiabilityForm> = {
   errors: [{ path: "root", message: "Could not find statement" }],
 };
 
-export async function deleteLiability(
-  liabilityId: unknown,
-  statementId: unknown,
-  path: unknown
-): Promise<ActionResponse<LiabilityForm>> {
+export async function deleteLiability({
+  liabilityId,
+  statementId,
+  path,
+}: {
+  liabilityId: unknown;
+  statementId: unknown;
+  path: unknown;
+}): Promise<ActionResponse<LiabilityForm>> {
   await dbConnect();
 
   const liabilityIdParseResult = validateId(liabilityId);
@@ -51,12 +55,17 @@ export async function deleteLiability(
   return { success: true };
 }
 
-export async function updateLiability(
-  liabilityId: unknown,
-  statementId: unknown,
-  data: unknown,
-  path: unknown
-): Promise<ActionResponse<LiabilityForm>> {
+export async function updateLiability({
+  liabilityId,
+  statementId,
+  data,
+  path,
+}: {
+  liabilityId: unknown;
+  statementId: unknown;
+  data: unknown;
+  path: unknown;
+}): Promise<ActionResponse<LiabilityForm>> {
   await dbConnect();
 
   const liabilityIdParseResult = validateId(liabilityId);
