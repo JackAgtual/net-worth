@@ -8,7 +8,7 @@ import ContributionTable from "./components/contribution-table";
 import IncomeTable from "./components/income-table";
 import LiabilityTable from "./components/liability-table";
 import NetWorthTable from "./components/net-worth-table";
-import AddAsset from "./components/add-asset";
+// import AddAsset from "./components/add-asset";
 
 export default async function Page({
   params,

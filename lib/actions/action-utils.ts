@@ -1,6 +1,7 @@
 import { FieldPath, FieldValues } from "react-hook-form";
 import { z } from "zod";
 import { $ZodIssue } from "zod/v4/core";
+import { mongoIdSchema } from "../types/mongo-types";
 
 export function getErrors<T extends FieldValues>(issues: $ZodIssue[]) {
   return issues.map((issue) => {
@@ -12,7 +13,7 @@ export function getErrors<T extends FieldValues>(issues: $ZodIssue[]) {
 }
 
 export function validateId(id: unknown) {
-  const idParseResult = z.string().safeParse(id);
+  const idParseResult = mongoIdSchema.safeParse(id);
   if (!idParseResult.success) {
     throw new Error("Invalid ID");
   }
