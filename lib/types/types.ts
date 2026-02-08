@@ -25,12 +25,3 @@ export enum Contributor {
   NonSelf = "Non self",
   All = "All",
 }
-
-const entryAction = {
-  CREATE: "create",
-  EDIT: "edit",
-  DELETE: "delete",
-} as const;
-
-// export type EntryAction = (typeof entryAction)[keyof typeof entryAction];
-export type EntryAction = "create" | "edit" | "delete";

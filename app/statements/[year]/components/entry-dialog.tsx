@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Spinner } from "@/components/ui/spinner";
-import { EntryAction } from "@/lib/types/types";
+import type { EntryAction } from "@/lib/types/entry-dialog-types";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { Dispatch, ReactNode, SetStateAction, useEffect } from "react";
 import { FieldValues, UseFormReset } from "react-hook-form";

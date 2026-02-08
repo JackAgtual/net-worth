@@ -11,45 +11,12 @@ import {
   AssetForm as TAssetForm,
   assetFormSchema,
 } from "@/lib/types/asset-types";
+import type { AssetDialogProps } from "@/lib/types/entry-dialog-types";
 import { setFormErrors } from "@/lib/utils/form-utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { usePathname } from "next/navigation";
-import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import EntryDialog from "./entry-dialog";
-
-// TODO: combine this variable and EntryAction type
-const Action = {
-  CREATE: "create",
-  EDIT: "edit",
-  DELETE: "delete",
-} as const;
-
-type BaseAssetDialogProps = {
-  open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>>;
-  statementId: string;
-};
-
-type CreateAssetDialogProps = BaseAssetDialogProps & {
-  action: typeof Action.CREATE;
-};
-
-type EditAssetDialogProps = BaseAssetDialogProps & {
-  action: typeof Action.EDIT;
-  assetId: string;
-  data: TAssetForm;
-};
-
-type DeleteAssetDialogProps = BaseAssetDialogProps & {
-  action: typeof Action.DELETE;
-  assetId: string;
-};
-
-type AssetDialogProps =
-  | CreateAssetDialogProps
-  | EditAssetDialogProps
-  | DeleteAssetDialogProps;
 
 export default function AssetDialog(props: AssetDialogProps) {
   const { open, setOpen, statementId, action } = props;
@@ -59,11 +26,11 @@ export default function AssetDialog(props: AssetDialogProps) {
 
   switch (action) {
     case "edit":
-      assetId = props.assetId;
+      assetId = props.entryId;
       data = props.data;
       break;
     case "delete":
-      assetId = props.assetId;
+      assetId = props.entryId;
       break;
   }
 

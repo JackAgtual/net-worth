@@ -6,6 +6,7 @@ import {
   deleteLiability,
   updateLiability,
 } from "@/lib/actions/liability-actions";
+import { LiabilityDialogProps } from "@/lib/types/entry-dialog-types";
 import {
   liabilityFormSchema,
   LiabilityForm as TLiabilityForm,
@@ -13,27 +14,25 @@ import {
 import { setFormErrors } from "@/lib/utils/form-utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { usePathname } from "next/navigation";
-import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import EntryDialog from "./entry-dialog";
 
-type LiabilityDialogProps = {
-  open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>>;
-  action: "edit" | "delete";
-  liabilityId: string;
-  statementId: string;
-  data: TLiabilityForm;
-};
+export default function LiabilityDialog(props: LiabilityDialogProps) {
+  const { open, setOpen, statementId, action } = props;
 
-export default function LiabilityDialog({
-  open,
-  setOpen,
-  action,
-  liabilityId,
-  statementId,
-  data,
-}: LiabilityDialogProps) {
+  let data = undefined;
+  let liabilityId = undefined;
+
+  switch (action) {
+    case "edit":
+      liabilityId = props.entryId;
+      data = props.data;
+      break;
+    case "delete":
+      liabilityId = props.entryId;
+      break;
+  }
+
   const {
     control,
     handleSubmit,

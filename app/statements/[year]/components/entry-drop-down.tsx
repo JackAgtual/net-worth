@@ -59,7 +59,7 @@ export default function EntryDropDown({
             open={editOpen}
             setOpen={setEditOpen}
             action="edit"
-            assetId={entryId}
+            entryId={entryId}
             statementId={statementId}
             data={data}
           />
@@ -67,7 +67,7 @@ export default function EntryDropDown({
             open={deleteOpen}
             setOpen={setDeleteOpen}
             action="delete"
-            assetId={entryId}
+            entryId={entryId}
             statementId={statementId}
           />
         </>
@@ -77,7 +77,7 @@ export default function EntryDropDown({
             open={editOpen}
             setOpen={setEditOpen}
             action="edit"
-            liabilityId={entryId}
+            entryId={entryId}
             statementId={statementId}
             data={data}
           />
@@ -85,9 +85,8 @@ export default function EntryDropDown({
             open={deleteOpen}
             setOpen={setDeleteOpen}
             action="delete"
-            liabilityId={entryId}
+            entryId={entryId}
             statementId={statementId}
-            data={data}
           />
         </>
       )}
