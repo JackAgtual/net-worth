@@ -2,8 +2,10 @@ import dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 
 import dbConnect from "./mongodb";
-import { Asset, Liability, Statement, AssetDoc, LiabilityDoc } from "./models";
+import { Asset, Liability, Statement } from "./models";
 import { Category } from "@/types/types";
+import { AssetDoc } from "../types/asset-types";
+import { LiabilityDoc } from "../types/liability-types";
 
 const userId = process.env.TEST_USER_ID as string;
 
