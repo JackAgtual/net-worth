@@ -162,7 +162,9 @@ const statementMongooseSchema = new Schema<
         id: Types.ObjectId | string,
         changes: LiabilityUpdate
       ): Promise<LiabilityHydrated | null> {
-        const liabilityId = this.liabilities.find((el) => el === id);
+        const liabilityId = this.liabilities.find(
+          (el) => el.toString() === id.toString()
+        );
 
         if (!liabilityId) return null;
 
@@ -191,7 +193,9 @@ const statementMongooseSchema = new Schema<
         id: Types.ObjectId | string,
         changes: AssetUpdate
       ): Promise<AssetHydrated | null> {
-        const assetId = this.assets.find((el) => el === id);
+        const assetId = this.assets.find(
+          (el) => el.toString() === id.toString()
+        );
 
         if (!assetId) return null;
 

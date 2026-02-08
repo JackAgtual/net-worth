@@ -12,8 +12,10 @@ import EntryDropDown from "./entry-drop-down";
 
 export default async function AssetTable({
   assets,
+  statementId,
 }: {
   assets: AssetHydrated[];
+  statementId: string;
 }) {
   return (
     <Table>
@@ -68,6 +70,7 @@ export default async function AssetTable({
               <TableCell className="text-right">
                 <EntryDropDown
                   id={id}
+                  statementId={statementId}
                   entityType="asset"
                   data={assetFormData}
                 />

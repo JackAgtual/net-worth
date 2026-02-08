@@ -23,7 +23,7 @@ export type AssetForm = z.infer<typeof assetFormSchema>;
 
 export type AssetDoc = z.infer<typeof assetSchema>;
 
-export type AssetUpdate = Partial<AssetDoc>;
+export type AssetUpdate = Partial<AssetForm>;
 
 export type AssetMethods = {
   getTotalContributions(): number;

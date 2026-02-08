@@ -8,6 +8,7 @@ import ContributionTable from "./components/contribution-table";
 import IncomeTable from "./components/income-table";
 import LiabilityTable from "./components/liability-table";
 import NetWorthTable from "./components/net-worth-table";
+import AddAsset from "./components/add-asset";
 
 export default async function Page({
   params,
@@ -22,26 +23,25 @@ export default async function Page({
   await dbConnect();
   const { year } = await params;
 
-  const statement = await Statement.findOne({ year });
+  const statement = await Statement.findOne({ year, userId: session.user.id });
 
   if (!statement) return <div>Couldn't find that statement</div>;
-
-  if (statement.userId !== session.user.id) {
-    redirect("/login");
-  }
 
   const [assets, liabilities] = await Promise.all([
     statement.getAssets(),
     statement.getLiabilities(),
   ]);
 
+  const statementId = statement._id.toString();
+
   return (
     <>
       <h1>{year} statement</h1>
       <h2>Assets</h2>
-      <AssetTable assets={assets} />
+      <AssetTable assets={assets} statementId={statementId} />
+      {/* <AddAsset /> */}
       <h2>Liabilities</h2>
-      <LiabilityTable liabilities={liabilities} />
+      <LiabilityTable liabilities={liabilities} statementId={statementId} />
       <h2>Net worth</h2>
       <NetWorthTable statement={statement} />
       <h2>Category analysis</h2>

@@ -25,3 +25,5 @@ export enum Contributor {
   NonSelf = "Non self",
   All = "All",
 }
+
+export type EntryAction = "new" | "edit" | "delete";

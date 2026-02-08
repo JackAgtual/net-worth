@@ -16,6 +16,7 @@ import LiabilityDialog from "./liability-dialog";
 
 type EntryDropDownProps = {
   id: string;
+  statementId: string;
 } & (
   | { entityType: "asset"; data: AssetForm }
   | { entityType: "liability"; data: LiabilityForm }
@@ -23,6 +24,7 @@ type EntryDropDownProps = {
 
 export default function EntryDropDown({
   id,
+  statementId,
   entityType,
   data,
 }: EntryDropDownProps) {
@@ -58,6 +60,7 @@ export default function EntryDropDown({
             setOpen={setEditOpen}
             action="edit"
             id={id}
+            statementId={statementId}
             data={data}
           />
           <AssetDialog
@@ -65,6 +68,7 @@ export default function EntryDropDown({
             setOpen={setDeleteOpen}
             action="delete"
             id={id}
+            statementId={statementId}
             data={data}
           />
         </>
@@ -75,6 +79,7 @@ export default function EntryDropDown({
             setOpen={setEditOpen}
             action="edit"
             id={id}
+            statementId={statementId}
             data={data}
           />
           <LiabilityDialog
@@ -82,6 +87,7 @@ export default function EntryDropDown({
             setOpen={setDeleteOpen}
             action="delete"
             id={id}
+            statementId={statementId}
             data={data}
           />
         </>

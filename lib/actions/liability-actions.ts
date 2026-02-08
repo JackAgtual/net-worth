@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getValidSession } from "../auth/auth-utils";
-import { Liability } from "../db/models";
+import { Liability, Statement } from "../db/models";
 import dbConnect from "../db/mongodb";
 import { LiabilityForm, liabilityFormSchema } from "../types/liability-types";
 import { ActionResponse } from "../types/action-types";
@@ -13,22 +13,37 @@ const liabilityNotFound: ActionResponse<LiabilityForm> = {
   errors: [{ path: "root", message: "Could not find liability" }],
 };
 
+const statementNotFound: ActionResponse<LiabilityForm> = {
+  success: false,
+  errors: [{ path: "root", message: "Could not find statement" }],
+};
+
 export async function deleteLiability(
-  id: unknown,
+  liabilityId: unknown,
+  statementId: unknown,
   path: unknown
 ): Promise<ActionResponse<LiabilityForm>> {
   await dbConnect();
 
-  const idParseResult = validateId(id);
+  const liabilityIdParseResult = validateId(liabilityId);
+  const statementIdParseResult = validateId(statementId);
   const pathParseResult = validatePath(path);
   const session = await getValidSession();
 
-  const liabilityDoc = await Liability.findOneAndDelete({
-    _id: idParseResult.data,
+  const statementDoc = await Statement.findOne({
     userId: session.user.id,
+    _id: statementIdParseResult.data,
   });
 
-  if (!liabilityDoc) {
+  if (!statementDoc) {
+    return statementNotFound;
+  }
+
+  const deleted = await statementDoc.deleteLiability(
+    liabilityIdParseResult.data
+  );
+
+  if (!deleted) {
     return liabilityNotFound;
   }
 
@@ -37,13 +52,15 @@ export async function deleteLiability(
 }
 
 export async function updateLiability(
-  id: unknown,
+  liabilityId: unknown,
+  statementId: unknown,
   data: unknown,
   path: unknown
 ): Promise<ActionResponse<LiabilityForm>> {
   await dbConnect();
 
-  const idParseResult = validateId(id);
+  const liabilityIdParseResult = validateId(liabilityId);
+  const statementIdParseResult = validateId(statementId);
   const pathParseResult = validatePath(path);
 
   const dataParseResult = liabilityFormSchema.safeParse(data);
@@ -54,8 +71,17 @@ export async function updateLiability(
 
   const session = await getValidSession();
 
-  const liabilityDoc = await Liability.findOneAndUpdate(
-    { _id: idParseResult.data, userId: session.user.id },
+  const statementDoc = await Statement.findOne({
+    userId: session.user.id,
+    _id: statementIdParseResult.data,
+  });
+
+  if (!statementDoc) {
+    return statementNotFound;
+  }
+
+  const liabilityDoc = await statementDoc.updateLiability(
+    liabilityIdParseResult.data,
     dataParseResult.data
   );
 

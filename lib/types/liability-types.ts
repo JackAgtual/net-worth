@@ -15,6 +15,6 @@ export type LiabilityDoc = z.infer<typeof liabilitySchema>;
 
 export type LiabilityHydrated = HydratedDocument<LiabilityDoc>;
 
-export type LiabilityUpdate = Partial<LiabilityDoc>;
+export type LiabilityUpdate = Partial<LiabilityForm>;
 
 export type LiabilityModelType = Model<LiabilityDoc>;

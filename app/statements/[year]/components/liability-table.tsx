@@ -12,8 +12,10 @@ import EntryDropDown from "./entry-drop-down";
 
 export default async function LiabilityTable({
   liabilities,
+  statementId,
 }: {
   liabilities: LiabilityHydrated[];
+  statementId: string;
 }) {
   return (
     <Table>
@@ -44,6 +46,7 @@ export default async function LiabilityTable({
               <TableCell className="text-right">
                 <EntryDropDown
                   id={id}
+                  statementId={statementId}
                   entityType="liability"
                   data={liabilityFormData}
                 />

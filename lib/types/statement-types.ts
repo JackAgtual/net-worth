@@ -68,13 +68,13 @@ export type StatementMethods = {
   addLiability(liability: LiabilityDoc): Promise<LiabilityHydrated>;
   deleteLiability(id: Types.ObjectId | string): Promise<boolean>;
   updateLiability(
-    id: Types.ObjectId,
+    id: Types.ObjectId | string,
     changes: LiabilityUpdate
   ): Promise<LiabilityHydrated | null>;
   addAsset(asset: AssetDoc): Promise<AssetHydrated>;
   deleteAsset(id: Types.ObjectId | string): Promise<boolean>;
   updateAsset(
-    id: Types.ObjectId,
+    id: Types.ObjectId | string,
     changes: AssetUpdate
   ): Promise<AssetHydrated | null>;
 };
