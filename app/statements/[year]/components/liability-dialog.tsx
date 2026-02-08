@@ -3,6 +3,7 @@
 import LiabilityForm from "@/components/form/liability-form";
 import { FieldError } from "@/components/ui/field";
 import {
+  createLiability,
   deleteLiability,
   updateLiability,
 } from "@/lib/actions/liability-actions";
@@ -45,6 +46,17 @@ export default function LiabilityDialog(props: LiabilityDialogProps) {
   });
   const path = usePathname();
 
+  const handleCreate = async (data: TLiabilityForm) => {
+    const result = await createLiability({ statementId, data, path });
+
+    if (!result.success) {
+      setFormErrors(result.errors, setError);
+      return;
+    }
+
+    setOpen(false);
+  };
+
   const handleEdit = async (data: TLiabilityForm) => {
     const result = await updateLiability({
       liabilityId,
@@ -76,8 +88,19 @@ export default function LiabilityDialog(props: LiabilityDialogProps) {
     setOpen(false);
   };
 
-  const onSubmit =
-    action === "edit" ? handleSubmit(handleEdit) : handleSubmit(handleDelete);
+  let handler;
+  switch (action) {
+    case "create":
+      handler = handleCreate;
+      break;
+    case "edit":
+      handler = handleEdit;
+      break;
+    case "delete":
+      handler = handleDelete;
+      break;
+  }
+  const onSubmit = handleSubmit(handler);
 
   return (
     <EntryDialog
@@ -89,7 +112,7 @@ export default function LiabilityDialog(props: LiabilityDialogProps) {
       data={data}
       isSubmitting={isSubmitting}
     >
-      {action === "edit" && (
+      {action !== "delete" && (
         <>
           <LiabilityForm control={control} />
           {errors.root && (

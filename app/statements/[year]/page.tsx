@@ -2,7 +2,7 @@ import { getSession } from "@/lib/auth/auth-utils";
 import { Statement } from "@/lib/db/models";
 import dbConnect from "@/lib/db/mongodb";
 import { redirect } from "next/navigation";
-import AddAsset from "./components/add-asset";
+import AddEntry from "./components/add-entry";
 import AssetTable from "./components/asset-table";
 import CategoryTable from "./components/category-table";
 import ContributionTable from "./components/contribution-table";
@@ -39,9 +39,10 @@ export default async function Page({
       <h1>{year} statement</h1>
       <h2>Assets</h2>
       <AssetTable assets={assets} statementId={statementId} />
-      <AddAsset statementId={statementId} />
+      <AddEntry entryType="asset" statementId={statementId} />
       <h2>Liabilities</h2>
       <LiabilityTable liabilities={liabilities} statementId={statementId} />
+      <AddEntry entryType="liability" statementId={statementId} />
       <h2>Net worth</h2>
       <NetWorthTable statement={statement} />
       <h2>Category analysis</h2>

@@ -108,7 +108,7 @@ export default function AssetDialog(props: AssetDialogProps) {
       data={data}
       isSubmitting={isSubmitting}
     >
-      {(action === "edit" || action === "create") && (
+      {action !== "delete" && (
         <>
           <AssetForm control={control} />
           {errors.root && (

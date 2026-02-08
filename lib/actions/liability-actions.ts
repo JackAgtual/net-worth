@@ -18,6 +18,53 @@ const statementNotFound: ActionResponse<LiabilityForm> = {
   errors: [{ path: "root", message: "Could not find statement" }],
 };
 
+export async function createLiability({
+  statementId,
+  data,
+  path,
+}: {
+  statementId: unknown;
+  data: unknown;
+  path: unknown;
+}): Promise<ActionResponse<LiabilityForm>> {
+  await dbConnect();
+
+  const statementIdParseResult = validateId(statementId);
+  const pathParseResult = validatePath(path);
+
+  const dataParseResult = liabilityFormSchema.safeParse(data);
+  if (!dataParseResult.success) {
+    const errors = getErrors<LiabilityForm>(dataParseResult.error.issues);
+    return { success: false, errors };
+  }
+
+  const session = await getValidSession();
+
+  const statementDoc = await Statement.findOne({
+    userId: session.user.id,
+    _id: statementIdParseResult.data,
+  });
+
+  if (!statementDoc) {
+    return statementNotFound;
+  }
+
+  const liabilityDoc = await statementDoc.addLiability({
+    userId: session.user.id,
+    ...dataParseResult.data,
+  });
+
+  if (!liabilityDoc) {
+    return {
+      success: false,
+      errors: [{ path: "root", message: "Could not create liability" }],
+    };
+  }
+
+  revalidatePath(pathParseResult.data);
+  return { success: true };
+}
+
 export async function deleteLiability({
   liabilityId,
   statementId,

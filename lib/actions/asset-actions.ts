@@ -44,22 +44,21 @@ export async function createAsset({
     _id: statementIdParseResult.data,
   });
 
-  console.log("created statement");
   if (!statementDoc) {
     return statementNotFound;
   }
-  console.log("found statement");
 
   const assetDoc = await statementDoc.addAsset({
     userId: session.user.id,
     ...dataParseResult.data,
   });
-  console.log("created asset");
 
   if (!assetDoc) {
-    return assetNotFound;
+    return {
+      success: false,
+      errors: [{ path: "root", message: "Could not create asset" }],
+    };
   }
-  console.log("found asset");
 
   revalidatePath(pathParseResult.data);
   return { success: true };
