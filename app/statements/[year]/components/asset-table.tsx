@@ -69,7 +69,7 @@ export default async function AssetTable({
               <TableCell>{asset.notes}</TableCell>
               <TableCell className="text-right">
                 <EntryDropDown
-                  id={id}
+                  entryId={id}
                   statementId={statementId}
                   entityType="asset"
                   data={assetFormData}

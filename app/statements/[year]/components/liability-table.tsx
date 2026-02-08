@@ -45,7 +45,7 @@ export default async function LiabilityTable({
               <TableCell>{liability.notes}</TableCell>
               <TableCell className="text-right">
                 <EntryDropDown
-                  id={id}
+                  entryId={id}
                   statementId={statementId}
                   entityType="liability"
                   data={liabilityFormData}

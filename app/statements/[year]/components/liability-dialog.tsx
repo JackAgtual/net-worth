@@ -21,7 +21,7 @@ type LiabilityDialogProps = {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
   action: "edit" | "delete";
-  id: string;
+  liabilityId: string;
   statementId: string;
   data: TLiabilityForm;
 };
@@ -30,7 +30,7 @@ export default function LiabilityDialog({
   open,
   setOpen,
   action,
-  id,
+  liabilityId,
   statementId,
   data,
 }: LiabilityDialogProps) {
@@ -47,7 +47,12 @@ export default function LiabilityDialog({
   const pathname = usePathname();
 
   const handleEdit = async (data: TLiabilityForm) => {
-    const result = await updateLiability(id, statementId, data, pathname);
+    const result = await updateLiability(
+      liabilityId,
+      statementId,
+      data,
+      pathname
+    );
 
     if (!result.success) {
       setFormErrors(result.errors, setError);
@@ -58,7 +63,7 @@ export default function LiabilityDialog({
   };
 
   const handleDelete = async () => {
-    const result = await deleteLiability(id, statementId, pathname);
+    const result = await deleteLiability(liabilityId, statementId, pathname);
 
     if (!result.success) {
       setFormErrors(result.errors, setError);

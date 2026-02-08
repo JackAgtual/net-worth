@@ -15,7 +15,7 @@ import AssetDialog from "./asset-dialog";
 import LiabilityDialog from "./liability-dialog";
 
 type EntryDropDownProps = {
-  id: string;
+  entryId: string;
   statementId: string;
 } & (
   | { entityType: "asset"; data: AssetForm }
@@ -23,7 +23,7 @@ type EntryDropDownProps = {
 );
 
 export default function EntryDropDown({
-  id,
+  entryId,
   statementId,
   entityType,
   data,
@@ -59,7 +59,7 @@ export default function EntryDropDown({
             open={editOpen}
             setOpen={setEditOpen}
             action="edit"
-            id={id}
+            assetId={entryId}
             statementId={statementId}
             data={data}
           />
@@ -67,7 +67,7 @@ export default function EntryDropDown({
             open={deleteOpen}
             setOpen={setDeleteOpen}
             action="delete"
-            id={id}
+            assetId={entryId}
             statementId={statementId}
             data={data}
           />
@@ -78,7 +78,7 @@ export default function EntryDropDown({
             open={editOpen}
             setOpen={setEditOpen}
             action="edit"
-            id={id}
+            liabilityId={entryId}
             statementId={statementId}
             data={data}
           />
@@ -86,7 +86,7 @@ export default function EntryDropDown({
             open={deleteOpen}
             setOpen={setDeleteOpen}
             action="delete"
-            id={id}
+            liabilityId={entryId}
             statementId={statementId}
             data={data}
           />

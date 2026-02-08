@@ -20,7 +20,7 @@ type AssetDialogProps = {
   setOpen: Dispatch<SetStateAction<boolean>>;
   action: EntryAction;
   statementId: string;
-  id?: string;
+  assetId?: string;
   data?: TAssetForm;
 };
 
@@ -64,7 +64,7 @@ export default function AssetDialog({
   setOpen,
   action,
   statementId,
-  id,
+  assetId,
   data,
 }: AssetDialogProps) {
   const {
@@ -91,7 +91,7 @@ export default function AssetDialog({
   // };
 
   const handleEdit = async (data: TAssetForm) => {
-    const result = await updateAsset(id, statementId, data, pathname);
+    const result = await updateAsset(assetId, statementId, data, pathname);
 
     if (!result.success) {
       setFormErrors(result.errors, setError);
@@ -102,7 +102,7 @@ export default function AssetDialog({
   };
 
   const handleDelete = async () => {
-    const result = await deleteAsset(id, statementId, pathname);
+    const result = await deleteAsset(assetId, statementId, pathname);
 
     if (!result.success) {
       setFormErrors(result.errors, setError);
