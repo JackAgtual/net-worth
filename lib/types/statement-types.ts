@@ -45,8 +45,8 @@ export type StatementDoc = Omit<
   z.infer<typeof statementSchema>,
   "assets" | "liabilities"
 > & {
-  assets: Types.ObjectId[];
-  liabilities: Types.ObjectId[];
+  assets: Types.Array<Types.ObjectId>;
+  liabilities: Types.Array<Types.ObjectId>;
 };
 
 export type StatementMethods = {
@@ -66,13 +66,13 @@ export type StatementMethods = {
   getTotalRetirementAssets(): Promise<number>;
   getRetirementAssetsByCategory(category: Category): Promise<number>;
   addLiability(liability: LiabilityDoc): Promise<LiabilityHydrated>;
-  deleteLiability(id: Types.ObjectId): Promise<boolean>;
+  deleteLiability(id: Types.ObjectId | string): Promise<boolean>;
   updateLiability(
     id: Types.ObjectId,
     changes: LiabilityUpdate
   ): Promise<LiabilityHydrated | null>;
   addAsset(asset: AssetDoc): Promise<AssetHydrated>;
-  deleteAsset(id: Types.ObjectId): Promise<boolean>;
+  deleteAsset(id: Types.ObjectId | string): Promise<boolean>;
   updateAsset(
     id: Types.ObjectId,
     changes: AssetUpdate

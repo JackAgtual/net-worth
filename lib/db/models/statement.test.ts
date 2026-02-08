@@ -254,10 +254,11 @@ describe("Statement", () => {
 
       const buildAsset = async () => {
         const assets = await Asset.insertMany([asset]);
-        statement.assets = assets.map((asset) => asset._id);
+        statement.assets.push(...assets.map((asset) => asset._id));
       };
 
       beforeEach(async () => {
+        statement.assets.splice(0);
         asset = {
           userId,
           title: "Savings",
@@ -275,6 +276,8 @@ describe("Statement", () => {
       it("returns 0 if amountOneYearAgo is undefined", async () => {
         asset.amountOneYearAgo = undefined;
         await buildAsset();
+        const ans = await statement.getLastYearAssetGrowth();
+        const assets = await statement.getAssets();
         expect(await statement.getLastYearAssetGrowth()).toEqual(0);
       });
 

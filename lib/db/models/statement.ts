@@ -44,12 +44,16 @@ const statementMongooseSchema = new Schema<
   {
     methods: {
       async getAssets(): Promise<AssetHydrated[]> {
-        await this.populate("assets");
-        return this.assets as unknown as AssetHydrated[];
+        const statement = await this.populate<{ assets: AssetHydrated[] }>(
+          "assets"
+        );
+        return statement.assets;
       },
       async getLiabilities(): Promise<LiabilityHydrated[]> {
-        await this.populate("liabilities");
-        return this.liabilities as unknown as LiabilityHydrated[];
+        const statement = await this.populate<{
+          liabilities: LiabilityHydrated[];
+        }>("liabilities");
+        return statement.liabilities;
       },
       async getTotalAssetAmount(): Promise<number> {
         const assets = await this.getAssets();
@@ -147,16 +151,15 @@ const statementMongooseSchema = new Schema<
         this.liabilities.push(liability._id);
         return liability;
       },
-      async deleteLiability(id: Types.ObjectId): Promise<boolean> {
-        this.liabilities = this.liabilities.filter(
-          (liabilityId) => liabilityId !== id
-        );
-
+      async deleteLiability(id: Types.ObjectId | string): Promise<boolean> {
         const deletedDoc = await Liability.findByIdAndDelete(id);
-        return !!deletedDoc;
+        if (!deletedDoc) return false;
+        this.liabilities.pull({ _id: deletedDoc._id });
+        await this.save();
+        return true;
       },
       async updateLiability(
-        id: Types.ObjectId,
+        id: Types.ObjectId | string,
         changes: LiabilityUpdate
       ): Promise<LiabilityHydrated | null> {
         const liabilityId = this.liabilities.find((el) => el === id);
@@ -176,14 +179,16 @@ const statementMongooseSchema = new Schema<
         this.assets.push(createdAsset._id);
         return createdAsset;
       },
-      async deleteAsset(id: Types.ObjectId): Promise<boolean> {
-        this.assets = this.assets.filter((assetId) => assetId !== id);
-
+      async deleteAsset(id: Types.ObjectId | string): Promise<boolean> {
         const deletedDoc = await Asset.findByIdAndDelete(id);
-        return !!deletedDoc;
+        if (!deletedDoc) return false;
+
+        this.assets.pull({ _id: deletedDoc._id });
+        await this.save();
+        return true;
       },
       async updateAsset(
-        id: Types.ObjectId,
+        id: Types.ObjectId | string,
         changes: AssetUpdate
       ): Promise<AssetHydrated | null> {
         const assetId = this.assets.find((el) => el === id);
