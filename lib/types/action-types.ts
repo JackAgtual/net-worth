@@ -1,4 +1,7 @@
 import { FieldPath, FieldValues } from "react-hook-form";
+import { LiabilityForm } from "./liability-types";
+import { AssetForm } from "./asset-types";
+import { StatementForm } from "./statement-types";
 
 export type FormError<T extends FieldValues> = {
   path: FieldPath<T> | "root";
@@ -18,12 +21,18 @@ export type ActionInputs = {
   entryId?: unknown;
   statementId?: unknown;
   path?: unknown;
+  liabilityFormData?: unknown;
+  assetFormData?: unknown;
+  statementFormData?: unknown;
 };
 
 type ValidatedActionInputs = {
   entryId: string;
   statementId: string;
   path: string;
+  liabilityFormData: LiabilityForm;
+  assetFormData: AssetForm;
+  statementFormData: StatementForm;
 };
 
 export type ValidatedShape<T> = {

@@ -1,5 +1,5 @@
 import { FieldPath, FieldValues } from "react-hook-form";
-import { z } from "zod";
+import { z, ZodBoolean, ZodObject } from "zod";
 import { $ZodIssue } from "zod/v4/core";
 import {
   ActionInputs,
@@ -8,6 +8,9 @@ import {
   ValidatedShape,
 } from "../types/action-types";
 import { mongoIdSchema } from "../types/mongo-types";
+import { LiabilityForm, liabilityFormSchema } from "../types/liability-types";
+import { assetFormSchema } from "../types/asset-types";
+import { statementFormSchema } from "../types/statement-types";
 
 export function getErrors<T extends FieldValues>(
   issues: $ZodIssue[]
@@ -46,10 +49,21 @@ function safeParsePath(path: unknown) {
   return z.string().safeParse(path);
 }
 
+function parseFormData<T>(data: unknown, schema: ZodObject) {
+  const parseResult = schema.safeParse(data);
+}
+
 export function validateActionInputs<
   T extends FieldValues,
   U extends ActionInputs = ActionInputs
->({ entryId, statementId, path }: U): InputValidationResponse<T, U> {
+>({
+  entryId,
+  statementId,
+  path,
+  liabilityFormData,
+  assetFormData,
+  statementFormData,
+}: U): InputValidationResponse<T, U> {
   const data = {} as ValidatedShape<U>;
   const errors: FormError<T>[] = [];
 
@@ -77,6 +91,33 @@ export function validateActionInputs<
       data.path = parseResult.data;
     } else {
       errors.push({ path: "root", message: "Invalid path" });
+    }
+  }
+
+  if (liabilityFormData) {
+    const parseResult = liabilityFormSchema.safeParse(liabilityFormData);
+    if (parseResult.success) {
+      data.liabilityFormData = parseResult.data;
+    } else {
+      errors.push(...getErrors<T>(parseResult.error.issues));
+    }
+  }
+
+  if (assetFormData) {
+    const parseResult = assetFormSchema.safeParse(assetFormData);
+    if (parseResult.success) {
+      data.assetFormData = parseResult.data;
+    } else {
+      errors.push(...getErrors<T>(parseResult.error.issues));
+    }
+  }
+
+  if (statementFormData) {
+    const parseResult = statementFormSchema.safeParse(statementFormData);
+    if (parseResult.success) {
+      data.statementFormData = parseResult.data;
+    } else {
+      errors.push(...getErrors<T>(parseResult.error.issues));
     }
   }
 
