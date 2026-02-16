@@ -6,7 +6,12 @@ import { Statement } from "../db/models";
 import dbConnect from "../db/mongodb";
 import { ActionResponse } from "../types/action-types";
 import { LiabilityForm, liabilityFormSchema } from "../types/liability-types";
-import { getErrors, validateId, validatePath } from "./action-utils";
+import {
+  getErrors,
+  validateActionInputs,
+  validateId,
+  validatePath,
+} from "./action-utils";
 
 const liabilityNotFound: ActionResponse<LiabilityForm> = {
   success: false,
@@ -76,29 +81,40 @@ export async function deleteLiability({
 }): Promise<ActionResponse<LiabilityForm>> {
   await dbConnect();
 
-  const liabilityIdParseResult = validateId(liabilityId);
-  const statementIdParseResult = validateId(statementId);
-  const pathParseResult = validatePath(path);
+  const validatedInputs = validateActionInputs({
+    statementId,
+    entryId: liabilityId,
+    path,
+  });
+
+  if (!validatedInputs.success) {
+    return validatedInputs;
+  }
+
+  const {
+    statementId: validStatementId,
+    entryId: validLiabilityId,
+    path: validPath,
+  } = validatedInputs.data;
+
   const session = await getValidSession();
 
   const statementDoc = await Statement.findOne({
     userId: session.user.id,
-    _id: statementIdParseResult.data,
+    _id: validStatementId,
   });
 
   if (!statementDoc) {
     return statementNotFound;
   }
 
-  const deleted = await statementDoc.deleteLiability(
-    liabilityIdParseResult.data
-  );
+  const deleted = await statementDoc.deleteLiability(validLiabilityId);
 
   if (!deleted) {
     return liabilityNotFound;
   }
 
-  revalidatePath(pathParseResult.data);
+  revalidatePath(validPath);
   return { success: true };
 }
 

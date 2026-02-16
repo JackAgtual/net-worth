@@ -1,16 +1,13 @@
 import { FieldPath, FieldValues } from "react-hook-form";
-import { z, ZodBoolean, ZodObject } from "zod";
+import { z, ZodObject } from "zod";
 import { $ZodIssue } from "zod/v4/core";
 import {
   ActionInputs,
+  FailedActionResponse,
   FormError,
-  InputValidationResponse,
   ValidatedShape,
 } from "../types/action-types";
 import { mongoIdSchema } from "../types/mongo-types";
-import { LiabilityForm, liabilityFormSchema } from "../types/liability-types";
-import { assetFormSchema } from "../types/asset-types";
-import { statementFormSchema } from "../types/statement-types";
 
 export function getErrors<T extends FieldValues>(
   issues: $ZodIssue[]
@@ -53,19 +50,23 @@ function parseFormData<T>(data: unknown, schema: ZodObject) {
   const parseResult = schema.safeParse(data);
 }
 
-export function validateActionInputs<
-  T extends FieldValues,
-  U extends ActionInputs = ActionInputs
->({
+type InputValidationResponse2<
+  U extends ActionInputs,
+  T extends FieldValues = never
+> =
+  | {
+      success: true;
+      data: ValidatedShape<U>;
+    }
+  | FailedActionResponse<T>;
+
+export function validateActionInputs<U extends ActionInputs>({
   entryId,
   statementId,
   path,
-  liabilityFormData,
-  assetFormData,
-  statementFormData,
-}: U): InputValidationResponse<T, U> {
+}: U): InputValidationResponse2<U> {
   const data = {} as ValidatedShape<U>;
-  const errors: FormError<T>[] = [];
+  const errors: FormError<never>[] = [];
 
   if (entryId) {
     const parseResult = safeParseId(entryId);
@@ -92,40 +93,6 @@ export function validateActionInputs<
     } else {
       errors.push({ path: "root", message: "Invalid path" });
     }
-  }
-
-  if (liabilityFormData) {
-    const parseResult = liabilityFormSchema.safeParse(liabilityFormData);
-    if (parseResult.success) {
-      data.liabilityFormData = parseResult.data;
-    } else {
-      errors.push(...getErrors<T>(parseResult.error.issues));
-    }
-  }
-
-  if (assetFormData) {
-    const parseResult = assetFormSchema.safeParse(assetFormData);
-    if (parseResult.success) {
-      data.assetFormData = parseResult.data;
-    } else {
-      errors.push(...getErrors<T>(parseResult.error.issues));
-    }
-  }
-
-  if (statementFormData) {
-    const parseResult = statementFormSchema.safeParse(statementFormData);
-    if (parseResult.success) {
-      data.statementFormData = parseResult.data;
-    } else {
-      errors.push(...getErrors<T>(parseResult.error.issues));
-    }
-  }
-
-  if (errors.length) {
-    return {
-      success: false,
-      errors,
-    };
   }
   return { success: true, data };
 }

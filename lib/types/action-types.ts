@@ -8,7 +8,7 @@ export type FormError<T extends FieldValues> = {
   message: string;
 };
 
-type FailedActionResponse<T extends FieldValues> = {
+export type FailedActionResponse<T extends FieldValues> = {
   success: false;
   errors: FormError<T>[];
 };
