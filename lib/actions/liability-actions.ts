@@ -6,12 +6,7 @@ import { Statement } from "../db/models";
 import dbConnect from "../db/mongodb";
 import { ActionResponse } from "../types/action-types";
 import { LiabilityForm, liabilityFormSchema } from "../types/liability-types";
-import {
-  getErrors,
-  validateActionInputs,
-  validateId,
-  validatePath,
-} from "./action-utils";
+import { getErrors, validateActionInputs } from "./action-utils";
 
 const liabilityNotFound: ActionResponse<LiabilityForm> = {
   success: false,
@@ -34,8 +29,16 @@ export async function createLiability({
 }): Promise<ActionResponse<LiabilityForm>> {
   await dbConnect();
 
-  const statementIdParseResult = validateId(statementId);
-  const pathParseResult = validatePath(path);
+  const validatedInputs = validateActionInputs({
+    statementId,
+    path,
+  });
+
+  if (!validatedInputs.success) {
+    return validatedInputs;
+  }
+
+  const inputs = validatedInputs.data;
 
   const dataParseResult = liabilityFormSchema.safeParse(data);
   if (!dataParseResult.success) {
@@ -47,7 +50,7 @@ export async function createLiability({
 
   const statementDoc = await Statement.findOne({
     userId: session.user.id,
-    _id: statementIdParseResult.data,
+    _id: inputs.statementId,
   });
 
   if (!statementDoc) {
@@ -66,7 +69,7 @@ export async function createLiability({
     };
   }
 
-  revalidatePath(pathParseResult.data);
+  revalidatePath(inputs.path);
   return { success: true };
 }
 
@@ -91,30 +94,26 @@ export async function deleteLiability({
     return validatedInputs;
   }
 
-  const {
-    statementId: validStatementId,
-    entryId: validLiabilityId,
-    path: validPath,
-  } = validatedInputs.data;
+  const inputs = validatedInputs.data;
 
   const session = await getValidSession();
 
   const statementDoc = await Statement.findOne({
     userId: session.user.id,
-    _id: validStatementId,
+    _id: inputs.statementId,
   });
 
   if (!statementDoc) {
     return statementNotFound;
   }
 
-  const deleted = await statementDoc.deleteLiability(validLiabilityId);
+  const deleted = await statementDoc.deleteLiability(inputs.entryId);
 
   if (!deleted) {
     return liabilityNotFound;
   }
 
-  revalidatePath(validPath);
+  revalidatePath(inputs.path);
   return { success: true };
 }
 
@@ -131,9 +130,17 @@ export async function updateLiability({
 }): Promise<ActionResponse<LiabilityForm>> {
   await dbConnect();
 
-  const liabilityIdParseResult = validateId(liabilityId);
-  const statementIdParseResult = validateId(statementId);
-  const pathParseResult = validatePath(path);
+  const validatedInputs = validateActionInputs({
+    statementId,
+    entryId: liabilityId,
+    path,
+  });
+
+  if (!validatedInputs.success) {
+    return validatedInputs;
+  }
+
+  const inputs = validatedInputs.data;
 
   const dataParseResult = liabilityFormSchema.safeParse(data);
   if (!dataParseResult.success) {
@@ -145,7 +152,7 @@ export async function updateLiability({
 
   const statementDoc = await Statement.findOne({
     userId: session.user.id,
-    _id: statementIdParseResult.data,
+    _id: inputs.statementId,
   });
 
   if (!statementDoc) {
@@ -153,7 +160,7 @@ export async function updateLiability({
   }
 
   const liabilityDoc = await statementDoc.updateLiability(
-    liabilityIdParseResult.data,
+    inputs.entryId,
     dataParseResult.data
   );
 
@@ -161,6 +168,6 @@ export async function updateLiability({
     return liabilityNotFound;
   }
 
-  revalidatePath(pathParseResult.data);
+  revalidatePath(inputs.path);
   return { success: true };
 }

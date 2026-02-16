@@ -42,8 +42,8 @@ export type ValidatedShape<T> = {
 };
 
 export type InputValidationResponse<
-  T extends FieldValues,
-  U extends ActionInputs
+  U extends ActionInputs,
+  T extends FieldValues = never
 > =
   | {
       success: true;

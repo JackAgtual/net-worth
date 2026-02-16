@@ -5,6 +5,7 @@ import {
   ActionInputs,
   FailedActionResponse,
   FormError,
+  InputValidationResponse,
   ValidatedShape,
 } from "../types/action-types";
 import { mongoIdSchema } from "../types/mongo-types";
@@ -50,21 +51,11 @@ function parseFormData<T>(data: unknown, schema: ZodObject) {
   const parseResult = schema.safeParse(data);
 }
 
-type InputValidationResponse2<
-  U extends ActionInputs,
-  T extends FieldValues = never
-> =
-  | {
-      success: true;
-      data: ValidatedShape<U>;
-    }
-  | FailedActionResponse<T>;
-
 export function validateActionInputs<U extends ActionInputs>({
   entryId,
   statementId,
   path,
-}: U): InputValidationResponse2<U> {
+}: U): InputValidationResponse<U> {
   const data = {} as ValidatedShape<U>;
   const errors: FormError<never>[] = [];
 
