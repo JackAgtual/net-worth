@@ -50,3 +50,10 @@ export type InputValidationResponse<
       data: ValidatedShape<U>;
     }
   | FailedActionResponse<T>;
+
+export type FormValidationResponse<T extends FieldValues> =
+  | {
+      success: true;
+      data: T;
+    }
+  | FailedActionResponse<T>;

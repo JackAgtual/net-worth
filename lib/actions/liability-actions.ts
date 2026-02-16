@@ -6,7 +6,7 @@ import { Statement } from "../db/models";
 import dbConnect from "../db/mongodb";
 import { ActionResponse } from "../types/action-types";
 import { LiabilityForm, liabilityFormSchema } from "../types/liability-types";
-import { getErrors, validateActionInputs } from "./action-utils";
+import { parseFormData, validateActionInputs } from "./action-utils";
 
 const liabilityNotFound: ActionResponse<LiabilityForm> = {
   success: false,
@@ -40,10 +40,10 @@ export async function createLiability({
 
   const inputs = validatedInputs.data;
 
-  const dataParseResult = liabilityFormSchema.safeParse(data);
+  const dataParseResult = parseFormData(data, liabilityFormSchema);
+
   if (!dataParseResult.success) {
-    const errors = getErrors<LiabilityForm>(dataParseResult.error.issues);
-    return { success: false, errors };
+    return dataParseResult;
   }
 
   const session = await getValidSession();
@@ -142,10 +142,10 @@ export async function updateLiability({
 
   const inputs = validatedInputs.data;
 
-  const dataParseResult = liabilityFormSchema.safeParse(data);
+  const dataParseResult = parseFormData(data, liabilityFormSchema);
+
   if (!dataParseResult.success) {
-    const errors = getErrors<LiabilityForm>(dataParseResult.error.issues);
-    return { success: false, errors };
+    return dataParseResult;
   }
 
   const session = await getValidSession();

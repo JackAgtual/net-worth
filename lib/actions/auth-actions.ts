@@ -11,16 +11,15 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "../auth/auth";
 import { ActionResponse } from "../types/action-types";
-import { getErrors } from "./action-utils";
+import { parseFormData } from "./action-utils";
 
 export async function createAccount(
   formData: unknown
 ): Promise<ActionResponse<CreateAccount>> {
-  const result = createAccountSchema.safeParse(formData);
+  const result = parseFormData(formData, createAccountSchema);
 
   if (!result.success) {
-    const errors = getErrors<CreateAccount>(result.error.issues);
-    return { success: false, errors };
+    return result;
   }
 
   const { name, email, password } = result.data;

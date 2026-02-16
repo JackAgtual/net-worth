@@ -1,11 +1,11 @@
 "use server";
 
-import { getSession } from "../auth/auth-utils";
-import { Asset, Liability, Statement } from "../db/models";
+import { getValidSession } from "../auth/auth-utils";
+import { Statement } from "../db/models";
 import dbConnect from "../db/mongodb";
-import { StatementForm, statementFormSchema } from "../types/statement-types";
 import { ActionResponse } from "../types/action-types";
-import { getErrors } from "./action-utils";
+import { StatementForm, statementFormSchema } from "../types/statement-types";
+import { parseFormData } from "./action-utils";
 
 const somethingWentWrong: ActionResponse<StatementForm> = {
   success: false,
@@ -15,21 +15,16 @@ const somethingWentWrong: ActionResponse<StatementForm> = {
 export async function createStatement(
   formData: unknown
 ): Promise<ActionResponse<StatementForm>> {
-  const session = await getSession();
-  if (!session) {
-    throw new Error("Invalid session");
-  }
-
-  const result = statementFormSchema.safeParse(formData);
-
-  if (!result.success) {
-    const issues = result.error.issues;
-    return { success: false, errors: getErrors<StatementForm>(issues) };
-  }
-
   await dbConnect();
 
-  const statementData = result.data;
+  const dataParseResult = parseFormData(formData, statementFormSchema);
+  if (!dataParseResult.success) {
+    return dataParseResult;
+  }
+
+  const session = await getValidSession();
+
+  const statementData = dataParseResult.data;
   const userId = session.user.id;
 
   const existingStatements = await Statement.find({

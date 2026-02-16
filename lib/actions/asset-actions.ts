@@ -6,7 +6,7 @@ import { Statement } from "../db/models";
 import dbConnect from "../db/mongodb";
 import { ActionResponse } from "../types/action-types";
 import { AssetForm, assetFormSchema } from "../types/asset-types";
-import { getErrors, validateActionInputs } from "./action-utils";
+import { parseFormData, validateActionInputs } from "./action-utils";
 
 const assetNotFound: ActionResponse<AssetForm> = {
   success: false,
@@ -39,10 +39,9 @@ export async function createAsset({
 
   const inputs = validatedInputs.data;
 
-  const dataParseResult = assetFormSchema.safeParse(data);
+  const dataParseResult = parseFormData(data, assetFormSchema);
   if (!dataParseResult.success) {
-    const errors = getErrors<AssetForm>(dataParseResult.error.issues);
-    return { success: false, errors };
+    return dataParseResult;
   }
 
   const session = await getValidSession();
@@ -141,10 +140,9 @@ export async function updateAsset({
 
   const inputs = validatedInputs.data;
 
-  const dataParseResult = assetFormSchema.safeParse(data);
+  const dataParseResult = parseFormData(data, assetFormSchema);
   if (!dataParseResult.success) {
-    const errors = getErrors<AssetForm>(dataParseResult.error.issues);
-    return { success: false, errors };
+    return dataParseResult;
   }
 
   const session = await getValidSession();

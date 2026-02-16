@@ -3,40 +3,20 @@ import { z, ZodObject } from "zod";
 import { $ZodIssue } from "zod/v4/core";
 import {
   ActionInputs,
-  FailedActionResponse,
   FormError,
+  FormValidationResponse,
   InputValidationResponse,
   ValidatedShape,
 } from "../types/action-types";
 import { mongoIdSchema } from "../types/mongo-types";
 
-export function getErrors<T extends FieldValues>(
-  issues: $ZodIssue[]
-): FormError<T>[] {
+function getErrors<T extends FieldValues>(issues: $ZodIssue[]): FormError<T>[] {
   return issues.map((issue) => {
     return {
       path: issue.path.join(".") as FieldPath<T>,
       message: issue.message,
     };
   });
-}
-
-// TODO: Delete
-export function validateId(id: unknown) {
-  const idParseResult = mongoIdSchema.safeParse(id);
-  if (!idParseResult.success) {
-    throw new Error("Invalid ID");
-  }
-  return idParseResult;
-}
-
-// TODO: Delete
-export function validatePath(path: unknown) {
-  const pathParseResult = z.string().safeParse(path);
-  if (!pathParseResult.success) {
-    throw new Error("Invalid path");
-  }
-  return pathParseResult;
 }
 
 function safeParseId(id: unknown) {
@@ -47,8 +27,18 @@ function safeParsePath(path: unknown) {
   return z.string().safeParse(path);
 }
 
-function parseFormData<T>(data: unknown, schema: ZodObject) {
+export function parseFormData<T extends ZodObject>(
+  data: unknown,
+  schema: T
+): FormValidationResponse<z.infer<T>> {
   const parseResult = schema.safeParse(data);
+  if (!parseResult.success) {
+    return {
+      success: false,
+      errors: getErrors<z.infer<T>>(parseResult.error.issues),
+    };
+  }
+  return { success: true, data: parseResult.data };
 }
 
 export function validateActionInputs<U extends ActionInputs>({
