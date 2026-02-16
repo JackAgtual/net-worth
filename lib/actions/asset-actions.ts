@@ -6,7 +6,7 @@ import { Statement } from "../db/models";
 import dbConnect from "../db/mongodb";
 import { ActionResponse } from "../types/action-types";
 import { AssetForm, assetFormSchema } from "../types/asset-types";
-import { getErrors, validateId, validatePath } from "./action-utils";
+import { getErrors, validateActionInputs } from "./action-utils";
 
 const assetNotFound: ActionResponse<AssetForm> = {
   success: false,
@@ -28,8 +28,16 @@ export async function createAsset({
   path: unknown;
 }): Promise<ActionResponse<AssetForm>> {
   await dbConnect();
-  const statementIdParseResult = validateId(statementId);
-  const pathParseResult = validatePath(path);
+  const validatedInputs = validateActionInputs({
+    statementId,
+    path,
+  });
+
+  if (!validatedInputs.success) {
+    return validatedInputs;
+  }
+
+  const inputs = validatedInputs.data;
 
   const dataParseResult = assetFormSchema.safeParse(data);
   if (!dataParseResult.success) {
@@ -41,7 +49,7 @@ export async function createAsset({
 
   const statementDoc = await Statement.findOne({
     userId: session.user.id,
-    _id: statementIdParseResult.data,
+    _id: inputs.statementId,
   });
 
   if (!statementDoc) {
@@ -60,7 +68,7 @@ export async function createAsset({
     };
   }
 
-  revalidatePath(pathParseResult.data);
+  revalidatePath(inputs.path);
   return { success: true };
 }
 
@@ -75,27 +83,36 @@ export async function deleteAsset({
 }): Promise<ActionResponse<AssetForm>> {
   await dbConnect();
 
-  const assetIdParseResult = validateId(assetId);
-  const statementIdParseResult = validateId(statementId);
-  const pathParseResult = validatePath(path);
+  const validatedInputs = validateActionInputs({
+    statementId,
+    entryId: assetId,
+    path,
+  });
+
+  if (!validatedInputs.success) {
+    return validatedInputs;
+  }
+
+  const inputs = validatedInputs.data;
+
   const session = await getValidSession();
 
   const statementDoc = await Statement.findOne({
     userId: session.user.id,
-    _id: statementIdParseResult.data,
+    _id: inputs.statementId,
   });
 
   if (!statementDoc) {
     return statementNotFound;
   }
 
-  const deleted = await statementDoc.deleteAsset(assetIdParseResult.data);
+  const deleted = await statementDoc.deleteAsset(inputs.entryId);
 
   if (!deleted) {
     return assetNotFound;
   }
 
-  revalidatePath(pathParseResult.data);
+  revalidatePath(inputs.path);
   return { success: true };
 }
 
@@ -112,9 +129,17 @@ export async function updateAsset({
 }): Promise<ActionResponse<AssetForm>> {
   await dbConnect();
 
-  const assetIdParseResult = validateId(assetId);
-  const statementIdParseResult = validateId(statementId);
-  const pathParseResult = validatePath(path);
+  const validatedInputs = validateActionInputs({
+    statementId,
+    entryId: assetId,
+    path,
+  });
+
+  if (!validatedInputs.success) {
+    return validatedInputs;
+  }
+
+  const inputs = validatedInputs.data;
 
   const dataParseResult = assetFormSchema.safeParse(data);
   if (!dataParseResult.success) {
@@ -126,7 +151,7 @@ export async function updateAsset({
 
   const statementDoc = await Statement.findOne({
     userId: session.user.id,
-    _id: statementIdParseResult.data,
+    _id: inputs.statementId,
   });
 
   if (!statementDoc) {
@@ -134,7 +159,7 @@ export async function updateAsset({
   }
 
   const assetDoc = await statementDoc.updateAsset(
-    assetIdParseResult.data,
+    inputs.entryId,
     dataParseResult.data
   );
 
@@ -142,6 +167,6 @@ export async function updateAsset({
     return assetNotFound;
   }
 
-  revalidatePath(pathParseResult.data);
+  revalidatePath(inputs.path);
   return { success: true };
 }
