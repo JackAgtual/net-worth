@@ -59,7 +59,7 @@ export function validateActionInputs<U extends ActionInputs>({
   const data = {} as ValidatedShape<U>;
   const errors: FormError<never>[] = [];
 
-  if (entryId) {
+  if (entryId !== undefined) {
     const parseResult = safeParseId(entryId);
     if (parseResult.success) {
       data.entryId = parseResult.data;
@@ -68,7 +68,7 @@ export function validateActionInputs<U extends ActionInputs>({
     }
   }
 
-  if (statementId) {
+  if (statementId !== undefined) {
     const parseResult = safeParseId(statementId);
     if (parseResult.success) {
       data.statementId = parseResult.data;
@@ -77,7 +77,7 @@ export function validateActionInputs<U extends ActionInputs>({
     }
   }
 
-  if (path) {
+  if (path !== undefined) {
     const parseResult = safeParsePath(path);
     if (parseResult.success) {
       data.path = parseResult.data;
@@ -85,5 +85,10 @@ export function validateActionInputs<U extends ActionInputs>({
       errors.push({ path: "root", message: "Invalid path" });
     }
   }
+
+  if (errors.length > 0) {
+    return { success: false, errors };
+  }
+
   return { success: true, data };
 }
