@@ -5,7 +5,7 @@ export function formatAsDollar(amount: number | undefined): string {
   if (amount > 0) {
     return `$${locale}`;
   } else if (amount < 0) {
-    return `($${locale})`;
+    return `($${locale.slice(1)})`;
   }
   return "$-";
 }
