@@ -4,3 +4,9 @@ export type NetWorthChartData = {
   totalAssetAmount: number;
   totalLiabilityAmount: number;
 };
+
+export type AssetGrowthChartData = {
+  year: number;
+  lastYearSalary: number | undefined;
+  lastYearAssetGrowth: number;
+};

@@ -1,4 +1,7 @@
-import { NetWorthChartData } from "../types/chart-data-types";
+import {
+  AssetGrowthChartData,
+  NetWorthChartData,
+} from "../types/chart-data-types";
 import { StatementHydrated } from "../types/statement-types";
 
 export class StatementDataAggregator {
@@ -49,6 +52,7 @@ export class StatementDataAggregator {
     );
 
     const netWorth: NetWorthChartData[] = [];
+    const assetGrowth: AssetGrowthChartData[] = [];
 
     for (const data of allData) {
       const { year } = data;
@@ -58,8 +62,14 @@ export class StatementDataAggregator {
         totalAssetAmount: data.assets,
         totalLiabilityAmount: data.liabilities,
       });
+
+      assetGrowth.push({
+        year,
+        lastYearSalary: data.lastyearSalary,
+        lastYearAssetGrowth: data.lastYearAssetGrowth,
+      });
     }
 
-    return { netWorth };
+    return { netWorth, assetGrowth };
   }
 }

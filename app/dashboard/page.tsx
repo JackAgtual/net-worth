@@ -7,6 +7,7 @@ import { formatAsDollar } from "@/lib/utils/format-utils";
 import Link from "next/link";
 import { NetWorthChart } from "./components/net-worth-chart";
 import { StatementDataAggregator } from "@/lib/utils/statement-data-aggregator";
+import { AssetGrowthChart } from "./components/asset-growth-chart";
 
 export default async function Home() {
   await dbConnect();
@@ -76,6 +77,7 @@ export default async function Home() {
           </div>
         </CardContent>
       </Card>
+      <AssetGrowthChart chartData={plotData.assetGrowth} />
     </>
   );
 }
