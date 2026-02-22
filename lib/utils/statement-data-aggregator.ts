@@ -50,27 +50,16 @@ export class StatementDataAggregator {
 
     const netWorth: NetWorthChartData[] = [];
 
-    // for (const data of allData) {
-    //   const { year } = data;
-    //   netWorth.push({});
-    // }
-
-    // WRONG: Use for loop instead
-    return allData.map((data) => {
+    for (const data of allData) {
       const { year } = data;
-      return {
-        netWorth: {
-          year,
-          netWorth: data.netWorth,
-          totalAssetAmount: data.assets,
-          totalLiabilityAmount: data.liabilities,
-        },
-        assetGrowthVsSalary: {
-          year,
-          lastYearSalary: data.lastyearSalary,
-          lastYearAssetGrowth: data.lastYearAssetGrowth,
-        },
-      };
-    });
+      netWorth.push({
+        year,
+        netWorth: data.netWorth,
+        totalAssetAmount: data.assets,
+        totalLiabilityAmount: data.liabilities,
+      });
+    }
+
+    return { netWorth };
   }
 }

@@ -28,24 +28,6 @@ export default async function Home() {
   const statementDataAggregator = new StatementDataAggregator(allStatements);
   const plotData = await statementDataAggregator.getPlotData();
 
-  const netWorthPlotData = await Promise.all(
-    allStatements.map(async (statement) => {
-      const [netWorth, totalAssetAmount, totalLiabilityAmount] =
-        await Promise.all([
-          statement.getNetWorth(),
-          statement.getTotalAssetAmount(),
-          statement.getTotalLiabilityAmount(),
-        ]);
-
-      return {
-        year: statement.year,
-        netWorth,
-        totalAssetAmount,
-        totalLiabilityAmount,
-      };
-    })
-  );
-
   const mostRecentStatement = allStatements[allStatements.length - 1];
 
   const [netWorth, assets, liabilities] = await Promise.all([
@@ -78,7 +60,7 @@ export default async function Home() {
           </div>
         </CardContent>
       </Card>
-      <NetWorthChart chartData={netWorthPlotData} />
+      <NetWorthChart chartData={plotData.netWorth} />
       <Card>
         <CardHeader>
           <CardTitle>Asset Growth vs. Salary</CardTitle>
