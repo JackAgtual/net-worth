@@ -6,6 +6,7 @@ import dbConnect from "@/lib/db/mongodb";
 import { formatAsDollar } from "@/lib/utils/format-utils";
 import Link from "next/link";
 import { NetWorthChart } from "./components/net-worth-chart";
+import { StatementDataAggregator } from "@/lib/utils/statement-data-aggregator";
 
 export default async function Home() {
   await dbConnect();
@@ -23,6 +24,9 @@ export default async function Home() {
       </>
     );
   }
+
+  const statementDataAggregator = new StatementDataAggregator(allStatements);
+  const plotData = await statementDataAggregator.getPlotData();
 
   const netWorthPlotData = await Promise.all(
     allStatements.map(async (statement) => {

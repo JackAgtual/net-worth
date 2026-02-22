@@ -18,14 +18,10 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { formatAsDollar } from "@/lib/utils/format-utils";
+import { NetWorthChartData } from "@/lib/types/chart-data-types";
 
 type NetWorthChartProps = {
-  chartData: {
-    year: number;
-    netWorth: number;
-    totalAssetAmount: number;
-    totalLiabilityAmount: number;
-  }[];
+  chartData: NetWorthChartData[];
 };
 
 export function NetWorthChart({ chartData }: NetWorthChartProps) {
