@@ -87,7 +87,10 @@ export class StatementDataAggregator {
     const netWorth: NetWorthChartData[] = [];
     const assetGrowth: AssetGrowthChartData[] = [];
     const contributionAmount: ContributionAmountChartData[] = [];
+    const cumulativeContributionAmount: ContributionAmountChartData[] = [];
     const contributionPercentOfSalary: ContributionPercentChartData[] = [];
+
+    const curCumilativeContributions = { total: 0, self: 0, nonSelf: 0 };
 
     for (const data of allData) {
       const { year, contributions } = data;
@@ -118,6 +121,17 @@ export class StatementDataAggregator {
         selfContributionPct: percentOfSalary.self,
         nonSelfContributionPct: percentOfSalary.nonSelf,
       });
+
+      curCumilativeContributions.total += amount.total;
+      curCumilativeContributions.self += amount.self;
+      curCumilativeContributions.nonSelf += amount.nonSelf;
+
+      cumulativeContributionAmount.push({
+        year,
+        totalContributionAmount: curCumilativeContributions.total,
+        selfContributionAmount: curCumilativeContributions.self,
+        nonSelfContributionAmount: curCumilativeContributions.nonSelf,
+      });
     }
 
     return {
@@ -125,6 +139,7 @@ export class StatementDataAggregator {
       assetGrowth,
       contributionAmount,
       contributionPercentOfSalary,
+      cumulativeContributionAmount,
     };
   }
 }

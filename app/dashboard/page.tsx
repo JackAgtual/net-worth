@@ -31,8 +31,6 @@ export default async function Home() {
   const statementDataAggregator = new StatementDataAggregator(allStatements);
   const plotData = await statementDataAggregator.getPlotData();
 
-  console.log(plotData.contributionPercentOfSalary);
-
   const mostRecentStatement = allStatements[allStatements.length - 1];
 
   const [netWorth, assets, liabilities] = await Promise.all([
@@ -87,6 +85,10 @@ export default async function Home() {
       <h2>Contribution percent of salary vs year</h2>
       <ContributionPercentChart
         chartData={plotData.contributionPercentOfSalary}
+      />
+      <h2>Cumulative contribution amount vs year</h2>
+      <ContributionAmountChart
+        chartData={plotData.cumulativeContributionAmount}
       />
     </>
   );
