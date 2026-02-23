@@ -1,8 +1,11 @@
 import {
   AssetGrowthChartData,
+  ContributionAmountChartData,
+  ContributionPercentChartData,
   NetWorthChartData,
 } from "../types/chart-data-types";
 import { StatementHydrated } from "../types/statement-types";
+import { Contributor } from "../types/types";
 
 export class StatementDataAggregator {
   mostRecentStatement: StatementHydrated;
@@ -19,16 +22,34 @@ export class StatementDataAggregator {
   }
 
   async #getAllDataFromStatement(statement: StatementHydrated) {
-    const [netWorth, assets, liabilities, lastYearAssetGrowth] =
-      await Promise.all([
-        // net worth
-        statement.getNetWorth(),
-        statement.getTotalAssetAmount(),
-        statement.getTotalLiabilityAmount(),
+    const [
+      netWorth,
+      assets,
+      liabilities,
+      lastYearAssetGrowth,
+      totalContributions,
+      selfContributions,
+      nonSelfContributions,
+      totalContributionsPctOfSalary,
+      selfContributionsPctOfSalary,
+      nonSelfContributionsPctOfSalary,
+    ] = await Promise.all([
+      // net worth
+      statement.getNetWorth(),
+      statement.getTotalAssetAmount(),
+      statement.getTotalLiabilityAmount(),
 
-        // asset growth
-        statement.getLastYearAssetGrowth(),
-      ]);
+      // asset growth
+      statement.getLastYearAssetGrowth(),
+
+      // contributions
+      statement.getContributionAmountByContributor(Contributor.All),
+      statement.getContributionAmountByContributor(Contributor.Self),
+      statement.getContributionAmountByContributor(Contributor.NonSelf),
+      statement.getContributioPercentOfSalaryByContributor(Contributor.All),
+      statement.getContributioPercentOfSalaryByContributor(Contributor.Self),
+      statement.getContributioPercentOfSalaryByContributor(Contributor.NonSelf),
+    ]);
 
     return {
       year: statement.year,
@@ -37,6 +58,18 @@ export class StatementDataAggregator {
       liabilities,
       lastYearAssetGrowth,
       lastyearSalary: statement.lastYearSalary,
+      contributions: {
+        amount: {
+          total: totalContributions,
+          self: selfContributions,
+          nonSelf: nonSelfContributions,
+        },
+        percentOfSalary: {
+          total: totalContributionsPctOfSalary,
+          self: selfContributionsPctOfSalary,
+          nonSelf: nonSelfContributionsPctOfSalary,
+        },
+      },
     };
   }
 
@@ -53,9 +86,11 @@ export class StatementDataAggregator {
 
     const netWorth: NetWorthChartData[] = [];
     const assetGrowth: AssetGrowthChartData[] = [];
+    const contributionAmount: ContributionAmountChartData[] = [];
+    const contributionPercentOfSalary: ContributionPercentChartData[] = [];
 
     for (const data of allData) {
-      const { year } = data;
+      const { year, contributions } = data;
       netWorth.push({
         year,
         netWorth: data.netWorth,
@@ -68,8 +103,28 @@ export class StatementDataAggregator {
         lastYearSalary: data.lastyearSalary,
         lastYearAssetGrowth: data.lastYearAssetGrowth,
       });
+
+      const { amount, percentOfSalary } = contributions;
+      contributionAmount.push({
+        year,
+        totalContributionAmount: amount.total,
+        selfContributionAmount: amount.self,
+        nonSelfContributionAmount: amount.nonSelf,
+      });
+
+      contributionPercentOfSalary.push({
+        year,
+        totalContributionPct: percentOfSalary.total,
+        selfContributionPct: percentOfSalary.self,
+        nonSelfContributionPct: percentOfSalary.nonSelf,
+      });
     }
 
-    return { netWorth, assetGrowth };
+    return {
+      netWorth,
+      assetGrowth,
+      contributionAmount,
+      contributionPercentOfSalary,
+    };
   }
 }

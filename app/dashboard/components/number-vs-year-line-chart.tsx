@@ -16,15 +16,17 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { formatAsDollar } from "@/lib/utils/format-utils";
+import { formatAsDollar, formatAsPercent } from "@/lib/utils/format-utils";
 
 type DollarVsYearLineChartProps<T> = {
   chartData: T[];
+  yAxisFormat?: "dollar" | "percent";
   children: React.ReactNode;
 };
 
-export function DollarVsYearLineChart<T>({
+export function NumberVsYearLineChart<T>({
   chartData,
+  yAxisFormat = "dollar",
   children,
 }: DollarVsYearLineChartProps<T>) {
   return (
@@ -39,7 +41,13 @@ export function DollarVsYearLineChart<T>({
         }}
       >
         <CartesianGrid vertical={false} />
-        <YAxis tickFormatter={(value) => formatAsDollar(value, true)} />
+        <YAxis
+          tickFormatter={(value) =>
+            yAxisFormat === "dollar"
+              ? formatAsDollar(value, true)
+              : formatAsPercent(value)
+          }
+        />
         <XAxis dataKey="year" tickMargin={8} />
         <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
         <ChartLegend content={<ChartLegendContent />} />

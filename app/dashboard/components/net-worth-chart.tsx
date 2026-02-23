@@ -2,7 +2,7 @@
 
 import CustomLine from "@/components/chart/CustomLine";
 import { NetWorthChartData } from "@/lib/types/chart-data-types";
-import { DollarVsYearLineChart } from "./dollar-vs-year-line-chart";
+import { NumberVsYearLineChart } from "./number-vs-year-line-chart";
 
 type NetWorthChartProps = {
   chartData: NetWorthChartData[];
@@ -10,10 +10,10 @@ type NetWorthChartProps = {
 
 export function NetWorthChart({ chartData }: NetWorthChartProps) {
   return (
-    <DollarVsYearLineChart chartData={chartData}>
+    <NumberVsYearLineChart chartData={chartData}>
       {CustomLine({ dataKey: "netWorth" })}
       {CustomLine({ dataKey: "totalAssetAmount" })}
       {CustomLine({ dataKey: "totalLiabilityAmount" })}
-    </DollarVsYearLineChart>
+    </NumberVsYearLineChart>
   );
 }

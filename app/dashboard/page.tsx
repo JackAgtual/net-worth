@@ -8,6 +8,8 @@ import Link from "next/link";
 import { NetWorthChart } from "./components/net-worth-chart";
 import { StatementDataAggregator } from "@/lib/utils/statement-data-aggregator";
 import { AssetGrowthChart } from "./components/asset-growth-chart";
+import { ContributionAmountChart } from "./components/contribution-amount-chart";
+import { ContributionPercentChart } from "./components/contribution-percent-of-salary-chart";
 
 export default async function Home() {
   await dbConnect();
@@ -28,6 +30,8 @@ export default async function Home() {
 
   const statementDataAggregator = new StatementDataAggregator(allStatements);
   const plotData = await statementDataAggregator.getPlotData();
+
+  console.log(plotData.contributionPercentOfSalary);
 
   const mostRecentStatement = allStatements[allStatements.length - 1];
 
@@ -78,6 +82,12 @@ export default async function Home() {
         </CardContent>
       </Card>
       <AssetGrowthChart chartData={plotData.assetGrowth} />
+      <h2>Contribution amount vs year</h2>
+      <ContributionAmountChart chartData={plotData.contributionAmount} />
+      <h2>Contribution percent of salary vs year</h2>
+      <ContributionPercentChart
+        chartData={plotData.contributionPercentOfSalary}
+      />
     </>
   );
 }
