@@ -1,24 +1,41 @@
-import { isPlainObject } from "lodash";
+type ResolvedObject<T> = {
+  [K in keyof T]: T[K] extends Promise<infer U>
+    ? U
+    : T[K] extends object
+      ? ResolvedObject<T[K]>
+      : T[K];
+};
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return isPlainObject(value);
+function isPromise(val: unknown): val is Promise<any> {
+  return val instanceof Promise;
 }
 
-export function deepObjectEntries(
-  obj: Record<string, unknown>,
-  path: string = ""
-): [string, unknown][] {
-  const deepEntries: [string, unknown][] = [];
-  const entries = Object.entries(obj);
+function isObject(val: unknown) {
+  return val !== null && typeof val === "object" && !Array.isArray(val);
+}
 
-  for (const [key, val] of entries) {
-    const curPath = path ? `${path}.${key}` : key;
-    if (isRecord(val)) {
-      deepEntries.push(...deepObjectEntries(val, curPath));
-    } else {
-      deepEntries.push([curPath, val]);
-    }
-  }
+export async function deepResolveObject<T extends Record<string, any>>(
+  obj: T
+): Promise<ResolvedObject<T>> {
+  const keys = Object.keys(obj) as Array<keyof T>;
 
-  return deepEntries;
+  const values = await Promise.all(
+    keys.map(async (key) => {
+      const value = obj[key];
+
+      if (isPromise(value)) {
+        return await value;
+      }
+
+      if (isObject(value)) {
+        return await deepResolveObject(value);
+      }
+
+      return value;
+    })
+  );
+
+  return Object.fromEntries(
+    keys.map((key, i) => [key, values[i]])
+  ) as ResolvedObject<T>;
 }
