@@ -1,22 +1,9 @@
 "use client";
 
-import {
-  CartesianGrid,
-  LineChart,
-  ReferenceLine,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { LineChart } from "recharts";
 
 import { chartConfig } from "@/components/chart/chart-config";
-import {
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { formatAsDollar, formatAsPercent } from "@/lib/utils/format-utils";
+import { ChartContainer } from "@/components/ui/chart";
 import { CommonChartSetup } from "./common-chart-setup";
 
 type DollarVsYearLineChartProps<T> = {
@@ -41,7 +28,7 @@ export function NumberVsYearLineChart<T>({
           bottom: 12,
         }}
       >
-        {CommonChartSetup({ yAxisFormat })}
+        {CommonChartSetup({ yAxisFormat, xAxisReferenceLine: true })}
         {children}
       </LineChart>
     </ChartContainer>
