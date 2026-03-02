@@ -1,26 +1,21 @@
-export type NetWorthChartData = {
-  year: number;
+import { Contributor } from "./types";
+
+type Year = { year: number };
+
+export type NetWorthChartData = Year & {
   netWorth: number;
   totalAssetAmount: number;
   totalLiabilityAmount: number;
 };
 
-export type AssetGrowthChartData = {
-  year: number;
+export type AssetGrowthChartData = Year & {
   lastYearSalary: number | undefined;
   lastYearAssetGrowth: number;
 };
 
-export type ContributionAmountChartData = {
-  year: number;
-  totalContributionAmount: number;
-  selfContributionAmount: number;
-  nonSelfContributionAmount: number;
-};
+export type ContributionValues<T = number> = Record<Contributor, T>;
 
-export type ContributionPercentChartData = {
-  year: number;
-  totalContributionPct: number | undefined;
-  selfContributionPct: number | undefined;
-  nonSelfContributionPct: number | undefined;
-};
+export type ContributionAmountChartData = Year & ContributionValues;
+
+export type ContributionPercentChartData = Year &
+  ContributionValues<number | undefined>;

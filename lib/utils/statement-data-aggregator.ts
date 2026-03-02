@@ -2,14 +2,18 @@ import {
   AssetGrowthChartData,
   ContributionAmountChartData,
   ContributionPercentChartData,
+  ContributionValues,
   NetWorthChartData,
 } from "../types/chart-data-types";
 import { StatementHydrated } from "../types/statement-types";
 import { Contributor } from "../types/types";
+import { deepResolveObject } from "./object-utils";
 
 export class StatementDataAggregator {
   mostRecentStatement: StatementHydrated;
   statements: StatementHydrated[];
+
+  contributors = Object.values(Contributor);
 
   constructor(statements: StatementHydrated[]) {
     if (statements.length === 0) {
@@ -18,58 +22,37 @@ export class StatementDataAggregator {
       );
     }
     this.statements = statements;
-    this.mostRecentStatement = statements[-1];
+    this.mostRecentStatement = statements[statements.length - 1];
   }
 
   async #getAllDataFromStatement(statement: StatementHydrated) {
-    const [
-      netWorth,
-      assets,
-      liabilities,
-      lastYearAssetGrowth,
-      totalContributions,
-      selfContributions,
-      nonSelfContributions,
-      totalContributionsPctOfSalary,
-      selfContributionsPctOfSalary,
-      nonSelfContributionsPctOfSalary,
-    ] = await Promise.all([
-      // net worth
-      statement.getNetWorth(),
-      statement.getTotalAssetAmount(),
-      statement.getTotalLiabilityAmount(),
+    const mapContributions = <T>(fn: (c: Contributor) => T) => {
+      return Object.fromEntries(
+        this.contributors.map((contributor) => [contributor, fn(contributor)])
+      ) as Record<Contributor, T>;
+    };
 
-      // asset growth
-      statement.getLastYearAssetGrowth(),
+    const contributions = {
+      amount: mapContributions((c) =>
+        statement.getContributionAmountByContributor(c)
+      ),
+      percentOfSalary: mapContributions((c) =>
+        statement.getContributioPercentOfSalaryByContributor(c)
+      ),
+    };
 
-      // contributions
-      statement.getContributionAmountByContributor(Contributor.All),
-      statement.getContributionAmountByContributor(Contributor.Self),
-      statement.getContributionAmountByContributor(Contributor.NonSelf),
-      statement.getContributioPercentOfSalaryByContributor(Contributor.All),
-      statement.getContributioPercentOfSalaryByContributor(Contributor.Self),
-      statement.getContributioPercentOfSalaryByContributor(Contributor.NonSelf),
-    ]);
+    const promises = {
+      netWorth: statement.getNetWorth(),
+      assets: statement.getTotalAssetAmount(),
+      liabilities: statement.getTotalLiabilityAmount(),
+      lastYearAssetGrowth: statement.getLastYearAssetGrowth(),
+      contributions,
+    };
 
     return {
       year: statement.year,
-      netWorth,
-      assets,
-      liabilities,
-      lastYearAssetGrowth,
-      lastyearSalary: statement.lastYearSalary,
-      contributions: {
-        amount: {
-          total: totalContributions,
-          self: selfContributions,
-          nonSelf: nonSelfContributions,
-        },
-        percentOfSalary: {
-          total: totalContributionsPctOfSalary,
-          self: selfContributionsPctOfSalary,
-          nonSelf: nonSelfContributionsPctOfSalary,
-        },
-      },
+      lastYearSalary: statement.lastYearSalary,
+      ...(await deepResolveObject(promises)),
     };
   }
 
@@ -89,11 +72,14 @@ export class StatementDataAggregator {
     const contributionAmount: ContributionAmountChartData[] = [];
     const cumulativeContributionAmount: ContributionAmountChartData[] = [];
     const contributionPercentOfSalary: ContributionPercentChartData[] = [];
-
-    const curCumilativeContributions = { total: 0, self: 0, nonSelf: 0 };
+    const curCumilativeContributions: ContributionValues =
+      this.contributors.reduce((acc, cur) => {
+        acc[cur] = 0;
+        return acc;
+      }, {} as ContributionValues);
 
     for (const data of allData) {
-      const { year, contributions } = data;
+      const { year, lastYearSalary } = data;
       netWorth.push({
         year,
         netWorth: data.netWorth,
@@ -103,34 +89,28 @@ export class StatementDataAggregator {
 
       assetGrowth.push({
         year,
-        lastYearSalary: data.lastyearSalary,
+        lastYearSalary,
         lastYearAssetGrowth: data.lastYearAssetGrowth,
       });
 
-      const { amount, percentOfSalary } = contributions;
+      const { amount, percentOfSalary } = data.contributions;
       contributionAmount.push({
         year,
-        totalContributionAmount: amount.total,
-        selfContributionAmount: amount.self,
-        nonSelfContributionAmount: amount.nonSelf,
+        ...amount,
       });
 
       contributionPercentOfSalary.push({
         year,
-        totalContributionPct: percentOfSalary.total,
-        selfContributionPct: percentOfSalary.self,
-        nonSelfContributionPct: percentOfSalary.nonSelf,
+        ...percentOfSalary,
       });
 
-      curCumilativeContributions.total += amount.total;
-      curCumilativeContributions.self += amount.self;
-      curCumilativeContributions.nonSelf += amount.nonSelf;
+      this.contributors.forEach((contributor) => {
+        curCumilativeContributions[contributor] += amount[contributor];
+      });
 
       cumulativeContributionAmount.push({
         year,
-        totalContributionAmount: curCumilativeContributions.total,
-        selfContributionAmount: curCumilativeContributions.self,
-        nonSelfContributionAmount: curCumilativeContributions.nonSelf,
+        ...curCumilativeContributions,
       });
     }
 

@@ -8,8 +8,7 @@ import Link from "next/link";
 import { NetWorthChart } from "./components/net-worth-chart";
 import { StatementDataAggregator } from "@/lib/utils/statement-data-aggregator";
 import { AssetGrowthChart } from "./components/asset-growth-chart";
-import { ContributionAmountChart } from "./components/contribution-amount-chart";
-import { ContributionPercentChart } from "./components/contribution-percent-of-salary-chart";
+import { ContributionChart } from "./components/contribution-chart";
 
 export default async function Home() {
   await dbConnect();
@@ -64,6 +63,7 @@ export default async function Home() {
         </CardContent>
       </Card>
       <NetWorthChart chartData={plotData.netWorth} />
+      <h2>Asset category percentage vs year</h2>
       <Card>
         <CardHeader>
           <CardTitle>Asset Growth vs. Salary</CardTitle>
@@ -81,15 +81,14 @@ export default async function Home() {
       </Card>
       <AssetGrowthChart chartData={plotData.assetGrowth} />
       <h2>Contribution amount vs year</h2>
-      <ContributionAmountChart chartData={plotData.contributionAmount} />
+      <ContributionChart chartData={plotData.contributionAmount} />
       <h2>Contribution percent of salary vs year</h2>
-      <ContributionPercentChart
+      <ContributionChart
         chartData={plotData.contributionPercentOfSalary}
+        yAxisFormat="percent"
       />
       <h2>Cumulative contribution amount vs year</h2>
-      <ContributionAmountChart
-        chartData={plotData.cumulativeContributionAmount}
-      />
+      <ContributionChart chartData={plotData.cumulativeContributionAmount} />
     </>
   );
 }

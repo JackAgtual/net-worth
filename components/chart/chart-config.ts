@@ -5,6 +5,7 @@ import {
   NetWorthChartData,
 } from "@/lib/types/chart-data-types";
 import { ChartConfig } from "../ui/chart";
+import { Contributor } from "@/lib/types/types";
 
 type ChartConfigItem = ChartConfig[string];
 type StrictChartConfig<T> = {
@@ -37,41 +38,26 @@ const assetGrowthChartConfig = {
   },
 } satisfies StrictChartConfig<AssetGrowthChartData>;
 
-const contributionAmountChartConfig = {
-  totalContributionAmount: {
-    label: "Total contributions",
+// shared between amount, percent, and cumulative contributions
+const contributionChartConfig = {
+  [Contributor.All]: {
+    label: "Total",
     color: "black",
   },
-  selfContributionAmount: {
-    label: "Self contributions",
+  [Contributor.Self]: {
+    label: "Self",
     color: "blue",
   },
-  nonSelfContributionAmount: {
-    label: "Non-self contributions",
+  [Contributor.NonSelf]: {
+    label: "Non-self",
     color: "orange",
   },
 } satisfies StrictChartConfig<ContributionAmountChartData>;
 
-const contributionPercentOfSalaryChartConfig = {
-  totalContributionPct: {
-    label: "Total contributions percent of salary",
-    color: "black",
-  },
-  selfContributionPct: {
-    label: "Self contributions percent of salary",
-    color: "blue",
-  },
-  nonSelfContributionPct: {
-    label: "Non-self contributions percent of salary",
-    color: "orange",
-  },
-} satisfies StrictChartConfig<ContributionPercentChartData>;
-
 export const chartConfig = {
   ...netWorthChartConfig,
   ...assetGrowthChartConfig,
-  ...contributionAmountChartConfig,
-  ...contributionPercentOfSalaryChartConfig,
+  ...contributionChartConfig,
 } satisfies ChartConfig;
 
 export type DataKey = keyof typeof chartConfig;
