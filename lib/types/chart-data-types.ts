@@ -1,4 +1,4 @@
-import { Contributor } from "./types";
+import { Category, Contributor } from "./types";
 
 type Year = { year: number };
 
@@ -19,3 +19,5 @@ export type ContributionAmountChartData = Year & ContributionValues;
 
 export type ContributionPercentChartData = Year &
   ContributionValues<number | undefined>;
+
+export type CategoryChartData = Year & Record<Category, number>;

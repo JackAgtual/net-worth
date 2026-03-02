@@ -1,12 +1,13 @@
 import {
   AssetGrowthChartData,
+  CategoryChartData,
   ContributionAmountChartData,
   ContributionPercentChartData,
   ContributionValues,
   NetWorthChartData,
 } from "../types/chart-data-types";
 import { StatementHydrated } from "../types/statement-types";
-import { Contributor } from "../types/types";
+import { Category, Contributor } from "../types/types";
 import { deepResolveObject } from "./object-utils";
 
 export class StatementDataAggregator {
@@ -41,11 +42,18 @@ export class StatementDataAggregator {
       ),
     };
 
+    const categoryPercentagePromises = Object.fromEntries(
+      Object.values(Category).map((category) => {
+        return [category, statement.getPercentOfAssetsByCategory(category)];
+      })
+    ) as Record<Category, Promise<number>>;
+
     const promises = {
       netWorth: statement.getNetWorth(),
       assets: statement.getTotalAssetAmount(),
       liabilities: statement.getTotalLiabilityAmount(),
       lastYearAssetGrowth: statement.getLastYearAssetGrowth(),
+      categoryPercentage: categoryPercentagePromises,
       contributions,
     };
 
@@ -69,6 +77,7 @@ export class StatementDataAggregator {
 
     const netWorth: NetWorthChartData[] = [];
     const assetGrowth: AssetGrowthChartData[] = [];
+    const categoryPercentage: CategoryChartData[] = [];
     const contributionAmount: ContributionAmountChartData[] = [];
     const cumulativeContributionAmount: ContributionAmountChartData[] = [];
     const contributionPercentOfSalary: ContributionPercentChartData[] = [];
@@ -91,6 +100,11 @@ export class StatementDataAggregator {
         year,
         lastYearSalary,
         lastYearAssetGrowth: data.lastYearAssetGrowth,
+      });
+
+      categoryPercentage.push({
+        year,
+        ...data.categoryPercentage,
       });
 
       const { amount, percentOfSalary } = data.contributions;
@@ -117,6 +131,7 @@ export class StatementDataAggregator {
     return {
       netWorth,
       assetGrowth,
+      categoryPercentage,
       contributionAmount,
       contributionPercentOfSalary,
       cumulativeContributionAmount,

@@ -9,6 +9,7 @@ import { NetWorthChart } from "./components/net-worth-chart";
 import { StatementDataAggregator } from "@/lib/utils/statement-data-aggregator";
 import { AssetGrowthChart } from "./components/asset-growth-chart";
 import { ContributionChart } from "./components/contribution-chart";
+import { CategoryPercentageChart } from "./components/category-percentage-cahrt";
 
 export default async function Home() {
   await dbConnect();
@@ -63,6 +64,8 @@ export default async function Home() {
         </CardContent>
       </Card>
       <NetWorthChart chartData={plotData.netWorth} />
+      <h2>Category breakdown</h2>
+      <CategoryPercentageChart chartData={plotData.categoryPercentage} />
       <h2>Asset category percentage vs year</h2>
       <Card>
         <CardHeader>

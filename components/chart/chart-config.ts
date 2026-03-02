@@ -1,11 +1,12 @@
 import {
   AssetGrowthChartData,
+  CategoryChartData,
   ContributionAmountChartData,
   ContributionPercentChartData,
   NetWorthChartData,
 } from "@/lib/types/chart-data-types";
 import { ChartConfig } from "../ui/chart";
-import { Contributor } from "@/lib/types/types";
+import { Category, Contributor } from "@/lib/types/types";
 
 type ChartConfigItem = ChartConfig[string];
 type StrictChartConfig<T> = {
@@ -54,10 +55,34 @@ const contributionChartConfig = {
   },
 } satisfies StrictChartConfig<ContributionAmountChartData>;
 
+const categoryChartConfig = {
+  [Category.AfterTax]: {
+    color: "#1D4ED8",
+    label: Category.AfterTax,
+  },
+  [Category.Cash]: {
+    color: "green",
+    label: Category.Cash,
+  },
+  [Category.Property]: {
+    color: "gray",
+    label: Category.Property,
+  },
+  [Category.TaxDeferred]: {
+    color: "#F59E0B",
+    label: Category.TaxDeferred,
+  },
+  [Category.TaxFree]: {
+    color: "#8B5CF6",
+    label: Category.TaxFree,
+  },
+} satisfies StrictChartConfig<CategoryChartData>;
+
 export const chartConfig = {
   ...netWorthChartConfig,
   ...assetGrowthChartConfig,
   ...contributionChartConfig,
+  ...categoryChartConfig,
 } satisfies ChartConfig;
 
 export type DataKey = keyof typeof chartConfig;
