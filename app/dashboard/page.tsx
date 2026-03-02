@@ -4,12 +4,13 @@ import { checkSession } from "@/lib/auth/auth-utils";
 import { Statement } from "@/lib/db/models";
 import dbConnect from "@/lib/db/mongodb";
 import { formatAsDollar } from "@/lib/utils/format-utils";
-import Link from "next/link";
-import { NetWorthChart } from "./components/net-worth-chart";
 import { StatementDataAggregator } from "@/lib/utils/statement-data-aggregator";
+import Link from "next/link";
 import { AssetGrowthChart } from "./components/asset-growth-chart";
-import { ContributionChart } from "./components/contribution-chart";
 import { CategoryPercentageChart } from "./components/category-percentage-chart";
+import ChartCard from "./components/chart-card";
+import { ContributionChart } from "./components/contribution-chart";
+import { NetWorthChart } from "./components/net-worth-chart";
 
 export default async function Home() {
   await dbConnect();
@@ -63,10 +64,12 @@ export default async function Home() {
           </div>
         </CardContent>
       </Card>
-      <NetWorthChart chartData={plotData.netWorth} />
-      <h2>Category breakdown</h2>
-      <CategoryPercentageChart chartData={plotData.categoryPercentage} />
-      <h2>Asset category percentage vs year</h2>
+      <ChartCard title="Net Worth vs. Time">
+        <NetWorthChart chartData={plotData.netWorth} />
+      </ChartCard>
+      <ChartCard title="Asset Category vs. Time">
+        <CategoryPercentageChart chartData={plotData.categoryPercentage} />
+      </ChartCard>
       <Card>
         <CardHeader>
           <CardTitle>Asset Growth vs. Salary</CardTitle>
@@ -82,16 +85,21 @@ export default async function Home() {
           </div>
         </CardContent>
       </Card>
-      <AssetGrowthChart chartData={plotData.assetGrowth} />
-      <h2>Contribution amount vs year</h2>
-      <ContributionChart chartData={plotData.contributionAmount} />
-      <h2>Contribution percent of salary vs year</h2>
-      <ContributionChart
-        chartData={plotData.contributionPercentOfSalary}
-        yAxisFormat="percent"
-      />
-      <h2>Cumulative contribution amount vs year</h2>
-      <ContributionChart chartData={plotData.cumulativeContributionAmount} />
+      <ChartCard title="Asset Growth & Salary vs. Time">
+        <AssetGrowthChart chartData={plotData.assetGrowth} />
+      </ChartCard>
+      <ChartCard title="Contribution Amount vs. Time">
+        <ContributionChart chartData={plotData.contributionAmount} />
+      </ChartCard>
+      <ChartCard title="Contribution Percent of Salary vs. Time">
+        <ContributionChart
+          chartData={plotData.contributionPercentOfSalary}
+          yAxisFormat="percent"
+        />
+      </ChartCard>
+      <ChartCard title="Cumulative Contribution Amount vs. Time">
+        <ContributionChart chartData={plotData.cumulativeContributionAmount} />
+      </ChartCard>
     </>
   );
 }
