@@ -9,7 +9,7 @@ import { NetWorthChart } from "./components/net-worth-chart";
 import { StatementDataAggregator } from "@/lib/utils/statement-data-aggregator";
 import { AssetGrowthChart } from "./components/asset-growth-chart";
 import { ContributionChart } from "./components/contribution-chart";
-import { CategoryPercentageChart } from "./components/category-percentage-cahrt";
+import { CategoryPercentageChart } from "./components/category-percentage-chart";
 
 export default async function Home() {
   await dbConnect();

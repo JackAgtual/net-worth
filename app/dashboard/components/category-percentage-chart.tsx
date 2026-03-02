@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/chart";
 import { CategoryChartData } from "@/lib/types/chart-data-types";
 import { Category } from "@/lib/types/types";
-import { formatAsDollar, formatAsPercent } from "@/lib/utils/format-utils";
+import { formatAsPercent } from "@/lib/utils/format-utils";
 import {
   Area,
   AreaChart,
@@ -19,10 +19,10 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { CommonChartSetup } from "./common-chart-setup";
 
 type ContributionChartProps = {
   chartData: CategoryChartData[];
-  yAxisFormat?: "dollar" | "percent";
 };
 
 export function CategoryPercentageChart({ chartData }: ContributionChartProps) {
@@ -37,12 +37,10 @@ export function CategoryPercentageChart({ chartData }: ContributionChartProps) {
           bottom: 12,
         }}
       >
-        <CartesianGrid vertical={false} />
-        <YAxis tickFormatter={(value) => formatAsPercent(value)} />
-        <XAxis dataKey="year" tickMargin={8} />
-        <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-        <ChartLegend content={<ChartLegendContent />} />
-        <ReferenceLine y={0} stroke="black" />
+        {CommonChartSetup({
+          yAxisFormat: "percent",
+          xAxisReferenceLine: false,
+        })}
         {Object.values(Category).map((category) => {
           return (
             <Area

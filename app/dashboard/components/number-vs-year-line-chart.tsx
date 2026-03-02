@@ -17,6 +17,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { formatAsDollar, formatAsPercent } from "@/lib/utils/format-utils";
+import { CommonChartSetup } from "./common-chart-setup";
 
 type DollarVsYearLineChartProps<T> = {
   chartData: T[];
@@ -40,18 +41,7 @@ export function NumberVsYearLineChart<T>({
           bottom: 12,
         }}
       >
-        <CartesianGrid vertical={false} />
-        <YAxis
-          tickFormatter={(value) =>
-            yAxisFormat === "dollar"
-              ? formatAsDollar(value, true)
-              : formatAsPercent(value)
-          }
-        />
-        <XAxis dataKey="year" tickMargin={8} />
-        <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-        <ChartLegend content={<ChartLegendContent />} />
-        <ReferenceLine y={0} stroke="black" />
+        {CommonChartSetup({ yAxisFormat })}
         {children}
       </LineChart>
     </ChartContainer>
