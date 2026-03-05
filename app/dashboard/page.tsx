@@ -31,14 +31,7 @@ export default async function Home() {
 
   const statementDataAggregator = new StatementDataAggregator(allStatements);
   const plotData = await statementDataAggregator.getPlotData();
-
-  const mostRecentStatement = allStatements[allStatements.length - 1];
-
-  const [netWorth, assets, liabilities] = await Promise.all([
-    mostRecentStatement.getNetWorth(),
-    mostRecentStatement.getTotalAssetAmount(),
-    mostRecentStatement.getTotalLiabilityAmount(),
-  ]);
+  const mostRecent = await statementDataAggregator.getMostRecentStatementData();
 
   return (
     <>
@@ -47,7 +40,7 @@ export default async function Home() {
       <form action={signOut}>
         <button type="submit">Sign out</button>
       </form>
-      <p>Most recent statement: {mostRecentStatement?.year}</p>
+      <p>Most recent statement: {mostRecent?.year}</p>
 
       <Card>
         <CardHeader>
@@ -56,11 +49,11 @@ export default async function Home() {
         <CardContent>
           <div className="grid grid-cols-2 w-fit gap-x-2">
             <p>Net worth:</p>
-            <p>{formatAsDollar(netWorth)}</p>
+            <p>{formatAsDollar(mostRecent.netWorth)}</p>
             <p>Assets:</p>
-            <p>{formatAsDollar(assets)}</p>
+            <p>{formatAsDollar(mostRecent.assets)}</p>
             <p>Liabilities:</p>
-            <p>{formatAsDollar(liabilities)}</p>
+            <p>{formatAsDollar(mostRecent.liabilities)}</p>
           </div>
         </CardContent>
       </Card>
@@ -77,11 +70,9 @@ export default async function Home() {
         <CardContent>
           <div className="grid grid-cols-2 w-fit gap-x-2">
             <p>Salary</p>
-            <p>{formatAsDollar(netWorth)}</p>
+            <p>{formatAsDollar(mostRecent.lastYearSalary)}</p>
             <p>Asset growth:</p>
-            <p>{formatAsDollar(assets)}</p>
-            <p>Liabilities:</p>
-            <p>{formatAsDollar(liabilities)}</p>
+            <p>{formatAsDollar(mostRecent.lastYearAssetGrowth)}</p>
           </div>
         </CardContent>
       </Card>
