@@ -12,17 +12,20 @@ import { redirect } from "next/navigation";
 import { auth } from "../auth/auth";
 import { ActionResponse } from "../types/action-types";
 import { parseFormData } from "./action-utils";
+import dbConnect from "../db/mongodb";
 
 export async function createAccount(
   formData: unknown
 ): Promise<ActionResponse<CreateAccount>> {
   const result = parseFormData(formData, createAccountSchema);
-
   if (!result.success) {
     return result;
   }
 
   const { name, email, password } = result.data;
+
+  await dbConnect();
+  console.log("connected to db");
 
   try {
     await auth.api.signUpEmail({
@@ -30,6 +33,7 @@ export async function createAccount(
     });
     return { success: true };
   } catch (err) {
+    console.error(err);
     if (err instanceof APIError) {
       console.log(err);
       return {
