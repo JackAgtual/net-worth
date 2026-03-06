@@ -137,4 +137,13 @@ export class StatementDataAggregator {
       cumulativeContributionAmount,
     };
   }
+
+  async getStatementOverviewData() {
+    return Promise.all(
+      this.statements.map(async (statement) => {
+        const netWorth = await statement.getNetWorth();
+        return { year: statement.year, netWorth };
+      })
+    );
+  }
 }

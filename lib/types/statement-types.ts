@@ -85,3 +85,8 @@ export type StatementHydrated = HydratedDocument<
   StatementDoc,
   StatementMethods
 >;
+
+export type StatementOverview = {
+  year: number;
+  netWorth: number;
+};
