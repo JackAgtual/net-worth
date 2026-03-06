@@ -1,3 +1,4 @@
+import NoStatements from "@/components/misc/no-statements";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { signOut } from "@/lib/actions/auth-actions";
 import { checkSession } from "@/lib/auth/auth-utils";
@@ -21,12 +22,7 @@ export default async function Home() {
   }).sort({ year: 1 });
 
   if (allStatements.length === 0) {
-    return (
-      <>
-        <p>You don't have any statements</p>
-        <Link href={"/statements/create"}>Create your first statement</Link>
-      </>
-    );
+    return <NoStatements />;
   }
 
   const statementDataAggregator = new StatementDataAggregator(allStatements);

@@ -1,3 +1,4 @@
+import NoStatements from "@/components/misc/no-statements";
 import { getSession } from "@/lib/auth/auth-utils";
 import { Statement } from "@/lib/db/models";
 import { StatementDataAggregator } from "@/lib/utils/statement-data-aggregator";
@@ -17,12 +18,7 @@ export default async function Page() {
   }).sort({ year: -1 });
 
   if (allStatements.length === 0) {
-    return (
-      <>
-        <p>You don't have any statements</p>
-        <Link href={"/statements/create"}>Create your first statement</Link>
-      </>
-    );
+    return <NoStatements />;
   }
 
   const statementDataAggregator = new StatementDataAggregator(allStatements);
