@@ -12,6 +12,13 @@ if (!MONGODB_URI) {
 const client = new MongoClient(MONGODB_URI);
 const db = client.db();
 
+export const seedAuth = betterAuth({
+  database: mongodbAdapter(db, { client }),
+  emailAndPassword: {
+    enabled: true,
+  },
+});
+
 export const auth = betterAuth({
   database: mongodbAdapter(db, { client }),
   emailAndPassword: {
