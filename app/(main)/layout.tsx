@@ -1,11 +1,8 @@
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { signOut } from "@/lib/actions/auth-actions";
 import { SidebarData } from "@/lib/types/sidebar-types";
 import AppSidebar from "./components/app-sidebar";
-import { signOut } from "@/lib/actions/auth-actions";
+import MobileSidebarTrigger from "./components/mobile-sidebar-trigger";
 
 const sidebarData: SidebarData[] = [
   {
@@ -37,9 +34,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar data={sidebarData} />
-      {/* TODO: Fix trigger layout/positioning */}
-      <SidebarTrigger />
-      <SidebarInset>{children}</SidebarInset>
+      <SidebarInset>
+        <MobileSidebarTrigger />
+        {children}
+      </SidebarInset>
     </SidebarProvider>
   );
 }
