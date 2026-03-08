@@ -1,99 +1,20 @@
-"use client";
-
-import DollarInput from "@/components/form/DollarInput";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { createStatement } from "@/lib/actions/statement-actions";
-import { authClient } from "@/lib/auth/auth-client";
-import {
-  StatementForm,
-  statementFormSchema,
-} from "@/lib/types/statement-types";
-import { setFormErrors } from "@/lib/utils/form-utils";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { getSession } from "@/lib/auth/auth-utils";
 import { redirect } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
-import AssetsForm from "./components/assets-form";
-import LiabilitiesForm from "./components/liabilities-form";
+import StatementForm from "./components/statement-form";
 
-export default function Page() {
-  const { data: session, isPending } = authClient.useSession();
+export default async function Page() {
+  const session = await getSession();
 
-  const {
-    control,
-    handleSubmit,
-    setError,
-    formState: { errors },
-  } = useForm<StatementForm>({
-    resolver: zodResolver(statementFormSchema),
-  });
-
-  if (isPending) {
-    return <p>Loading</p>;
-  }
   if (!session) {
     redirect("/login");
   }
-
-  const onSubmit = async (data: StatementForm) => {
-    const response = await createStatement(data);
-
-    if (response.success) {
-      redirect(`/statements/${data.year}`);
-    }
-    setFormErrors(response.errors, setError);
-  };
 
   return (
     <Card>
       <CardHeader>Add a statement</CardHeader>
       <CardContent>
-        <form
-          className="flex-col"
-          onSubmit={handleSubmit(onSubmit, (err) => {
-            console.error(err);
-          })}
-        >
-          <Controller
-            name="year"
-            control={control}
-            render={({ field, fieldState }) => (
-              <Field>
-                <FieldLabel>Year</FieldLabel>
-                <Input
-                  {...field}
-                  id="year"
-                  aria-invalid={fieldState.invalid}
-                  placeholder="2023"
-                  type="text"
-                  onChange={(e) => {
-                    const val = e.target.value.replace(/\D/g, "");
-                    field.onChange(val === "" ? undefined : Number(val));
-                  }}
-                  value={field.value ?? ""}
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-          <DollarInput
-            control={control}
-            label="Last year salary"
-            name="lastYearSalary"
-            placeholder="70,000"
-          />
-          <AssetsForm control={control} />
-          <LiabilitiesForm control={control} />
-
-          <Button type="submit">Create</Button>
-          {errors.root && (
-            <FieldError errors={[{ message: errors.root.message }]} />
-          )}
-        </form>
+        <StatementForm />
       </CardContent>
     </Card>
   );
