@@ -1,10 +1,10 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { checkSession } from "@/lib/auth/auth-utils";
 import { getStatementFormPrefillData } from "@/lib/utils/form-utils-server";
 import { SearchParams } from "next/dist/server/request/search-params";
 import { z } from "zod";
 import ChooseMode from "./components/choose-mode";
 import StatementForm from "./components/statement-form";
+import StatementFormCard from "./components/statement-form-card";
 
 export default async function Page({
   searchParams,
@@ -21,22 +21,16 @@ export default async function Page({
 
   if (mode === "blank")
     return (
-      <Card>
-        <CardHeader>Add a statement</CardHeader>
-        <CardContent>
-          <StatementForm />
-        </CardContent>
-      </Card>
+      <StatementFormCard>
+        <StatementForm />
+      </StatementFormCard>
     );
 
   const yearInt = z.coerce.number().int().parse(year);
   const defaultVals = await getStatementFormPrefillData(yearInt);
   return (
-    <Card>
-      <CardHeader>Add a statement</CardHeader>
-      <CardContent>
-        <StatementForm defaultValues={defaultVals} />
-      </CardContent>
-    </Card>
+    <StatementFormCard>
+      <StatementForm defaultValues={defaultVals} />
+    </StatementFormCard>
   );
 }
