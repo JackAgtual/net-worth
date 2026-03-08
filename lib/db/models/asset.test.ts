@@ -1,6 +1,5 @@
 import { Asset } from "./asset";
-
-const userId = process.env.TEST_USER_ID as string;
+import { userId } from "./test-fixtures";
 
 describe("Asset", () => {
   let asset: InstanceType<typeof Asset>;

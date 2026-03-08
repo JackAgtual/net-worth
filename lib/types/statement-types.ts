@@ -66,12 +66,14 @@ export type StatementMethods = {
   getTotalRetirementAssets(): Promise<number>;
   getRetirementAssetsByCategory(category: Category): Promise<number>;
   addLiability(liability: LiabilityDoc): Promise<LiabilityHydrated>;
+  addLiabilities(liabilities: LiabilityDoc[]): Promise<void>;
   deleteLiability(id: Types.ObjectId | string): Promise<boolean>;
   updateLiability(
     id: Types.ObjectId | string,
     changes: LiabilityUpdate
   ): Promise<LiabilityHydrated | null>;
   addAsset(asset: AssetDoc): Promise<AssetHydrated>;
+  addAssets(assets: AssetDoc[]): Promise<void>;
   deleteAsset(id: Types.ObjectId | string): Promise<boolean>;
   updateAsset(
     id: Types.ObjectId | string,

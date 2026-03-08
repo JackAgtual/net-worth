@@ -1,100 +1,36 @@
-"use client";
+import { checkSession } from "@/lib/auth/auth-utils";
+import { getStatementFormPrefillData } from "@/lib/utils/form-utils-server";
+import { SearchParams } from "next/dist/server/request/search-params";
+import { z } from "zod";
+import ChooseMode from "./components/choose-mode";
+import StatementForm from "./components/statement-form";
+import StatementFormCard from "./components/statement-form-card";
 
-import DollarInput from "@/components/form/DollarInput";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { createStatement } from "@/lib/actions/statement-actions";
-import { authClient } from "@/lib/auth/auth-client";
-import {
-  StatementForm,
-  statementFormSchema,
-} from "@/lib/types/statement-types";
-import { setFormErrors } from "@/lib/utils/form-utils";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { redirect } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
-import AssetsForm from "./components/assets-form";
-import LiabilitiesForm from "./components/liabilities-form";
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  await checkSession();
 
-export default function Page() {
-  const { data: session, isPending } = authClient.useSession();
+  const { mode, year } = await searchParams;
 
-  const {
-    control,
-    handleSubmit,
-    setError,
-    formState: { errors },
-  } = useForm<StatementForm>({
-    resolver: zodResolver(statementFormSchema),
-  });
-
-  if (isPending) {
-    return <p>Loading</p>;
-  }
-  if (!session) {
-    redirect("/login");
+  if (!mode) {
+    return <ChooseMode />;
   }
 
-  const onSubmit = async (data: StatementForm) => {
-    const response = await createStatement(data);
+  if (mode === "blank")
+    return (
+      <StatementFormCard>
+        <StatementForm />
+      </StatementFormCard>
+    );
 
-    if (response.success) {
-      redirect(`/statements/${data.year}`);
-    }
-    setFormErrors(response.errors, setError);
-  };
-
+  const yearInt = z.coerce.number().int().parse(year);
+  const defaultVals = await getStatementFormPrefillData(yearInt);
   return (
-    <Card>
-      <CardHeader>Add a statement</CardHeader>
-      <CardContent>
-        <form
-          className="flex-col"
-          onSubmit={handleSubmit(onSubmit, (err) => {
-            console.error(err);
-          })}
-        >
-          <Controller
-            name="year"
-            control={control}
-            render={({ field, fieldState }) => (
-              <Field>
-                <FieldLabel>Year</FieldLabel>
-                <Input
-                  {...field}
-                  id="year"
-                  aria-invalid={fieldState.invalid}
-                  placeholder="2023"
-                  type="text"
-                  onChange={(e) => {
-                    const val = e.target.value.replace(/\D/g, "");
-                    field.onChange(val === "" ? undefined : Number(val));
-                  }}
-                  value={field.value ?? ""}
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-          <DollarInput
-            control={control}
-            label="Last year salary"
-            name="lastYearSalary"
-            placeholder="70,000"
-          />
-          <AssetsForm control={control} />
-          <LiabilitiesForm control={control} />
-
-          <Button type="submit">Create</Button>
-          {errors.root && (
-            <FieldError errors={[{ message: errors.root.message }]} />
-          )}
-        </form>
-      </CardContent>
-    </Card>
+    <StatementFormCard>
+      <StatementForm defaultValues={defaultVals} />
+    </StatementFormCard>
   );
 }
