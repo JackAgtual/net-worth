@@ -16,7 +16,11 @@ import { Controller, useForm } from "react-hook-form";
 import AssetsForm from "./assets-form";
 import LiabilitiesForm from "./liabilities-form";
 
-export default function StatementForm() {
+export default function StatementForm({
+  defaultValues,
+}: {
+  defaultValues?: TStatementForm;
+}) {
   const {
     control,
     handleSubmit,
@@ -24,6 +28,7 @@ export default function StatementForm() {
     formState: { errors },
   } = useForm<TStatementForm>({
     resolver: zodResolver(statementFormSchema),
+    defaultValues,
   });
 
   const onSubmit = async (data: TStatementForm) => {
