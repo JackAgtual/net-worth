@@ -43,12 +43,13 @@ export async function createStatement(
     };
   }
 
+  const statementLevelData = {
+    userId,
+    year: statementData.year,
+    lastYearSalary: statementData.lastYearSalary,
+  };
   try {
-    const statementDoc = new Statement({
-      userId,
-      year: statementData.year,
-      lastYearSalary: statementData.lastYearSalary,
-    });
+    const statementDoc = new Statement(statementLevelData);
     await statementDoc.save();
 
     if (!statementDoc) {
@@ -76,6 +77,7 @@ export async function createStatement(
     return { success: true };
   } catch (error) {
     console.error(error);
+    await Statement.deleteOne(statementLevelData);
     return somethingWentWrong;
   }
 }
