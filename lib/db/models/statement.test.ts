@@ -4,8 +4,7 @@ import { Asset, Liability, Statement } from ".";
 import { Category, Contributor } from "@/types/types";
 import { AssetDoc, AssetUpdate } from "@/lib/types/asset-types";
 import { LiabilityDoc, LiabilityUpdate } from "@/lib/types/liability-types";
-
-const userId = process.env.TEST_USER_ID as string;
+import { userId } from "./test-fixtures";
 
 describe("Statement", () => {
   let mongoServer: MongoMemoryServer;
@@ -366,8 +365,10 @@ describe("Statement", () => {
   });
 
   describe("CRUD assets and liabilities", () => {
+    let assetsInput: AssetDoc[];
+    let liabilitiesInput: LiabilityDoc[];
     beforeEach(async () => {
-      const assetsInput: AssetDoc[] = [
+      assetsInput = [
         {
           userId,
           title: "Asset 1",
@@ -383,7 +384,7 @@ describe("Statement", () => {
       ];
       const assets = await Asset.insertMany(assetsInput);
 
-      const liabilitiesInput: LiabilityDoc[] = [
+      liabilitiesInput = [
         {
           userId,
           title: "Liability 1",
@@ -419,6 +420,28 @@ describe("Statement", () => {
       expect(addedLiability).toMatchObject(liability);
       expect(statement.liabilities.length).toEqual(3);
       expect(statement.liabilities.at(-1)).toEqual(id);
+    });
+
+    it("adds multiple liabilities", async () => {
+      const myStatement = await Statement.create({
+        userId,
+        year: 2026,
+      });
+
+      await myStatement.addLiabilities(liabilitiesInput);
+
+      expect(myStatement.liabilities.length).toEqual(2);
+      await myStatement.populate("liabilities");
+      expect(myStatement.liabilities[0]).toMatchObject({
+        userId,
+        title: "Liability 1",
+        amount: 500,
+      });
+      expect(myStatement.liabilities[1]).toMatchObject({
+        userId,
+        title: "Liability 2",
+        amount: 1000,
+      });
     });
 
     it("deletes liability", async () => {
@@ -502,6 +525,31 @@ describe("Statement", () => {
       expect(addedAsset).toMatchObject(assetToAdd);
       expect(statement.assets.length).toEqual(3);
       expect(statement.assets.at(-1)).toEqual(addedAsset._id);
+    });
+
+    it("adds multiple assets", async () => {
+      const myStatement = await Statement.create({
+        userId,
+        year: 2026,
+      });
+
+      await myStatement.addAssets(assetsInput);
+
+      expect(myStatement.assets.length).toEqual(2);
+      await myStatement.populate("assets");
+
+      expect(myStatement.assets[0]).toMatchObject({
+        userId,
+        title: "Asset 1",
+        amount: 100,
+        category: Category.Cash,
+      });
+      expect(myStatement.assets[1]).toMatchObject({
+        userId,
+        title: "Asset 2",
+        amount: 300,
+        category: Category.TaxFree,
+      });
     });
 
     it("deletes asset", async () => {

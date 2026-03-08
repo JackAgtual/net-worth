@@ -78,9 +78,8 @@ const statementMongooseSchema = new Schema<
           .reduce((acc, cur) => acc + cur.amount, 0);
       },
       async getPercentOfAssetsByCategory(category: Category): Promise<number> {
-        const totalAmountInCategory = await this.getTotalAssetAmountByCategory(
-          category
-        );
+        const totalAmountInCategory =
+          await this.getTotalAssetAmountByCategory(category);
         const totalAssets = await this.getTotalAssetAmount();
         return totalAmountInCategory / totalAssets;
       },
@@ -152,6 +151,17 @@ const statementMongooseSchema = new Schema<
         await this.save();
         return liability;
       },
+      async addLiabilities(liabilities: LiabilityDoc[]): Promise<void> {
+        const liabilityDocs = await Liability.insertMany(liabilities);
+        if (liabilityDocs.length !== liabilities.length) {
+          throw new Error("Not all liabilities were added to statement");
+        }
+
+        liabilityDocs.forEach((asset) => {
+          this.liabilities.push(asset._id);
+        });
+        await this.save();
+      },
       async deleteLiability(id: Types.ObjectId | string): Promise<boolean> {
         const deletedDoc = await Liability.findByIdAndDelete(id);
         if (!deletedDoc) return false;
@@ -182,6 +192,17 @@ const statementMongooseSchema = new Schema<
         this.assets.push(createdAsset._id);
         await this.save();
         return createdAsset;
+      },
+      async addAssets(assets: AssetDoc[]): Promise<void> {
+        const assetDocs = await Asset.insertMany(assets);
+        if (assetDocs.length !== assets.length) {
+          throw new Error("Not all assets were added to statement");
+        }
+
+        assetDocs.forEach((asset) => {
+          this.assets.push(asset._id);
+        });
+        await this.save();
       },
       async deleteAsset(id: Types.ObjectId | string): Promise<boolean> {
         const deletedDoc = await Asset.findByIdAndDelete(id);

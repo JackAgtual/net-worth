@@ -55,19 +55,24 @@ export async function createStatement(
       return somethingWentWrong;
     }
 
-    await Promise.all(
+    await statementDoc.addAssets(
       statementData.assets?.map((asset) => {
-        return statementDoc.addAsset({ userId, ...asset });
+        return {
+          userId,
+          ...asset,
+        };
       }) ?? []
     );
 
-    await Promise.all(
-      statementData.liabilities?.map(async (liability) => {
-        return statementDoc.addLiability({ userId, ...liability });
+    await statementDoc.addLiabilities(
+      statementData.liabilities?.map((liability) => {
+        return {
+          userId,
+          ...liability,
+        };
       }) ?? []
     );
 
-    await statementDoc.save();
     return { success: true };
   } catch (error) {
     console.error(error);
