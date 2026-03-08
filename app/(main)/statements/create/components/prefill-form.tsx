@@ -9,12 +9,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { redirect } from "next/navigation";
+import { z } from "zod";
 
 export default function PrefillForm({ years }: { years: number[] }) {
   async function onSubmit(formData: FormData) {
     "use server";
 
-    const year = formData.get("year")?.toString() ?? "";
+    const year = z.coerce.number().int().parse(formData.get("year")).toString();
 
     const queryParams = new URLSearchParams({
       mode: "prefill",
