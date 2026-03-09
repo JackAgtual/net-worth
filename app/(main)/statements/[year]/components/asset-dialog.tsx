@@ -58,10 +58,15 @@ export default function AssetDialog(props: AssetDialogProps) {
   };
 
   const handleEdit = async (data: TAssetForm) => {
+    const serializable = JSON.parse(
+      JSON.stringify(data, (_, v) => (v === undefined ? null : v))
+    );
+    // console.log({ data, serializable });
+    console.log(data);
     const result = await updateAsset({
       assetId,
       statementId,
-      data,
+      data: serializable,
       path,
     });
 

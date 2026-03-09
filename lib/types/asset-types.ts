@@ -3,8 +3,8 @@ import { Category, entrySchema } from "@/types/types";
 import { HydratedDocument, Model } from "mongoose";
 
 const contributionSchema = z.object({
-  self: z.number().optional(),
-  nonSelf: z.number().optional(),
+  self: z.number().nullable().optional(),
+  nonSelf: z.number().nullable().optional(),
 });
 
 export type Contribution = z.infer<typeof contributionSchema>;
@@ -12,7 +12,7 @@ export type Contribution = z.infer<typeof contributionSchema>;
 export const assetSchema = entrySchema.extend({
   category: z.enum(Category),
   retirement: z.boolean().optional(),
-  amountOneYearAgo: z.number().optional(),
+  amountOneYearAgo: z.number().nullable().optional(),
   contribution: contributionSchema.optional(),
   includeInGrowthCalculation: z.boolean().optional(),
 });

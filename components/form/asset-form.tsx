@@ -1,17 +1,6 @@
-import {
-  assetFormSchema,
-  AssetForm as TAssetForm,
-} from "@/lib/types/asset-types";
+import { AssetForm as TAssetForm } from "@/lib/types/asset-types";
 import { Category } from "@/lib/types/types";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Control,
-  Controller,
-  FieldPath,
-  FieldValues,
-  useForm,
-} from "react-hook-form";
-import DollarInput from "./DollarInput";
+import { Control, Controller, FieldPath, FieldValues } from "react-hook-form";
 import { Checkbox } from "../ui/checkbox";
 import {
   Field,
@@ -29,6 +18,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
+import DollarInput from "./DollarInput";
 
 type AssetFormProps<TForm extends FieldValues & TAssetForm = TAssetForm> = {
   control: Control<any>; // TODO: Fix types
@@ -36,7 +26,7 @@ type AssetFormProps<TForm extends FieldValues & TAssetForm = TAssetForm> = {
 };
 
 export default function AssetForm<
-  TForm extends FieldValues & TAssetForm = TAssetForm
+  TForm extends FieldValues & TAssetForm = TAssetForm,
 >({ control, baseName }: AssetFormProps<TForm>) {
   function getName(name: FieldPath<TAssetForm>): FieldPath<TForm> {
     if (!baseName) return name as FieldPath<TForm>;
@@ -156,6 +146,8 @@ export default function AssetForm<
               id={getName("notes")}
               placeholder="Type your notes here."
               aria-invalid={fieldState.invalid}
+              value={controllerField.value ?? ""}
+              onChange={(e) => controllerField.onChange(e.target.value)}
             />
             {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
           </Field>

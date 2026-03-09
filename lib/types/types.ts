@@ -7,7 +7,7 @@ export type UserItem = z.infer<typeof userItemSchema>;
 export const entrySchema = userItemSchema.extend({
   title: z.string().trim().nonempty(),
   amount: z.number(),
-  notes: z.string().optional(),
+  notes: z.string().nullable().optional(),
 });
 
 export type Entry = z.infer<typeof entrySchema>;

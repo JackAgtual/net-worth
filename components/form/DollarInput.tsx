@@ -1,4 +1,12 @@
-import { Control, Controller, FieldPath, FieldValues } from "react-hook-form";
+import { useState } from "react";
+import {
+  Control,
+  Controller,
+  ControllerFieldState,
+  ControllerRenderProps,
+  FieldPath,
+  FieldValues,
+} from "react-hook-form";
 import { Field, FieldError, FieldLabel } from "../ui/field";
 import {
   InputGroup,
@@ -9,7 +17,7 @@ import {
 
 type DollarInputProps<
   TFormValues extends FieldValues,
-  TName extends FieldPath<TFormValues>
+  TName extends FieldPath<TFormValues>,
 > = {
   name: TName;
   label: string;
@@ -17,9 +25,62 @@ type DollarInputProps<
   placeholder?: string;
 };
 
+type DollarInputInnerProps = {
+  field: ControllerRenderProps<any, any>;
+  fieldState: ControllerFieldState;
+  label: string;
+  placeholder: string;
+  name: string;
+};
+
+function DollarInputInner({
+  field,
+  fieldState,
+  label,
+  placeholder,
+  name,
+}: DollarInputInnerProps) {
+  const initialValue = field.value as number | undefined;
+  const [displayVal, setDisplayVal] = useState(
+    initialValue !== undefined && initialValue !== null
+      ? initialValue.toLocaleString("en-US")
+      : ""
+  );
+
+  return (
+    <Field>
+      <FieldLabel>{label}</FieldLabel>
+      <InputGroup>
+        <InputGroupAddon>
+          <InputGroupText>$</InputGroupText>
+        </InputGroupAddon>
+        <InputGroupInput
+          {...field}
+          id={name}
+          aria-invalid={fieldState.invalid}
+          placeholder={placeholder}
+          type="text"
+          value={displayVal}
+          onChange={(e) => {
+            const rawVal = e.target.value.replaceAll(",", "");
+            if (!/^\d*$/.test(rawVal)) return;
+
+            setDisplayVal(
+              rawVal === "" ? "" : Number(rawVal).toLocaleString("en-US")
+            );
+
+            field.onChange(rawVal === "" ? undefined : Number(rawVal));
+          }}
+        />
+      </InputGroup>
+      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+    </Field>
+  );
+}
+
 export default function DollarInput<
   TFormValues extends FieldValues,
-  TName extends FieldPath<TFormValues>
+  TName extends FieldPath<TFormValues>,
 >({
   name,
   label,
@@ -30,34 +91,15 @@ export default function DollarInput<
     <Controller
       name={name}
       control={control}
-      render={({ field, fieldState }) => {
-        const val = field.value as number | undefined;
-        return (
-          <Field>
-            <FieldLabel>{label}</FieldLabel>
-            <InputGroup>
-              <InputGroupAddon>
-                <InputGroupText>$</InputGroupText>
-              </InputGroupAddon>
-              <InputGroupInput
-                {...field}
-                id={name}
-                aria-invalid={fieldState.invalid}
-                placeholder={placeholder}
-                type="text"
-                value={val !== undefined ? val.toLocaleString("en-US") : ""}
-                onChange={(e) => {
-                  const val = e.target.value.replaceAll(",", "");
-                  if (!/^\d*$/.test(val)) return;
-
-                  field.onChange(val === "" ? "" : Number(val));
-                }}
-              />
-            </InputGroup>
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-          </Field>
-        );
-      }}
+      render={({ field, fieldState }) => (
+        <DollarInputInner
+          field={field}
+          fieldState={fieldState}
+          name={name}
+          label={label}
+          placeholder={placeholder}
+        />
+      )}
     />
   );
 }

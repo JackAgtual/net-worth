@@ -5,6 +5,7 @@ import { Category, Contributor } from "@/types/types";
 import { AssetDoc, AssetUpdate } from "@/lib/types/asset-types";
 import { LiabilityDoc, LiabilityUpdate } from "@/lib/types/liability-types";
 import { userId } from "./test-fixtures";
+import { updateAsset } from "@/lib/actions/asset-actions";
 
 describe("Statement", () => {
   let mongoServer: MongoMemoryServer;
@@ -374,6 +375,10 @@ describe("Statement", () => {
           title: "Asset 1",
           amount: 100,
           category: Category.Cash,
+          contribution: {
+            self: 20,
+            nonSelf: 0,
+          },
         },
         {
           userId,
@@ -607,6 +612,42 @@ describe("Statement", () => {
       expect(updatedAssetId).toEqual(updatedAsset._id);
       expect(updatedAssetId).toEqual(idToUpdate);
       expect(updatedAsset).toMatchObject(assetUpdates);
+    });
+
+    it("can remove fields when updating asset", async () => {
+      const updateIndex = 0;
+      const idToUpdate = statement.assets.at(updateIndex);
+
+      if (!idToUpdate) {
+        fail("Need valid id for this test");
+      }
+
+      const assetUpdates: AssetUpdate = {
+        amount: 600,
+        notes: "an updated asset",
+        contribution: undefined,
+        amountOneYearAgo: undefined,
+        includeInGrowthCalculation: true,
+      };
+
+      const updatedAsset = await statement.updateAsset(
+        idToUpdate,
+        assetUpdates
+      );
+
+      const updatedAssetId = statement.assets.at(updateIndex);
+
+      if (!updatedAsset) {
+        fail("This test requires a valid id to update");
+      }
+
+      const originalAsset = assetsInput[updateIndex];
+      console.log({ originalAsset, updatedAsset });
+
+      expect(updatedAssetId).toEqual(updatedAsset._id);
+      expect(updatedAssetId).toEqual(idToUpdate);
+      expect(updatedAsset.contribution).toBeUndefined();
+      expect(updatedAsset.amountOneYearAgo).toBeUndefined();
     });
 
     it("returns null when trying to update invalid asset id", async () => {

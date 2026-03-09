@@ -1,8 +1,8 @@
 export function formatAsDollar(
-  amount: number | undefined,
+  amount: number | undefined | null,
   compact: boolean = false
 ): string {
-  if (amount === undefined) return "";
+  if (amount === undefined || amount === null) return "";
 
   const locale = amount.toLocaleString("en-US", {
     notation: compact ? "compact" : "standard",

@@ -6,14 +6,14 @@ import { Textarea } from "../ui/textarea";
 import DollarInput from "./DollarInput";
 
 type LiabilityFormProps<
-  TForm extends FieldValues & TLiabilityForm = TLiabilityForm
+  TForm extends FieldValues & TLiabilityForm = TLiabilityForm,
 > = {
   control: Control<any>; // TODO: Fix types
   baseName?: FieldPath<TForm>;
 };
 
 export default function LiabilityForm<
-  TForm extends FieldValues & TLiabilityForm = TLiabilityForm
+  TForm extends FieldValues & TLiabilityForm = TLiabilityForm,
 >({ control, baseName }: LiabilityFormProps<TForm>) {
   function getName(name: FieldPath<TLiabilityForm>): FieldPath<TForm> {
     if (!baseName) return name as FieldPath<TForm>;
@@ -52,6 +52,8 @@ export default function LiabilityForm<
               id={getName("notes")}
               placeholder="Type your notes here."
               aria-invalid={fieldState.invalid}
+              value={controllerField.value ?? ""}
+              onChange={(e) => controllerField.onChange(e.target.value)}
             />
             {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
           </Field>
