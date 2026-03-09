@@ -61,8 +61,7 @@ export default function AssetDialog(props: AssetDialogProps) {
     const serializable = JSON.parse(
       JSON.stringify(data, (_, v) => (v === undefined ? null : v))
     );
-    // console.log({ data, serializable });
-    console.log(data);
+
     const result = await updateAsset({
       assetId,
       statementId,
@@ -89,19 +88,18 @@ export default function AssetDialog(props: AssetDialogProps) {
     setOpen(false);
   };
 
-  let handler;
+  let onSubmit;
   switch (action) {
     case "create":
-      handler = handleCreate;
+      onSubmit = handleSubmit(handleCreate);
       break;
     case "edit":
-      handler = handleEdit;
+      onSubmit = handleSubmit(handleEdit);
       break;
     case "delete":
-      handler = handleDelete;
+      onSubmit = handleDelete;
       break;
   }
-  const onSubmit = handleSubmit(handler);
 
   return (
     <EntryDialog

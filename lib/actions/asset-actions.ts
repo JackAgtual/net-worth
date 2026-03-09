@@ -155,7 +155,7 @@ export async function updateAsset({
   if (!statementDoc) {
     return statementNotFound;
   }
-  // make sure undefiend amountOneYearAgo exists in dataParseResult
+
   const assetDoc = await statementDoc.updateAsset(
     inputs.entryId,
     dataParseResult.data

@@ -8,13 +8,12 @@ const contributionSchema = z.object({
 });
 
 export type Contribution = z.infer<typeof contributionSchema>;
-
 export const assetSchema = entrySchema.extend({
   category: z.enum(Category),
-  retirement: z.boolean().optional(),
+  retirement: z.boolean().nullable().optional(),
   amountOneYearAgo: z.number().nullable().optional(),
   contribution: contributionSchema.optional(),
-  includeInGrowthCalculation: z.boolean().optional(),
+  includeInGrowthCalculation: z.boolean().nullable().optional(),
 });
 
 export const assetFormSchema = assetSchema.omit({ userId: true });
