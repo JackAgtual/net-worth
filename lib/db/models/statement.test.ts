@@ -642,7 +642,6 @@ describe("Statement", () => {
       }
 
       const originalAsset = assetsInput[updateIndex];
-      console.log({ originalAsset, updatedAsset });
 
       expect(updatedAssetId).toEqual(updatedAsset._id);
       expect(updatedAssetId).toEqual(idToUpdate);
