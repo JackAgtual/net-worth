@@ -1,9 +1,9 @@
-import { render, screen } from "@testing-library/react";
-// import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
+import { render, screen } from "@testing-library/react";
+import userEvent, { UserEvent } from "@testing-library/user-event";
 
-import DollarInput from "./DollarInput";
 import { useForm } from "react-hook-form";
+import DollarInput from "./DollarInput";
 
 function TestForm({ defaultValue }: { defaultValue?: number }) {
   const { control } = useForm({
@@ -13,36 +13,67 @@ function TestForm({ defaultValue }: { defaultValue?: number }) {
 }
 
 describe("DollarInput", () => {
+  let user: UserEvent;
+  beforeEach(() => {
+    user = userEvent.setup();
+  });
+
   it("renders label", () => {
     render(<TestForm />);
     expect(screen.getByText("Amount")).toBeInTheDocument();
   });
 
-  //   it("formats number with commas on type", async () => {
-  //     const user = userEvent.setup();
-  //     render(<TestForm />);
-  //     await user.type(screen.getByRole("textbox"), "1500");
-  //     expect(screen.getByRole("textbox")).toHaveValue("1,500");
-  //   });
+  it("formats number with commas", async () => {
+    render(<TestForm />);
+    const el = screen.getByRole("textbox");
+    await user.type(el, "1500");
+    expect(el).toHaveValue("1,500");
+  });
 
-  //   it("clears to empty string when all characters deleted", async () => {
-  //     const user = userEvent.setup();
-  //     render(<TestForm defaultValue={100} />);
-  //     await user.clear(screen.getByRole("textbox"));
-  //     expect(screen.getByRole("textbox")).toHaveValue("");
-  //   });
+  it("clears to empty string when all characters deleted", async () => {
+    render(<TestForm defaultValue={100} />);
+    const el = screen.getByRole("textbox");
+    await user.clear(el);
+    expect(el).toHaveValue("");
+  });
 
-  //   it("ignores non-numeric characters", async () => {
-  //     const user = userEvent.setup();
-  //     render(<TestForm />);
-  //     await user.type(screen.getByRole("textbox"), "abc");
-  //     expect(screen.getByRole("textbox")).toHaveValue("");
-  //   });
+  it("ignores non-numeric characters", async () => {
+    render(<TestForm />);
+    const el = screen.getByRole("textbox");
+    await user.type(el, "abc");
+    expect(el).toHaveValue("");
+  });
 
-  //   it("prepopulates with formatted value", () => {
-  //     render(<TestForm defaultValue={5000} />);
-  //     expect(screen.getByRole("textbox")).toHaveValue("5,000");
-  //   });
+  it("allows one decimal to be typed (zero ending)", async () => {
+    render(<TestForm />);
+    const el = screen.getByRole("textbox");
+    await user.type(el, "0.....40");
+    expect(el).toHaveValue("0.40");
+  });
 
-  //   it("allows user to delete all values", () => {});
+  it("allows one decimal to be typed (non-zero ending)", async () => {
+    render(<TestForm />);
+    const el = screen.getByRole("textbox");
+    await user.type(el, "0.....99");
+    expect(el).toHaveValue("0.99");
+  });
+
+  it("adds 0 before decimal if decimal is only character entered", async () => {
+    render(<TestForm />);
+    const el = screen.getByRole("textbox");
+    await user.type(el, ".");
+    expect(el).toHaveValue("0.");
+  });
+
+  it("only allows 2 decimal places", async () => {
+    render(<TestForm />);
+    const el = screen.getByRole("textbox");
+    await user.type(el, "100500.12345678");
+    expect(el).toHaveValue("100,500.12");
+  });
+
+  it("prepopulates with formatted value", () => {
+    render(<TestForm defaultValue={5000} />);
+    expect(screen.getByRole("textbox")).toHaveValue("5,000");
+  });
 });

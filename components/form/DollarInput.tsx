@@ -63,13 +63,22 @@ function DollarInputInner({
           value={displayVal}
           onChange={(e) => {
             const rawVal = e.target.value.replaceAll(",", "");
-            if (!/^\d*$/.test(rawVal)) return;
+            const normalized = rawVal.startsWith(".") ? "0" + rawVal : rawVal;
 
-            setDisplayVal(
-              rawVal === "" ? "" : Number(rawVal).toLocaleString("en-US")
-            );
+            // Only allow digits and one decimal point with max 2 decimal places
+            if (!/^\d*\.?\d{0,2}$/.test(normalized)) return;
 
-            field.onChange(rawVal === "" ? undefined : Number(rawVal));
+            let formatted: string;
+            if (normalized === "") {
+              formatted = "";
+            } else if (normalized.endsWith(".") || /\.\d*0$/.test(normalized)) {
+              formatted = normalized;
+            } else {
+              formatted = Number(normalized).toLocaleString("en-US");
+            }
+
+            setDisplayVal(formatted);
+            field.onChange(normalized === "" ? undefined : Number(normalized));
           }}
         />
       </InputGroup>
