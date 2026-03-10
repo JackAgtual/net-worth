@@ -17,7 +17,6 @@ describe("Statement", () => {
     });
 
     const uri = mongoServer.getUri();
-    console.log({ uri });
     await mongoose.connect(uri);
   });
 
