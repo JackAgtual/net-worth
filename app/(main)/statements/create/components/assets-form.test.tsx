@@ -5,14 +5,16 @@ import userEvent, { UserEvent } from "@testing-library/user-event";
 import { useForm } from "react-hook-form";
 import AssetsForm from "./assets-form";
 
-const TITLE_PLACEHOLDER = "Investment account";
-
 function TestForm() {
   const { control } = useForm<StatementForm>();
   return <AssetsForm control={control} />;
 }
 
 describe("AssetsForm", () => {
+  const titlePlaceholder = "Investment account";
+  const addAssetText = /add asset/i;
+  const removeAssetText = /remove asset/i;
+
   let user: UserEvent;
 
   beforeEach(() => {
@@ -22,46 +24,46 @@ describe("AssetsForm", () => {
 
   it("renders Add Asset button", () => {
     expect(
-      screen.getByRole("button", { name: /add asset/i })
+      screen.getByRole("button", { name: addAssetText })
     ).toBeInTheDocument();
   });
 
   it("defaults to zero asset forms", () => {
-    expect(screen.queryByPlaceholderText(TITLE_PLACEHOLDER)).toBeNull();
+    expect(screen.queryByPlaceholderText(titlePlaceholder)).toBeNull();
   });
 
   it("adds asset form when Add Asset button is clicked", async () => {
-    await user.click(screen.getByRole("button", { name: /add asset/i }));
-    expect(screen.getAllByPlaceholderText(TITLE_PLACEHOLDER)).toHaveLength(1);
+    await user.click(screen.getByRole("button", { name: addAssetText }));
+    expect(screen.getAllByPlaceholderText(titlePlaceholder)).toHaveLength(1);
   });
 
   it("adds multiple asset forms when Add Asset button is clicked multiple times", async () => {
-    const addAsset = screen.getByRole("button", { name: /add asset/i });
+    const addAsset = screen.getByRole("button", { name: addAssetText });
     await user.click(addAsset);
     await user.click(addAsset);
-    expect(screen.getAllByPlaceholderText(TITLE_PLACEHOLDER)).toHaveLength(2);
+    expect(screen.getAllByPlaceholderText(titlePlaceholder)).toHaveLength(2);
   });
 
   it("renders Remove Asset button for each asset", async () => {
-    const addAsset = screen.getByRole("button", { name: /add asset/i });
+    const addAsset = screen.getByRole("button", { name: addAssetText });
     await user.click(addAsset);
     await user.click(addAsset);
     expect(
-      screen.getAllByRole("button", { name: /remove asset/i })
+      screen.getAllByRole("button", { name: removeAssetText })
     ).toHaveLength(2);
   });
 
   it("removes correct asset form when Remove Asset button is clicked", async () => {
-    const addAsset = screen.getByRole("button", { name: /add asset/i });
+    const addAsset = screen.getByRole("button", { name: addAssetText });
     await user.click(addAsset);
     await user.click(addAsset);
 
-    const titleInputs = screen.getAllByPlaceholderText(TITLE_PLACEHOLDER);
+    const titleInputs = screen.getAllByPlaceholderText(titlePlaceholder);
     await user.type(titleInputs[0], "First Asset");
     await user.type(titleInputs[1], "Second Asset");
 
     const removeButtons = screen.getAllByRole("button", {
-      name: /remove asset/i,
+      name: removeAssetText,
     });
     await user.click(removeButtons[0]);
 
@@ -70,19 +72,19 @@ describe("AssetsForm", () => {
   });
 
   it("removes all asset forms when all are removed", async () => {
-    const addAsset = screen.getByRole("button", { name: /add asset/i });
+    const addAsset = screen.getByRole("button", { name: addAssetText });
     await user.click(addAsset);
 
-    const titleInput = screen.getByPlaceholderText(TITLE_PLACEHOLDER);
+    const titleInput = screen.getByPlaceholderText(titlePlaceholder);
     await user.type(titleInput, "Only Asset");
 
-    await user.click(screen.getByRole("button", { name: /remove asset/i }));
-    expect(screen.queryByPlaceholderText(TITLE_PLACEHOLDER)).toBeNull();
+    await user.click(screen.getByRole("button", { name: removeAssetText }));
+    expect(screen.queryByPlaceholderText(titlePlaceholder)).toBeNull();
     expect(screen.queryByDisplayValue("Only Asset")).toBeNull();
   });
 
   it("renders separator between assets but not after last one", async () => {
-    const addAsset = screen.getByRole("button", { name: /add asset/i });
+    const addAsset = screen.getByRole("button", { name: addAssetText });
     await user.click(addAsset);
     await user.click(addAsset);
     expect(document.querySelectorAll("[data-slot=separator]")).toHaveLength(1);
