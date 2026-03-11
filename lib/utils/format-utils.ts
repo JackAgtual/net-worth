@@ -4,9 +4,18 @@ export function formatAsDollar(
 ): string {
   if (amount === undefined || amount === null) return "";
 
-  const locale = amount.toLocaleString("en-US", {
-    notation: compact ? "compact" : "standard",
-  });
+  const options: Intl.NumberFormatOptions = compact
+    ? { notation: "compact" }
+    : {
+        ...(Number.isInteger(amount) && !compact
+          ? {}
+          : {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }),
+      };
+
+  const locale = amount.toLocaleString("en-US", options);
   if (amount > 0) {
     return `$${locale}`;
   } else if (amount < 0) {
@@ -17,5 +26,5 @@ export function formatAsDollar(
 
 export function formatAsPercent(amount: number | undefined): string {
   if (amount === undefined) return "0%";
-  return `${Math.trunc(amount * 100)}%`;
+  return `${Math.round(amount * 100)}%`;
 }
