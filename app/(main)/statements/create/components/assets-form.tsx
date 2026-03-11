@@ -1,35 +1,15 @@
 "use client";
 
 import AssetForm from "@/components/form/asset-form";
-import DollarInput from "@/components/form/DollarInput";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Field,
-  FieldContent,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-  FieldLegend,
-  FieldSet,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
 import { Separator } from "@/components/ui/separator";
-import { Textarea } from "@/components/ui/textarea";
 import {
   StatementForm,
   StatementFormControl,
 } from "@/lib/types/statement-types";
 import { Category } from "@/types/types";
-import { Controller, FieldPath, useFieldArray } from "react-hook-form";
+import { FieldPath, useFieldArray } from "react-hook-form";
 
 type AssetsFormProps = {
   control: StatementFormControl;
