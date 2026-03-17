@@ -1,36 +1,20 @@
 import {
-  getStatementFromYear,
-  getStatementFromId,
   getAllStatements,
+  getStatementFromId,
+  getStatementFromYear,
   statementYearAlreadyExists,
 } from "@/lib/dal/statement-dal";
-import { Statement } from "@/lib/db/models";
-import { checkSession } from "@/lib/auth/auth-utils";
+import {
+  createStatement,
+  mockSession,
+  USER_A,
+  USER_B,
+} from "@/tests/dal-helper";
 import { setupMongoTestDb } from "@/tests/setup-mongo";
 
 setupMongoTestDb();
 
 jest.mock("@/lib/auth/auth-utils");
-const mockCheckSession = checkSession as jest.MockedFunction<
-  typeof checkSession
->;
-
-const USER_A = "user-aaa";
-const USER_B = "user-bbb";
-
-async function createStatement(userId: string, year: number) {
-  return Statement.create({
-    userId,
-    year,
-    lastYearSalary: 50000,
-    assets: [],
-    liabilities: [],
-  });
-}
-
-function mockSession(userId: string) {
-  mockCheckSession.mockResolvedValue({ user: { id: userId } } as any);
-}
 
 describe("getAllStatements", () => {
   it("returns only statements belonging to the authenticated user", async () => {
