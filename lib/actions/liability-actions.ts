@@ -1,8 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getValidSession } from "../auth/auth-utils";
-import { getStatementFromId } from "../dal/statement-dal";
+import {
+  addLiabilityToStatement,
+  removeLiabilityFromStatement,
+  updateLiabilityOnStatement,
+} from "../dal/liability-dal";
 import dbConnect from "../db/mongodb";
 import { ActionResponse } from "../types/action-types";
 import { LiabilityForm, liabilityFormSchema } from "../types/liability-types";
@@ -11,11 +14,6 @@ import { parseFormData, validateActionInputs } from "./action-utils";
 const liabilityNotFound: ActionResponse<LiabilityForm> = {
   success: false,
   errors: [{ path: "root", message: "Could not find liability" }],
-};
-
-const statementNotFound: ActionResponse<LiabilityForm> = {
-  success: false,
-  errors: [{ path: "root", message: "Could not find statement" }],
 };
 
 export async function createLiability({
@@ -27,8 +25,6 @@ export async function createLiability({
   data: unknown;
   path: unknown;
 }): Promise<ActionResponse<LiabilityForm>> {
-  await dbConnect();
-
   const validatedInputs = validateActionInputs({
     statementId,
     path,
@@ -46,17 +42,10 @@ export async function createLiability({
     return dataParseResult;
   }
 
-  const statementDoc = await getStatementFromId(inputs.statementId);
-
-  if (!statementDoc) {
-    return statementNotFound;
-  }
-
-  const session = await getValidSession();
-  const liabilityDoc = await statementDoc.addLiability({
-    userId: session.user.id,
-    ...dataParseResult.data,
-  });
+  const liabilityDoc = await addLiabilityToStatement(
+    inputs.statementId,
+    dataParseResult.data
+  );
 
   if (!liabilityDoc) {
     return {
@@ -78,8 +67,6 @@ export async function deleteLiability({
   statementId: unknown;
   path: unknown;
 }): Promise<ActionResponse<LiabilityForm>> {
-  await dbConnect();
-
   const validatedInputs = validateActionInputs({
     statementId,
     entryId: liabilityId,
@@ -92,13 +79,10 @@ export async function deleteLiability({
 
   const inputs = validatedInputs.data;
 
-  const statementDoc = await getStatementFromId(inputs.statementId);
-
-  if (!statementDoc) {
-    return statementNotFound;
-  }
-
-  const deleted = await statementDoc.deleteLiability(inputs.entryId);
+  const deleted = await removeLiabilityFromStatement(
+    inputs.statementId,
+    inputs.entryId
+  );
 
   if (!deleted) {
     return liabilityNotFound;
@@ -139,13 +123,8 @@ export async function updateLiability({
     return dataParseResult;
   }
 
-  const statementDoc = await getStatementFromId(inputs.statementId);
-
-  if (!statementDoc) {
-    return statementNotFound;
-  }
-
-  const liabilityDoc = await statementDoc.updateLiability(
+  const liabilityDoc = updateLiabilityOnStatement(
+    inputs.statementId,
     inputs.entryId,
     dataParseResult.data
   );
