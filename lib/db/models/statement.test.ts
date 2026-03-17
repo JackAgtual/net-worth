@@ -1,31 +1,17 @@
-import { MongoMemoryServer } from "mongodb-memory-server";
-import mongoose from "mongoose";
-import { Asset, Liability, Statement } from ".";
-import { Category, Contributor } from "@/types/types";
 import { AssetDoc, AssetUpdate } from "@/lib/types/asset-types";
 import { LiabilityDoc, LiabilityUpdate } from "@/lib/types/liability-types";
+import { setupMongoTestDb } from "@/tests/setup-mongo";
+import { Category, Contributor } from "@/types/types";
+import mongoose from "mongoose";
+import { Asset, Liability, Statement } from ".";
 import { userId } from "./test-fixtures";
-import { updateAsset } from "@/lib/actions/asset-actions";
+
+setupMongoTestDb();
 
 describe("Statement", () => {
-  let mongoServer: MongoMemoryServer;
   let statement: InstanceType<typeof Statement>;
 
-  beforeAll(async () => {
-    mongoServer = await MongoMemoryServer.create({
-      binary: { version: "6.0.7" },
-    });
-
-    const uri = mongoServer.getUri();
-    await mongoose.connect(uri);
-  });
-
   beforeEach(async () => {
-    const collections = mongoose.connection.collections;
-    for (const key in collections) {
-      await collections[key].deleteMany();
-    }
-
     const assetsInput: AssetDoc[] = [
       {
         userId,
@@ -137,11 +123,6 @@ describe("Statement", () => {
       assets: assets.map((asset) => asset._id),
       liabilities: liabilities.map((liability) => liability._id),
     });
-  });
-
-  afterAll(async () => {
-    await mongoose.disconnect();
-    await mongoServer.stop();
   });
 
   it("getTotalAssetAmount sums all assets", async () => {

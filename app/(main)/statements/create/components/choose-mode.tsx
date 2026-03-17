@@ -7,12 +7,12 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import { checkSession } from "@/lib/auth/auth-utils";
-import { Statement } from "@/lib/db/models";
+import { getAllStatements } from "@/lib/dal/statement-dal";
 import dbConnect from "@/lib/db/mongodb";
 import { ExternalLinkIcon } from "lucide-react";
 import Link from "next/link";
-import PrefillForm from "./prefill-form";
 import { redirect } from "next/navigation";
+import PrefillForm from "./prefill-form";
 
 export default async function ChooseMode() {
   await dbConnect();
@@ -21,9 +21,7 @@ export default async function ChooseMode() {
   const blankParams = new URLSearchParams({ mode: "blank" }).toString();
   const blankFormHref = `/statements/create?${blankParams}`;
 
-  const statements = await Statement.find({ userId: session.user.id }).sort({
-    year: -1,
-  }); // select year not working
+  const statements = await getAllStatements(false);
   const years = statements.map((statement) => statement.year);
 
   // User doesn't have any statements

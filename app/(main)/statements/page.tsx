@@ -1,21 +1,11 @@
 import NoStatements from "@/components/misc/no-statements";
-import { getSession } from "@/lib/auth/auth-utils";
-import { Statement } from "@/lib/db/models";
+import { getAllStatements } from "@/lib/dal/statement-dal";
 import { StatementDataAggregator } from "@/lib/utils/statement-data-aggregator";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import StatementsTable from "./components/statements-table";
 
 export default async function Page() {
-  const session = await getSession();
-
-  if (!session) {
-    redirect("/login");
-  }
-
-  const allStatements = await Statement.find({
-    userId: session.user.id,
-  }).sort({ year: -1 });
+  const allStatements = await getAllStatements(false);
 
   if (allStatements.length === 0) {
     return <NoStatements />;

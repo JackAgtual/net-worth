@@ -1,6 +1,10 @@
 "use server";
 
 import { getValidSession } from "../auth/auth-utils";
+import {
+  deleteStatement,
+  statementYearAlreadyExists,
+} from "../dal/statement-dal";
 import { Statement } from "../db/models";
 import dbConnect from "../db/mongodb";
 import { ActionResponse } from "../types/action-types";
@@ -27,11 +31,10 @@ export async function createStatement(
   const statementData = dataParseResult.data;
   const userId = session.user.id;
 
-  const existingStatements = await Statement.find({
-    userId,
-    year: statementData.year,
-  });
-  if (existingStatements.length !== 0) {
+  const statementAlreadyExists = await statementYearAlreadyExists(
+    statementData.year
+  );
+  if (statementAlreadyExists) {
     return {
       success: false,
       errors: [
@@ -77,7 +80,7 @@ export async function createStatement(
     return { success: true };
   } catch (error) {
     console.error(error);
-    await Statement.deleteOne(statementLevelData);
+    await deleteStatement(statementLevelData);
     return somethingWentWrong;
   }
 }

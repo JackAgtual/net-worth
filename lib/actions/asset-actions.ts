@@ -1,8 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getValidSession } from "../auth/auth-utils";
-import { Statement } from "../db/models";
+import {
+  addAssetToStatement,
+  removeAssetFromStatement,
+  updateAssetOnStatement,
+} from "../dal/asset-dal";
 import dbConnect from "../db/mongodb";
 import { ActionResponse } from "../types/action-types";
 import { AssetForm, assetFormSchema } from "../types/asset-types";
@@ -11,11 +14,6 @@ import { parseFormData, validateActionInputs } from "./action-utils";
 const assetNotFound: ActionResponse<AssetForm> = {
   success: false,
   errors: [{ path: "root", message: "Could not find asset" }],
-};
-
-const statementNotFound: ActionResponse<AssetForm> = {
-  success: false,
-  errors: [{ path: "root", message: "Could not find statement" }],
 };
 
 export async function createAsset({
@@ -27,7 +25,6 @@ export async function createAsset({
   data: unknown;
   path: unknown;
 }): Promise<ActionResponse<AssetForm>> {
-  await dbConnect();
   const validatedInputs = validateActionInputs({
     statementId,
     path,
@@ -44,21 +41,10 @@ export async function createAsset({
     return dataParseResult;
   }
 
-  const session = await getValidSession();
-
-  const statementDoc = await Statement.findOne({
-    userId: session.user.id,
-    _id: inputs.statementId,
-  });
-
-  if (!statementDoc) {
-    return statementNotFound;
-  }
-
-  const assetDoc = await statementDoc.addAsset({
-    userId: session.user.id,
-    ...dataParseResult.data,
-  });
+  const assetDoc = await addAssetToStatement(
+    inputs.statementId,
+    dataParseResult.data
+  );
 
   if (!assetDoc) {
     return {
@@ -80,8 +66,6 @@ export async function deleteAsset({
   statementId: unknown;
   path: unknown;
 }): Promise<ActionResponse<AssetForm>> {
-  await dbConnect();
-
   const validatedInputs = validateActionInputs({
     statementId,
     entryId: assetId,
@@ -94,18 +78,7 @@ export async function deleteAsset({
 
   const inputs = validatedInputs.data;
 
-  const session = await getValidSession();
-
-  const statementDoc = await Statement.findOne({
-    userId: session.user.id,
-    _id: inputs.statementId,
-  });
-
-  if (!statementDoc) {
-    return statementNotFound;
-  }
-
-  const deleted = await statementDoc.deleteAsset(inputs.entryId);
+  const deleted = removeAssetFromStatement(inputs.statementId, inputs.entryId);
 
   if (!deleted) {
     return assetNotFound;
@@ -145,18 +118,8 @@ export async function updateAsset({
     return dataParseResult;
   }
 
-  const session = await getValidSession();
-
-  const statementDoc = await Statement.findOne({
-    userId: session.user.id,
-    _id: inputs.statementId,
-  });
-
-  if (!statementDoc) {
-    return statementNotFound;
-  }
-
-  const assetDoc = await statementDoc.updateAsset(
+  const assetDoc = await updateAssetOnStatement(
+    inputs.statementId,
     inputs.entryId,
     dataParseResult.data
   );

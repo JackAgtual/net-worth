@@ -1,7 +1,4 @@
-import { getSession } from "@/lib/auth/auth-utils";
-import { Statement } from "@/lib/db/models";
-import dbConnect from "@/lib/db/mongodb";
-import { redirect } from "next/navigation";
+import { getStatementFromYear } from "@/lib/dal/statement-dal";
 import AddEntry from "./components/add-entry";
 import AssetTable from "./components/asset-table";
 import CategoryTable from "./components/category-table";
@@ -15,15 +12,9 @@ export default async function Page({
 }: {
   params: Promise<{ year: number }>;
 }) {
-  const session = await getSession();
-  if (!session) {
-    redirect("/login");
-  }
-
-  await dbConnect();
   const { year } = await params;
 
-  const statement = await Statement.findOne({ year, userId: session.user.id });
+  const statement = await getStatementFromYear(year);
 
   if (!statement) return <div>Couldn't find that statement</div>;
 
