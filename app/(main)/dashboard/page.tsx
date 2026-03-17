@@ -1,12 +1,8 @@
 import NoStatements from "@/components/misc/no-statements";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { signOut } from "@/lib/actions/auth-actions";
-import { checkSession } from "@/lib/auth/auth-utils";
-import { Statement } from "@/lib/db/models";
-import dbConnect from "@/lib/db/mongodb";
+import { getAllStatements } from "@/lib/dal/statement-dal";
 import { formatAsDollar } from "@/lib/utils/format-utils";
 import { StatementDataAggregator } from "@/lib/utils/statement-data-aggregator";
-import Link from "next/link";
 import { AssetGrowthChart } from "./components/asset-growth-chart";
 import { CategoryPercentageChart } from "./components/category-percentage-chart";
 import ChartCard from "./components/chart-card";
@@ -14,30 +10,21 @@ import { ContributionChart } from "./components/contribution-chart";
 import { NetWorthChart } from "./components/net-worth-chart";
 
 export default async function Home() {
-  await dbConnect();
-  const session = await checkSession();
-
-  const allStatements = await Statement.find({
-    userId: session.user.id,
-  }).sort({ year: 1 });
+  const allStatements = await getAllStatements();
 
   if (allStatements.length === 0) {
     return <NoStatements />;
   }
 
   const statementDataAggregator = new StatementDataAggregator(allStatements);
-  const plotData = await statementDataAggregator.getPlotData();
-  const mostRecent = await statementDataAggregator.getMostRecentStatementData();
+  const [plotData, mostRecent] = await Promise.all([
+    statementDataAggregator.getPlotData(),
+    statementDataAggregator.getMostRecentStatementData(),
+  ]);
 
   return (
     <>
-      <div>welcome {session.user.name}</div>
-      <Link href={"/statements/create"}>New statement</Link>
-      <form action={signOut}>
-        <button type="submit">Sign out</button>
-      </form>
       <p>Most recent statement: {mostRecent?.year}</p>
-
       <Card>
         <CardHeader>
           <CardTitle>Net Worth</CardTitle>

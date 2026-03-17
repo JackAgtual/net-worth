@@ -1,9 +1,10 @@
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "./auth";
-import { headers } from "next/headers";
-import { authClient } from "./auth-client";
+import dbConnect from "../db/mongodb";
 
 export async function getSession() {
+  await dbConnect();
   return auth.api.getSession({
     headers: await headers(),
   });

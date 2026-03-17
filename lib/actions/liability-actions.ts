@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getValidSession } from "../auth/auth-utils";
-import { Statement } from "../db/models";
+import { getStatementFromId } from "../dal/statement-dal";
 import dbConnect from "../db/mongodb";
 import { ActionResponse } from "../types/action-types";
 import { LiabilityForm, liabilityFormSchema } from "../types/liability-types";
@@ -46,17 +46,13 @@ export async function createLiability({
     return dataParseResult;
   }
 
-  const session = await getValidSession();
-
-  const statementDoc = await Statement.findOne({
-    userId: session.user.id,
-    _id: inputs.statementId,
-  });
+  const statementDoc = await getStatementFromId(inputs.statementId);
 
   if (!statementDoc) {
     return statementNotFound;
   }
 
+  const session = await getValidSession();
   const liabilityDoc = await statementDoc.addLiability({
     userId: session.user.id,
     ...dataParseResult.data,
@@ -96,12 +92,7 @@ export async function deleteLiability({
 
   const inputs = validatedInputs.data;
 
-  const session = await getValidSession();
-
-  const statementDoc = await Statement.findOne({
-    userId: session.user.id,
-    _id: inputs.statementId,
-  });
+  const statementDoc = await getStatementFromId(inputs.statementId);
 
   if (!statementDoc) {
     return statementNotFound;
@@ -148,12 +139,7 @@ export async function updateLiability({
     return dataParseResult;
   }
 
-  const session = await getValidSession();
-
-  const statementDoc = await Statement.findOne({
-    userId: session.user.id,
-    _id: inputs.statementId,
-  });
+  const statementDoc = await getStatementFromId(inputs.statementId);
 
   if (!statementDoc) {
     return statementNotFound;

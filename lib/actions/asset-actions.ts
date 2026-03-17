@@ -7,6 +7,7 @@ import dbConnect from "../db/mongodb";
 import { ActionResponse } from "../types/action-types";
 import { AssetForm, assetFormSchema } from "../types/asset-types";
 import { parseFormData, validateActionInputs } from "./action-utils";
+import { getStatementFromId } from "../dal/statement-dal";
 
 const assetNotFound: ActionResponse<AssetForm> = {
   success: false,
@@ -46,10 +47,7 @@ export async function createAsset({
 
   const session = await getValidSession();
 
-  const statementDoc = await Statement.findOne({
-    userId: session.user.id,
-    _id: inputs.statementId,
-  });
+  const statementDoc = await getStatementFromId(inputs.statementId);
 
   if (!statementDoc) {
     return statementNotFound;
@@ -94,12 +92,7 @@ export async function deleteAsset({
 
   const inputs = validatedInputs.data;
 
-  const session = await getValidSession();
-
-  const statementDoc = await Statement.findOne({
-    userId: session.user.id,
-    _id: inputs.statementId,
-  });
+  const statementDoc = await getStatementFromId(inputs.statementId);
 
   if (!statementDoc) {
     return statementNotFound;
@@ -145,12 +138,7 @@ export async function updateAsset({
     return dataParseResult;
   }
 
-  const session = await getValidSession();
-
-  const statementDoc = await Statement.findOne({
-    userId: session.user.id,
-    _id: inputs.statementId,
-  });
+  const statementDoc = await getStatementFromId(inputs.statementId);
 
   if (!statementDoc) {
     return statementNotFound;
