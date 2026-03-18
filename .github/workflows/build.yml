@@ -13,7 +13,10 @@ jobs:
         with:
           node-version: 25.6.1
           cache: "npm"
+      - run: docker compose up -d --wait
       - run: npm ci
       - run: npm run build
         env:
-          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          MONGODB_URI: mongodb://127.0.0.1:27017/dev?replicaSet=rs0
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+      - run: docker compose down
