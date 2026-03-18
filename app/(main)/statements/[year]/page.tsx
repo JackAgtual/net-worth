@@ -1,5 +1,10 @@
+import { chartConfig } from "@/components/chart/chart-config";
 import { getStatementFromYear } from "@/lib/dal/statement-dal";
+import { Category } from "@/lib/types/types";
+import { SearchParams } from "next/dist/server/request/search-params";
 import AddEntry from "./components/add-entry";
+import CategoryChart from "./components/charts/category-chart";
+import NetWorthChart from "./components/charts/net-worth-chart";
 import AssetTable from "./components/tables/asset-table";
 import CategoryTable from "./components/tables/category-table";
 import ContributionTable from "./components/tables/contribution-table";
@@ -7,10 +12,6 @@ import IncomeTable from "./components/tables/income-table";
 import LiabilityTable from "./components/tables/liability-table";
 import NetWorthTable from "./components/tables/net-worth-table";
 import ViewSelector from "./components/view-selector";
-import { SearchParams } from "next/dist/server/request/search-params";
-import { Category } from "@/lib/types/types";
-import { chartConfig } from "@/components/chart/chart-config";
-import CategoryChart from "./components/charts/category-chart";
 
 type PageProps = {
   params: Promise<{
@@ -32,6 +33,25 @@ export default async function Page({ params, searchParams }: PageProps) {
     statement.getAssets(),
     statement.getLiabilities(),
   ]);
+
+  const [netWorth, totalAssetAmount, totalLiabilityAmount] = await Promise.all([
+    statement.getNetWorth(),
+    statement.getTotalAssetAmount(),
+    statement.getTotalLiabilityAmount(),
+  ]);
+  const netWorthData = [
+    { name: "Net Worth", value: netWorth, fill: chartConfig.netWorth.color },
+    {
+      name: "Total Asset Amount",
+      value: totalAssetAmount,
+      fill: chartConfig.totalAssetAmount.color,
+    },
+    {
+      name: "Total Liability Amount",
+      value: totalLiabilityAmount,
+      fill: chartConfig.totalLiabilityAmount.color,
+    },
+  ];
 
   const categoryData = await Promise.all(
     Object.values(Category).map(async (category) => {
@@ -59,7 +79,12 @@ export default async function Page({ params, searchParams }: PageProps) {
       <AddEntry entryType="liability" statementId={statementId} />
       <ViewSelector />
       <h2>Net worth</h2>
-      <NetWorthTable statement={statement} />
+      {view === "table" ? (
+        <NetWorthTable data={netWorthData} />
+      ) : (
+        <NetWorthChart data={netWorthData} />
+      )}
+
       <h2>Category analysis</h2>
       {view === "table" ? (
         <CategoryTable data={categoryData} />

@@ -6,35 +6,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { StatementHydrated } from "@/lib/types/statement-types";
 import { formatAsDollar } from "@/lib/utils/format-utils";
 
+type NetWorthTableData = {
+  name: string;
+  value: number;
+  fill?: string;
+};
+
 export default async function NetWorthTable({
-  statement,
+  data,
 }: {
-  statement: StatementHydrated;
+  data: NetWorthTableData[];
 }) {
-  const [netWorth, totalAssetAmount, totalLiabilityAmount] = await Promise.all([
-    statement.getNetWorth(),
-    statement.getTotalAssetAmount(),
-    statement.getTotalLiabilityAmount(),
-  ]);
-
-  const contents = [
-    {
-      name: "Net worth",
-      value: formatAsDollar(netWorth),
-    },
-    {
-      name: "Total assets",
-      value: formatAsDollar(totalAssetAmount),
-    },
-    {
-      name: "Total liabilities",
-      value: formatAsDollar(totalLiabilityAmount),
-    },
-  ];
-
   return (
     <Table>
       <TableHeader>
@@ -44,11 +28,11 @@ export default async function NetWorthTable({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {contents.map((row, index) => {
+        {data.map((row, index) => {
           return (
             <TableRow key={index}>
               <TableCell>{row.name}</TableCell>
-              <TableCell>{row.value}</TableCell>
+              <TableCell>{formatAsDollar(row.value)}</TableCell>
             </TableRow>
           );
         })}
