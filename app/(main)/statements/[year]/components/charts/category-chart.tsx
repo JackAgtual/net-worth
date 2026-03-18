@@ -1,8 +1,6 @@
 "use client";
 
-import { chartConfig } from "@/components/chart/chart-config";
 import {
-  ChartContainer,
   ChartLegend,
   ChartLegendContent,
   ChartTooltip,
@@ -10,6 +8,7 @@ import {
 } from "@/components/ui/chart";
 import { formatAsDollar, formatAsPercent } from "@/lib/utils/format-utils";
 import { Pie, PieChart } from "recharts";
+import StatementChartContainer from "./statement-chart-container";
 
 type CategoryChartData = {
   category: string;
@@ -20,10 +19,7 @@ type CategoryChartData = {
 
 export default function CategoryChart({ data }: { data: CategoryChartData[] }) {
   return (
-    <ChartContainer
-      config={chartConfig}
-      className="mx-auto aspect-square max-h-[500px]"
-    >
+    <StatementChartContainer>
       <PieChart>
         <ChartTooltip
           cursor={false}
@@ -52,6 +48,6 @@ export default function CategoryChart({ data }: { data: CategoryChartData[] }) {
           className="text-base flex-wrap gap-2 *:basis-1/4 *:justify-center"
         />
       </PieChart>
-    </ChartContainer>
+    </StatementChartContainer>
   );
 }
