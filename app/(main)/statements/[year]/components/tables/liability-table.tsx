@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/table";
 import { LiabilityForm, LiabilityHydrated } from "@/lib/types/liability-types";
 import { formatAsDollar } from "@/lib/utils/format-utils";
-import EntryDropDown from "./entry-drop-down";
+import EntryDropDown from "../entry-drop-down";
 
 export default async function LiabilityTable({
   liabilities,

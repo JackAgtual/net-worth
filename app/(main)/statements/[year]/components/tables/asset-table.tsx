@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/table";
 import { AssetForm, AssetHydrated } from "@/lib/types/asset-types";
 import { formatAsDollar } from "@/lib/utils/format-utils";
-import EntryDropDown from "./entry-drop-down";
+import EntryDropDown from "../entry-drop-down";
 
 export default async function AssetTable({
   assets,

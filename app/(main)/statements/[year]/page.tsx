@@ -1,16 +1,16 @@
 import { getStatementFromYear } from "@/lib/dal/statement-dal";
 import AddEntry from "./components/add-entry";
-import AssetTable from "./components/asset-table";
-import CategoryTable from "./components/category-table";
-import ContributionTable from "./components/contribution-table";
-import IncomeTable from "./components/income-table";
-import LiabilityTable from "./components/liability-table";
-import NetWorthTable from "./components/net-worth-table";
+import AssetTable from "./components/tables/asset-table";
+import CategoryTable from "./components/tables/category-table";
+import ContributionTable from "./components/tables/contribution-table";
+import IncomeTable from "./components/tables/income-table";
+import LiabilityTable from "./components/tables/liability-table";
+import NetWorthTable from "./components/tables/net-worth-table";
 import ViewSelector from "./components/view-selector";
 import { SearchParams } from "next/dist/server/request/search-params";
 import { Category } from "@/lib/types/types";
 import { chartConfig } from "@/components/chart/chart-config";
-import CategoryChart from "./components/category-chart";
+import CategoryChart from "./components/charts/category-chart";
 
 type PageProps = {
   params: Promise<{
