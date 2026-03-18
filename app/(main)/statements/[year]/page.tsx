@@ -6,6 +6,7 @@ import ContributionTable from "./components/contribution-table";
 import IncomeTable from "./components/income-table";
 import LiabilityTable from "./components/liability-table";
 import NetWorthTable from "./components/net-worth-table";
+import ViewSelector from "./components/view-selector";
 
 export default async function Page({
   params,
@@ -34,6 +35,7 @@ export default async function Page({
       <h2>Liabilities</h2>
       <LiabilityTable liabilities={liabilities} statementId={statementId} />
       <AddEntry entryType="liability" statementId={statementId} />
+      <ViewSelector />
       <h2>Net worth</h2>
       <NetWorthTable statement={statement} />
       <h2>Category analysis</h2>
