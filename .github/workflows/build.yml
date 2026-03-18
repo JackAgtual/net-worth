@@ -13,7 +13,9 @@ jobs:
         with:
           node-version: 25.6.1
           cache: "npm"
-      - run: docker compose up -d --wait
+      - run: docker compose up -d mongo
+      - run: docker compose up -d --wait mongo
+      - run: docker compose up mongo-init
       - run: npm ci
       - run: npm run build
         env:
