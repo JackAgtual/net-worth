@@ -2,6 +2,10 @@ import { Category, Contributor } from "./types";
 
 type Year = { year: number };
 
+export type Fill = {
+  fill: string;
+};
+
 export type NetWorthChartData = Year & {
   netWorth: number;
   totalAssetAmount: number;

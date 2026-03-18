@@ -8,10 +8,9 @@ import {
 } from "@/components/ui/table";
 import { formatAsDollar } from "@/lib/utils/format-utils";
 
-type NetWorthTableData = {
+export type NetWorthTableData = {
   name: string;
   value: number;
-  fill?: string;
 };
 
 export default async function NetWorthTable({

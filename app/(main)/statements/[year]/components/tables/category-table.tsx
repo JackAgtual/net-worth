@@ -8,11 +8,10 @@ import {
 import { formatAsDollar, formatAsPercent } from "@/lib/utils/format-utils";
 import { Category } from "@/types/types";
 
-type CategoryTableData = {
+export type CategoryTableData = {
   category: Category;
   amount: number;
   percent: number;
-  fill?: string;
 };
 
 export default async function CategoryTable({

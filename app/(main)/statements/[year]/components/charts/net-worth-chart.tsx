@@ -1,7 +1,5 @@
 "use client";
 
-import { Card } from "@/components/ui/card";
-import StatementChartContainer from "./statement-chart-container";
 import { ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { formatAsDollar } from "@/lib/utils/format-utils";
 import {
@@ -12,12 +10,11 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import StatementChartContainer from "./statement-chart-container";
+import { NetWorthTableData } from "../tables/net-worth-table";
+import { Fill } from "@/lib/types/chart-data-types";
 
-type NetWorthChartData = {
-  name: string;
-  value: number;
-  fill: string;
-};
+type NetWorthChartData = NetWorthTableData & Fill;
 
 export default function NetWorthChart({ data }: { data: NetWorthChartData[] }) {
   return (

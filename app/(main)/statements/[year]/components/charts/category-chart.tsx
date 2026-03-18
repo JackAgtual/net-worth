@@ -8,14 +8,11 @@ import {
 } from "@/components/ui/chart";
 import { formatAsDollar, formatAsPercent } from "@/lib/utils/format-utils";
 import { Pie, PieChart } from "recharts";
+import { CategoryTableData } from "../tables/category-table";
 import StatementChartContainer from "./statement-chart-container";
+import { Fill } from "@/lib/types/chart-data-types";
 
-type CategoryChartData = {
-  category: string;
-  amount: number;
-  percent: number;
-  fill: string;
-};
+type CategoryChartData = CategoryTableData & Fill;
 
 export default function CategoryChart({ data }: { data: CategoryChartData[] }) {
   return (
