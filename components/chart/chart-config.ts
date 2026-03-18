@@ -2,11 +2,10 @@ import {
   AssetGrowthChartData,
   CategoryChartData,
   ContributionAmountChartData,
-  ContributionPercentChartData,
   NetWorthChartData,
 } from "@/lib/types/chart-data-types";
-import { ChartConfig } from "../ui/chart";
 import { Category, Contributor } from "@/lib/types/types";
+import { ChartConfig } from "../ui/chart";
 
 type ChartConfigItem = ChartConfig[string];
 type StrictChartConfig<T> = {

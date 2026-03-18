@@ -7,13 +7,22 @@ import IncomeTable from "./components/income-table";
 import LiabilityTable from "./components/liability-table";
 import NetWorthTable from "./components/net-worth-table";
 import ViewSelector from "./components/view-selector";
+import { SearchParams } from "next/dist/server/request/search-params";
+import { Category } from "@/lib/types/types";
+import { chartConfig } from "@/components/chart/chart-config";
+import CategoryChart from "./components/category-chart";
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ year: number }>;
-}) {
+type PageProps = {
+  params: Promise<{
+    year: number;
+  }>;
+  searchParams: Promise<SearchParams>;
+};
+
+export default async function Page({ params, searchParams }: PageProps) {
   const { year } = await params;
+
+  const { view = "table" } = await searchParams;
 
   const statement = await getStatementFromYear(year);
 
@@ -23,6 +32,19 @@ export default async function Page({
     statement.getAssets(),
     statement.getLiabilities(),
   ]);
+
+  const categoryData = await Promise.all(
+    Object.values(Category).map(async (category) => {
+      const amount = await statement.getTotalAssetAmountByCategory(category);
+      const percent = await statement.getPercentOfAssetsByCategory(category);
+      return {
+        category,
+        amount,
+        percent,
+        fill: chartConfig[category].color,
+      };
+    })
+  );
 
   const statementId = statement._id.toString();
 
@@ -39,7 +61,12 @@ export default async function Page({
       <h2>Net worth</h2>
       <NetWorthTable statement={statement} />
       <h2>Category analysis</h2>
-      <CategoryTable statement={statement} />
+      {view === "table" ? (
+        <CategoryTable data={categoryData} />
+      ) : (
+        <CategoryChart data={categoryData} />
+      )}
+
       <h2>Income analysis</h2>
       <IncomeTable statement={statement} />
       <h2>Contribution analysis</h2>
