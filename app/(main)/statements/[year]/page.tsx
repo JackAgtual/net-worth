@@ -1,9 +1,10 @@
 import { chartConfig } from "@/components/chart/chart-config";
 import { getStatementFromYear } from "@/lib/dal/statement-dal";
-import { Category } from "@/lib/types/types";
+import { Category, Contributor } from "@/lib/types/types";
 import { SearchParams } from "next/dist/server/request/search-params";
 import AddEntry from "./components/add-entry";
 import CategoryChart from "./components/charts/category-chart";
+import ContributionChart from "./components/charts/contribution-chart";
 import NetWorthChart from "./components/charts/net-worth-chart";
 import AssetTable from "./components/tables/asset-table";
 import CategoryTable from "./components/tables/category-table";
@@ -66,6 +67,24 @@ export default async function Page({ params, searchParams }: PageProps) {
     })
   );
 
+  const contributionData = await Promise.all(
+    Object.values(Contributor).map(async (contributor) => {
+      const amount =
+        await statement.getContributionAmountByContributor(contributor);
+
+      const percentOfIncome =
+        await statement.getContributioPercentOfSalaryByContributor(contributor);
+
+      const fill = chartConfig[contributor].color;
+      return {
+        contributor,
+        amount,
+        percentOfIncome,
+        fill,
+      };
+    })
+  );
+
   const statementId = statement._id.toString();
 
   return (
@@ -95,7 +114,11 @@ export default async function Page({ params, searchParams }: PageProps) {
       <h2>Income analysis</h2>
       <IncomeTable statement={statement} />
       <h2>Contribution analysis</h2>
-      <ContributionTable statement={statement} />
+      {view === "table" ? (
+        <ContributionTable data={contributionData} />
+      ) : (
+        <ContributionChart data={contributionData} />
+      )}
     </>
   );
 }

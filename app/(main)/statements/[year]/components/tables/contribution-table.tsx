@@ -5,39 +5,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { StatementHydrated } from "@/lib/types/statement-types";
 import { Contributor } from "@/lib/types/types";
 import { formatAsDollar, formatAsPercent } from "@/lib/utils/format-utils";
 
+export type ContributionTableData = {
+  contributor: Contributor;
+  amount: number;
+  percentOfIncome: number | undefined;
+};
+
 export default async function ContributionTable({
-  statement,
+  data,
 }: {
-  statement: StatementHydrated;
+  data: ContributionTableData[];
 }) {
-  const allCont = await statement.getContributionAmountByContributor(
-    Contributor.All
-  );
-
-  const contents = await Promise.all(
-    Object.keys(Contributor).map(async (contributor) => {
-      const contributorEnum =
-        Contributor[contributor as keyof typeof Contributor];
-
-      const amount = formatAsDollar(
-        await statement.getContributionAmountByContributor(contributorEnum)
-      );
-      const percentOfIncome = formatAsPercent(
-        await statement.getContributioPercentOfSalaryByContributor(
-          contributorEnum
-        )
-      );
-      return {
-        contributor: contributorEnum,
-        amount,
-        percentOfIncome,
-      };
-    })
-  );
   return (
     <Table>
       <TableHeader>
@@ -48,12 +29,12 @@ export default async function ContributionTable({
         </TableRow>
       </TableHeader>
       <tbody>
-        {contents.map((row, index) => {
+        {data.map((row, index) => {
           return (
             <TableRow key={index}>
               <TableCell>{row.contributor}</TableCell>
-              <TableCell>{row.amount}</TableCell>
-              <TableCell>{row.percentOfIncome}</TableCell>
+              <TableCell>{formatAsDollar(row.amount)}</TableCell>
+              <TableCell>{formatAsPercent(row.percentOfIncome)}</TableCell>
             </TableRow>
           );
         })}
