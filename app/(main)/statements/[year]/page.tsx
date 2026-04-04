@@ -1,10 +1,12 @@
 import { chartConfig } from "@/components/chart/chart-config";
 import { getStatementFromYear } from "@/lib/dal/statement-dal";
+import { IncomeData } from "@/lib/types/chart-data-types";
 import { Category, Contributor } from "@/lib/types/types";
 import { SearchParams } from "next/dist/server/request/search-params";
 import AddEntry from "./components/add-entry";
 import CategoryChart from "./components/charts/category-chart";
 import ContributionChart from "./components/charts/contribution-chart";
+import IncomeChart, { IncomeChartData } from "./components/charts/income-chart";
 import NetWorthChart from "./components/charts/net-worth-chart";
 import AssetTable from "./components/tables/asset-table";
 import CategoryTable from "./components/tables/category-table";
@@ -85,6 +87,33 @@ export default async function Page({ params, searchParams }: PageProps) {
     })
   );
 
+  const [lastyearAssetGrowth, assetGrothPercentOfSalary] = await Promise.all([
+    statement.getLastYearAssetGrowth(),
+    statement.getLastYearAssetGrowthPercentOfSalary(),
+  ]);
+
+  const incomeData: IncomeChartData[] = [
+    {
+      name: IncomeData.LastYearIncome,
+      value: statement.lastYearSalary,
+      format: "dollar",
+      fill: chartConfig.lastYearSalary.color,
+    },
+    {
+      name: IncomeData.LastYearAssetGrowth,
+      value: lastyearAssetGrowth,
+      format: "dollar",
+      fill: chartConfig.lastYearAssetGrowth.color,
+    },
+    {
+      name: IncomeData.AssetGrowthPercentOfSalary,
+      value: assetGrothPercentOfSalary,
+      format: "percent",
+      fill: "",
+      hideBar: true,
+    },
+  ];
+
   const statementId = statement._id.toString();
 
   return (
@@ -112,7 +141,11 @@ export default async function Page({ params, searchParams }: PageProps) {
       )}
 
       <h2>Income analysis</h2>
-      <IncomeTable statement={statement} />
+      {view === "table" ? (
+        <IncomeTable data={incomeData} />
+      ) : (
+        <IncomeChart data={incomeData} />
+      )}
       <h2>Contribution analysis</h2>
       {view === "table" ? (
         <ContributionTable data={contributionData} />

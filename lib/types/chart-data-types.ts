@@ -25,3 +25,9 @@ export type ContributionPercentChartData = Year &
   ContributionValues<number | undefined>;
 
 export type CategoryChartData = Year & Record<Category, number>;
+
+export enum IncomeData {
+  LastYearIncome = "Last year income",
+  LastYearAssetGrowth = "Last year asset growth",
+  AssetGrowthPercentOfSalary = "Last year asset growth percent of salary",
+}

@@ -5,34 +5,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { StatementHydrated } from "@/lib/types/statement-types";
 import { formatAsDollar, formatAsPercent } from "@/lib/utils/format-utils";
 
-export default async function IncomeTable({
-  statement,
-}: {
-  statement: StatementHydrated;
-}) {
-  const [lastYearAssetGrowth, lastYearAssetGrowthPercentOfSalary] =
-    await Promise.all([
-      statement.getLastYearAssetGrowth(),
-      statement.getLastYearAssetGrowthPercentOfSalary(),
-    ]);
-  const contents = [
-    {
-      name: "Last year income",
-      value: formatAsDollar(statement.lastYearSalary),
-    },
-    {
-      name: "Last year asset growth",
-      value: formatAsDollar(lastYearAssetGrowth),
-    },
-    {
-      name: "Last year asset growth percent of salary",
-      value: formatAsPercent(lastYearAssetGrowthPercentOfSalary),
-    },
-  ];
+export type IncomeTableData = {
+  name: string;
+  value: number | undefined;
+  format: "dollar" | "percent";
+};
 
+export default async function IncomeTable({
+  data,
+}: {
+  data: IncomeTableData[];
+}) {
   return (
     <Table>
       <TableHeader>
@@ -42,11 +27,15 @@ export default async function IncomeTable({
         </TableRow>
       </TableHeader>
       <tbody>
-        {contents.map((row, index) => {
+        {data.map((row, index) => {
+          const displayValue =
+            row.format === "dollar"
+              ? formatAsDollar(row.value)
+              : formatAsPercent(row.value);
           return (
             <TableRow key={index}>
               <TableCell>{row.name}</TableCell>
-              <TableCell>{row.value}</TableCell>
+              <TableCell>{displayValue}</TableCell>
             </TableRow>
           );
         })}
