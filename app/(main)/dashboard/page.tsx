@@ -34,9 +34,9 @@ export default async function Home() {
             <p>Net worth:</p>
             <p>{formatAsDollar(mostRecent.netWorth)}</p>
             <p>Assets:</p>
-            <p>{formatAsDollar(mostRecent.assets)}</p>
+            <p>{formatAsDollar(mostRecent.assetAmount)}</p>
             <p>Liabilities:</p>
-            <p>{formatAsDollar(mostRecent.liabilities)}</p>
+            <p>{formatAsDollar(mostRecent.liabilityAmount)}</p>
           </div>
         </CardContent>
       </Card>
