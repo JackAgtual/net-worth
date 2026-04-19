@@ -2,6 +2,7 @@ import { chartConfig } from "@/components/chart/chart-config";
 import { getStatementFromYear } from "@/lib/dal/statement-dal";
 import { IncomeData } from "@/lib/types/chart-data-types";
 import { Category, Contributor } from "@/lib/types/types";
+import { StatementDataAggregator } from "@/lib/utils/statement-data-aggregator";
 import { SearchParams } from "next/dist/server/request/search-params";
 import AddEntry from "./components/add-entry";
 import CategoryChart from "./components/charts/category-chart";
@@ -32,65 +33,47 @@ export default async function Page({ params, searchParams }: PageProps) {
 
   if (!statement) return <div>Couldn't find that statement</div>;
 
-  const [assets, liabilities] = await Promise.all([
+  const [assets, liabilities, data] = await Promise.all([
     statement.getAssets(),
     statement.getLiabilities(),
+    StatementDataAggregator.getAllDataFromStatement(statement),
   ]);
 
-  const [netWorth, totalAssetAmount, totalLiabilityAmount] = await Promise.all([
-    statement.getNetWorth(),
-    statement.getTotalAssetAmount(),
-    statement.getTotalLiabilityAmount(),
-  ]);
   const netWorthData = [
-    { name: "Net Worth", value: netWorth, fill: chartConfig.netWorth.color },
+    {
+      name: "Net Worth",
+      value: data.netWorth,
+      fill: chartConfig.netWorth.color,
+    },
     {
       name: "Total Asset Amount",
-      value: totalAssetAmount,
+      value: data.assetAmount,
       fill: chartConfig.totalAssetAmount.color,
     },
     {
       name: "Total Liability Amount",
-      value: totalLiabilityAmount,
+      value: data.liabilityAmount,
       fill: chartConfig.totalLiabilityAmount.color,
     },
   ];
 
-  const categoryData = await Promise.all(
-    Object.values(Category).map(async (category) => {
-      const amount = await statement.getTotalAssetAmountByCategory(category);
-      const percent = await statement.getPercentOfAssetsByCategory(category);
-      return {
-        category,
-        amount,
-        percent,
-        fill: chartConfig[category].color,
-      };
-    })
-  );
+  const categoryData = Object.values(Category).map((category) => {
+    return {
+      category,
+      amount: data.categories.amount[category],
+      percent: data.categories.percent[category],
+      fill: chartConfig[category].color,
+    };
+  });
 
-  const contributionData = await Promise.all(
-    Object.values(Contributor).map(async (contributor) => {
-      const amount =
-        await statement.getContributionAmountByContributor(contributor);
-
-      const percentOfIncome =
-        await statement.getContributioPercentOfSalaryByContributor(contributor);
-
-      const fill = chartConfig[contributor].color;
-      return {
-        contributor,
-        amount,
-        percentOfIncome,
-        fill,
-      };
-    })
-  );
-
-  const [lastyearAssetGrowth, assetGrothPercentOfSalary] = await Promise.all([
-    statement.getLastYearAssetGrowth(),
-    statement.getLastYearAssetGrowthPercentOfSalary(),
-  ]);
+  const contributionData = Object.values(Contributor).map((contributor) => {
+    return {
+      contributor,
+      amount: data.contributions.amount[contributor],
+      percentOfIncome: data.contributions.percentOfSalary[contributor],
+      fill: chartConfig[contributor].color,
+    };
+  });
 
   const incomeData: IncomeChartData[] = [
     {
@@ -101,13 +84,13 @@ export default async function Page({ params, searchParams }: PageProps) {
     },
     {
       name: IncomeData.LastYearAssetGrowth,
-      value: lastyearAssetGrowth,
+      value: data.lastYearAssetGrowth,
       format: "dollar",
       fill: chartConfig.lastYearAssetGrowth.color,
     },
     {
       name: IncomeData.AssetGrowthPercentOfSalary,
-      value: assetGrothPercentOfSalary,
+      value: data.lastYearAssetGrowthPercentOfSalary,
       format: "percent",
       fill: "",
       hideBar: true,

@@ -14,7 +14,7 @@ export class StatementDataAggregator {
   mostRecentStatement: StatementHydrated;
   statements: StatementHydrated[];
 
-  contributors = Object.values(Contributor);
+  static contributors = Object.values(Contributor);
 
   constructor(statements: StatementHydrated[]) {
     if (statements.length === 0) {
@@ -26,11 +26,20 @@ export class StatementDataAggregator {
     this.mostRecentStatement = statements[statements.length - 1];
   }
 
-  async #getAllDataFromStatement(statement: StatementHydrated) {
+  static async getAllDataFromStatement(statement: StatementHydrated) {
     const mapContributions = <T>(fn: (c: Contributor) => T) => {
       return Object.fromEntries(
-        this.contributors.map((contributor) => [contributor, fn(contributor)])
+        StatementDataAggregator.contributors.map((contributor) => [
+          contributor,
+          fn(contributor),
+        ])
       ) as Record<Contributor, T>;
+    };
+
+    const mapCategories = <T>(fn: (c: Category) => T) => {
+      return Object.fromEntries(
+        Object.values(Category).map((category) => [category, fn(category)])
+      ) as Record<Category, T>;
     };
 
     const contributions = {
@@ -48,12 +57,19 @@ export class StatementDataAggregator {
       })
     ) as Record<Category, Promise<number>>;
 
+    const categories = {
+      amount: mapCategories((c) => statement.getTotalAssetAmountByCategory(c)),
+      percent: mapCategories((c) => statement.getPercentOfAssetsByCategory(c)),
+    };
+
     const promises = {
       netWorth: statement.getNetWorth(),
-      assets: statement.getTotalAssetAmount(),
-      liabilities: statement.getTotalLiabilityAmount(),
+      assetAmount: statement.getTotalAssetAmount(),
+      liabilityAmount: statement.getTotalLiabilityAmount(),
       lastYearAssetGrowth: statement.getLastYearAssetGrowth(),
-      categoryPercentage: categoryPercentagePromises,
+      lastYearAssetGrowthPercentOfSalary:
+        statement.getLastYearAssetGrowthPercentOfSalary(),
+      categories,
       contributions,
     };
 
@@ -65,13 +81,15 @@ export class StatementDataAggregator {
   }
 
   async getMostRecentStatementData() {
-    return this.#getAllDataFromStatement(this.mostRecentStatement);
+    return StatementDataAggregator.getAllDataFromStatement(
+      this.mostRecentStatement
+    );
   }
 
   async getPlotData() {
     const allData = await Promise.all(
       this.statements.map(async (statement) => {
-        return this.#getAllDataFromStatement(statement);
+        return StatementDataAggregator.getAllDataFromStatement(statement);
       })
     );
 
@@ -82,7 +100,7 @@ export class StatementDataAggregator {
     const cumulativeContributionAmount: ContributionAmountChartData[] = [];
     const contributionPercentOfSalary: ContributionPercentChartData[] = [];
     const curCumilativeContributions: ContributionValues =
-      this.contributors.reduce((acc, cur) => {
+      StatementDataAggregator.contributors.reduce((acc, cur) => {
         acc[cur] = 0;
         return acc;
       }, {} as ContributionValues);
@@ -92,8 +110,8 @@ export class StatementDataAggregator {
       netWorth.push({
         year,
         netWorth: data.netWorth,
-        totalAssetAmount: data.assets,
-        totalLiabilityAmount: data.liabilities,
+        totalAssetAmount: data.assetAmount,
+        totalLiabilityAmount: data.liabilityAmount,
       });
 
       assetGrowth.push({
@@ -104,7 +122,7 @@ export class StatementDataAggregator {
 
       categoryPercentage.push({
         year,
-        ...data.categoryPercentage,
+        ...data.categories.percent,
       });
 
       const { amount, percentOfSalary } = data.contributions;
@@ -118,7 +136,7 @@ export class StatementDataAggregator {
         ...percentOfSalary,
       });
 
-      this.contributors.forEach((contributor) => {
+      StatementDataAggregator.contributors.forEach((contributor) => {
         curCumilativeContributions[contributor] += amount[contributor];
       });
 
