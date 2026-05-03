@@ -29,6 +29,7 @@ export default async function AssetTable({
           <TableHead>Account value 1 year ago</TableHead>
           <TableHead>Self contributions</TableHead>
           <TableHead>Non-self contribution</TableHead>
+          <TableHead>Withdrawals</TableHead>
           <TableHead>Growth from appreciation</TableHead>
           <TableHead>Notes</TableHead>
           <TableHead className="text-right">Action</TableHead>
@@ -49,6 +50,7 @@ export default async function AssetTable({
               self: asset.contribution?.self,
               nonSelf: asset.contribution?.nonSelf,
             },
+            withdrawals: asset.withdrawals,
             includeInGrowthCalculation: asset.includeInGrowthCalculation,
             notes: asset.notes,
           };
@@ -67,6 +69,7 @@ export default async function AssetTable({
               <TableCell>
                 {formatAsDollar(asset.contribution?.nonSelf)}
               </TableCell>
+              <TableCell>{formatAsDollar(asset.withdrawals)}</TableCell>
               <TableCell>
                 {formatAsDollar(asset.getGrowthFromAppreciation())}
               </TableCell>

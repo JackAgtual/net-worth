@@ -13,6 +13,7 @@ export const assetSchema = entrySchema.extend({
   retirement: z.boolean().nullable().optional(),
   amountOneYearAgo: z.number().nullable().optional(),
   contribution: contributionSchema.optional(),
+  withdrawals: z.number().nullable().optional(),
   includeInGrowthCalculation: z.boolean().nullable().optional(),
 });
 
@@ -26,6 +27,7 @@ export type AssetUpdate = Partial<AssetForm>;
 
 export type AssetMethods = {
   getTotalContributions(): number;
+  getNetContributions(): number;
   getGrowthFromAppreciation(): number | undefined;
 };
 

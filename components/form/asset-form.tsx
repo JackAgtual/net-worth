@@ -112,6 +112,12 @@ export default function AssetForm<
         name={getName("contribution.nonSelf")}
         placeholder="500"
       />
+      <DollarInput
+        control={control}
+        label="Withdrawals"
+        name={getName("withdrawals")}
+        placeholder="250"
+      />
       <Controller
         name={getName("includeInGrowthCalculation")}
         control={control}

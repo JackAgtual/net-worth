@@ -24,10 +24,10 @@ const assetMongooseSchema = new Schema<AssetDoc, AssetModelType, AssetMethods>(
       required,
     },
     amount: { type: Number, required },
-
     includeInGrowthCalculation: { type: Boolean, default: false },
     amountOneYearAgo: Number,
     contribution: { type: contributionMongooseSchema, required: false },
+    withdrawals: { type: Number, requied: false },
     retirement: Boolean,
     notes: String,
   },
@@ -39,12 +39,18 @@ const assetMongooseSchema = new Schema<AssetDoc, AssetModelType, AssetMethods>(
 
         return (contribution.self ?? 0) + (contribution.nonSelf ?? 0);
       },
+      getNetContributions(): number {
+        const { contribution, withdrawals } = this;
+        const contributionAmount = !!contribution
+          ? (contribution.self ?? 0) + (contribution.nonSelf ?? 0)
+          : 0;
+        const withdrawalsAmount = withdrawals ?? 0;
+        return contributionAmount - withdrawalsAmount;
+      },
       getGrowthFromAppreciation(): number | undefined {
         if (!this.amountOneYearAgo) return undefined;
 
-        return (
-          this.amount - this.amountOneYearAgo - this.getTotalContributions()
-        );
+        return this.amount - this.amountOneYearAgo - this.getNetContributions();
       },
     },
     toJSON: { virtuals: true },
