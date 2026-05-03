@@ -24,6 +24,7 @@ export default async function AssetTable({
           <TableHead>Asset</TableHead>
           <TableHead>Category</TableHead>
           <TableHead>Retirement</TableHead>
+          <TableHead>Include in growth</TableHead>
           <TableHead>Amount</TableHead>
           <TableHead>Account value 1 year ago</TableHead>
           <TableHead>Self contributions</TableHead>
@@ -57,6 +58,9 @@ export default async function AssetTable({
               <TableCell>{asset.title}</TableCell>
               <TableCell>{asset.category}</TableCell>
               <TableCell>{asset.retirement ? "Y" : "N"}</TableCell>
+              <TableCell>
+                {asset.includeInGrowthCalculation ? "Y" : "N"}
+              </TableCell>
               <TableCell>{formatAsDollar(asset.amount)}</TableCell>
               <TableCell>{formatAsDollar(asset.amountOneYearAgo)}</TableCell>
               <TableCell>{formatAsDollar(asset.contribution?.self)}</TableCell>
