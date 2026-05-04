@@ -66,14 +66,28 @@ export default async function Page({ params, searchParams }: PageProps) {
     };
   });
 
-  const contributionData = Object.values(Contributor).map((contributor) => {
-    return {
-      contributor,
-      amount: data.contributions.amount[contributor],
-      percentOfIncome: data.contributions.percentOfSalary[contributor],
-      fill: chartConfig[contributor].color,
-    };
-  });
+  const contributionData = [
+    ...Object.values(Contributor).map((contributor) => {
+      return {
+        metric: `${contributor} contributions`,
+        amount: data.contributions.amount[contributor],
+        percentOfIncome: data.contributions.percentOfSalary[contributor],
+        fill: chartConfig[contributor].color,
+      };
+    }),
+    {
+      metric: "Withdrawals",
+      amount: data.totalWithdrawals,
+      percentOfIncome: data.totalWithdrawalsPercentOfSalary,
+      fill: "black",
+    },
+    {
+      metric: "Net contributions",
+      amount: data.netContributions,
+      percentOfIncome: data.netContributionsPercentOfSalary,
+      fill: "black",
+    },
+  ];
 
   const incomeData: IncomeChartData[] = [
     {

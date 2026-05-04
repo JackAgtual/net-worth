@@ -23,17 +23,19 @@ export default function ContributionChart({
   data: ContributionChartData[];
 }) {
   function getPctOfIncome(val: number) {
-    return `${formatAsPercent(val)} of income`;
+    return `${formatAsPercent(val)} of salary`;
   }
   return (
     <StatementChartContainer>
       <BarChart accessibilityLayer data={data}>
         <CartesianGrid vertical={false} />
+        {/* TODO: Fix bar labels overlapping */}
         <XAxis
-          dataKey="contributor"
+          dataKey="metric"
           tickLine={false}
           tickMargin={10}
           axisLine={false}
+          interval={0}
         />
         <YAxis
           yAxisId="amount"
@@ -47,7 +49,7 @@ export default function ContributionChart({
               hideLabel
               formatter={(value, name, item) => (
                 <div className="flex flex-col">
-                  <span className="font-bold">{item.payload.contributor}</span>
+                  <span className="font-bold">{item.payload.metric}</span>
                   <span>{formatAsDollar(item.payload.amount)}</span>
                   <span>{getPctOfIncome(item.payload.percentOfIncome)}</span>
                 </div>
