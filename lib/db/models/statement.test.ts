@@ -640,4 +640,112 @@ describe("Statement", () => {
       expect(updatedLiability).toBeNull();
     });
   });
+
+  describe("getTotalWithdrawals", () => {
+    it("returns 0 if no assets have withdrawals", async () => {
+      expect(await statement.getTotalWithdrawals()).toEqual(0);
+    });
+
+    it("sums withdrawals across all assets", async () => {
+      const assets = await statement.getAssets();
+      assets[0].withdrawals = 500;
+      assets[1].withdrawals = 1000;
+      await assets[0].save();
+      await assets[1].save();
+
+      expect(await statement.getTotalWithdrawals()).toEqual(1500);
+    });
+
+    it("treats undefined withdrawals as zero", async () => {
+      const assets = await statement.getAssets();
+      assets[0].withdrawals = 300;
+      await assets[0].save();
+
+      expect(await statement.getTotalWithdrawals()).toEqual(300);
+    });
+  });
+
+  describe("getNetContributions", () => {
+    it("returns total contributions when there are no withdrawals", async () => {
+      expect(await statement.getNetContributions()).toEqual(37_500);
+    });
+
+    it("subtracts withdrawals from total contributions", async () => {
+      const assets = await statement.getAssets();
+      assets[0].withdrawals = 500;
+      await assets[0].save();
+
+      expect(await statement.getNetContributions()).toEqual(37_000);
+    });
+
+    it("returns negative value if withdrawals exceed contributions", async () => {
+      const assets = await statement.getAssets();
+      assets[0].withdrawals = 40_000;
+      await assets[0].save();
+
+      expect(await statement.getNetContributions()).toEqual(-2_500);
+    });
+  });
+
+  describe("getPercentOfSalary", () => {
+    it("returns undefined if lastYearSalary is not set", async () => {
+      statement.lastYearSalary = undefined;
+      expect(statement.getPercentOfSalary(10_000)).toBeUndefined();
+    });
+
+    it("calculates percent of salary", async () => {
+      expect(statement.getPercentOfSalary(25_000)).toBeCloseTo(0.25, 2);
+    });
+  });
+
+  describe("getTotalWithdrawalsPercentOfSalary", () => {
+    it("returns undefined if lastYearSalary is not set", async () => {
+      statement.lastYearSalary = undefined;
+      expect(
+        await statement.getTotalWithdrawalsPercentOfSalary()
+      ).toBeUndefined();
+    });
+
+    it("returns 0 if there are no withdrawals", async () => {
+      expect(await statement.getTotalWithdrawalsPercentOfSalary()).toEqual(0);
+    });
+
+    it("calculates withdrawals as percent of salary", async () => {
+      const assets = await statement.getAssets();
+      assets[0].withdrawals = 10_000;
+      await assets[0].save();
+
+      expect(await statement.getTotalWithdrawalsPercentOfSalary()).toBeCloseTo(
+        0.1,
+        2
+      );
+    });
+  });
+
+  describe("getNetContributionsPercentOfSalary", () => {
+    it("returns undefined if lastYearSalary is not set", async () => {
+      statement.lastYearSalary = undefined;
+      expect(
+        await statement.getNetContributionsPercentOfSalary()
+      ).toBeUndefined();
+    });
+
+    it("calculates net contributions as percent of salary with no withdrawals", async () => {
+      expect(await statement.getNetContributionsPercentOfSalary()).toBeCloseTo(
+        0.375,
+        3
+      );
+    });
+
+    it("accounts for withdrawals when calculating percent of salary", async () => {
+      const assets = await statement.getAssets();
+      assets[0].withdrawals = 7_500;
+      await assets[0].save();
+
+      expect(await statement.getNetContributionsPercentOfSalary()).toBeCloseTo(
+        0.3,
+        2
+      );
+    });
+  });
 });

@@ -61,10 +61,15 @@ export type StatementMethods = {
   getContributioPercentOfSalaryByContributor(
     contributor: Contributor
   ): Promise<number | undefined>;
+  getTotalWithdrawals(): Promise<number>;
+  getTotalWithdrawalsPercentOfSalary(): Promise<number | undefined>;
+  getNetContributions(): Promise<number>;
+  getNetContributionsPercentOfSalary(): Promise<number | undefined>;
   getLastYearAssetGrowth(): Promise<number>;
   getLastYearAssetGrowthPercentOfSalary(): Promise<number | undefined>;
   getTotalRetirementAssets(): Promise<number>;
   getRetirementAssetsByCategory(category: Category): Promise<number>;
+  getPercentOfSalary(number: number): number | undefined;
   addLiability(liability: LiabilityDoc): Promise<LiabilityHydrated>;
   addLiabilities(liabilities: LiabilityDoc[]): Promise<void>;
   deleteLiability(id: Types.ObjectId | string): Promise<boolean>;

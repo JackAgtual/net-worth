@@ -107,7 +107,25 @@ const statementMongooseSchema = new Schema<
         if (!this.lastYearSalary) return undefined;
         const contributionAmount =
           await this.getContributionAmountByContributor(contributor);
-        return contributionAmount / this.lastYearSalary;
+        return this.getPercentOfSalary(contributionAmount);
+      },
+      async getTotalWithdrawals(): Promise<number> {
+        const assets = await this.getAssets();
+        return assets.reduce((acc, cur) => acc + (cur.withdrawals ?? 0), 0);
+      },
+      async getTotalWithdrawalsPercentOfSalary(): Promise<number | undefined> {
+        const totalWithdrawals = await this.getTotalWithdrawals();
+        return this.getPercentOfSalary(totalWithdrawals);
+      },
+      async getNetContributions(): Promise<number> {
+        const totalContributions =
+          await this.getContributionAmountByContributor(Contributor.All);
+        const totalWithdrawals = await this.getTotalWithdrawals();
+        return totalContributions - totalWithdrawals;
+      },
+      async getNetContributionsPercentOfSalary() {
+        const netContributions = await this.getNetContributions();
+        return this.getPercentOfSalary(netContributions);
       },
       async getLastYearAssetGrowth(): Promise<number> {
         const assets = await this.getAssets();
@@ -129,7 +147,7 @@ const statementMongooseSchema = new Schema<
         if (!this.lastYearSalary) return undefined;
 
         const lastYearAssetGrowth = await this.getLastYearAssetGrowth();
-        return lastYearAssetGrowth / this.lastYearSalary;
+        return this.getPercentOfSalary(lastYearAssetGrowth);
       },
       async getTotalRetirementAssets(): Promise<number> {
         const assets = await this.getAssets();
@@ -142,6 +160,11 @@ const statementMongooseSchema = new Schema<
         return assets
           .filter((asset) => asset.retirement && asset.category === category)
           .reduce((acc, cur) => acc + cur.amount, 0);
+      },
+      getPercentOfSalary(number) {
+        if (!this.lastYearSalary) return undefined;
+
+        return number / this.lastYearSalary;
       },
       async addLiability(
         liabilityParams: LiabilityDoc

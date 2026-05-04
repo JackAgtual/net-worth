@@ -51,12 +51,6 @@ export class StatementDataAggregator {
       ),
     };
 
-    const categoryPercentagePromises = Object.fromEntries(
-      Object.values(Category).map((category) => {
-        return [category, statement.getPercentOfAssetsByCategory(category)];
-      })
-    ) as Record<Category, Promise<number>>;
-
     const categories = {
       amount: mapCategories((c) => statement.getTotalAssetAmountByCategory(c)),
       percent: mapCategories((c) => statement.getPercentOfAssetsByCategory(c)),
@@ -71,6 +65,12 @@ export class StatementDataAggregator {
         statement.getLastYearAssetGrowthPercentOfSalary(),
       categories,
       contributions,
+      totalWithdrawals: statement.getTotalWithdrawals(),
+      totalWithdrawalsPercentOfSalary:
+        statement.getTotalWithdrawalsPercentOfSalary(),
+      netContributions: statement.getNetContributions(),
+      netContributionsPercentOfSalary:
+        statement.getNetContributionsPercentOfSalary(),
     };
 
     return {
