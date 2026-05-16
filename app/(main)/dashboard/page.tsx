@@ -6,9 +6,8 @@ import { StatementDataAggregator } from "@/lib/utils/statement-data-aggregator";
 import { AssetGrowthChart } from "./components/asset-growth-chart";
 import { CategoryPercentageChart } from "./components/category-percentage-chart";
 import ChartCard from "./components/chart-card";
-import { ContributionChart } from "./components/contribution-chart";
+import { ContributionWithdrawalChart } from "./components/contribution-withdrawal-chart";
 import { NetWorthChart } from "./components/net-worth-chart";
-import { WithdrawalsChart } from "./components/withdrawals-chart";
 
 export default async function Home() {
   const allStatements = await getAllStatements();
@@ -63,29 +62,21 @@ export default async function Home() {
       <ChartCard title="Asset Growth & Salary vs. Time">
         <AssetGrowthChart chartData={plotData.assetGrowth} />
       </ChartCard>
-      <ChartCard title="Contribution Amount vs. Time">
-        <ContributionChart chartData={plotData.contributionAmount} />
+      <ChartCard title="Contribution & Withdrawal Amount vs. Time">
+        <ContributionWithdrawalChart
+          chartData={plotData.contributionWithdrawalAmount}
+        />
       </ChartCard>
-      <ChartCard title="Contribution Percent of Salary vs. Time">
-        <ContributionChart
-          chartData={plotData.contributionPercentOfSalary}
+      <ChartCard title="Contribution & Withdrawal Percent of Salary vs. Time">
+        <ContributionWithdrawalChart
+          chartData={plotData.contributionWithdrawalPercentOfSalary}
           yAxisFormat="percent"
         />
       </ChartCard>
-      <ChartCard title="Cumulative Contribution Amount vs. Time">
-        <ContributionChart chartData={plotData.cumulativeContributionAmount} />
-      </ChartCard>
-      <ChartCard title="Withdrawal Amount vs. Time">
-        <WithdrawalsChart chartData={plotData.withdrawals} />
-      </ChartCard>
-      <ChartCard title="Withdrawal Amount Percent of Salary vs. Time">
-        <WithdrawalsChart
-          chartData={plotData.withdrawalsPercentOfSalary}
-          yAxisFormat="percent"
+      <ChartCard title="Cumulative Contribution & Withdrawal Amount vs. Time">
+        <ContributionWithdrawalChart
+          chartData={plotData.cumulativeContributionWithdrawalAmount}
         />
-      </ChartCard>
-      <ChartCard title="Cumulative Withdrawal Amount vs. Time">
-        <WithdrawalsChart chartData={plotData.cumulativeWithdrawals} />
       </ChartCard>
     </>
   );

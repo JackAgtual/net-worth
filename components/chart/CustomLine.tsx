@@ -4,6 +4,7 @@ import { chartConfig, DataKey } from "./chart-config";
 
 type CustomLineProps = Omit<ComponentProps<typeof Line>, "dataKey" | "ref"> & {
   dataKey: DataKey;
+  dashed?: boolean;
 };
 
 export default function CustomLine({
@@ -11,6 +12,7 @@ export default function CustomLine({
   strokeWidth = 2.5,
   dot = false,
   connectNulls = true,
+  dashed = false,
   ...remainingProps
 }: CustomLineProps) {
   return (
@@ -20,6 +22,7 @@ export default function CustomLine({
       strokeWidth={strokeWidth}
       dot={dot}
       connectNulls={connectNulls}
+      strokeDasharray={dashed ? "5 5" : ""}
       {...remainingProps}
     />
   );

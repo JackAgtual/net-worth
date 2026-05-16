@@ -1,7 +1,7 @@
 import {
   AssetGrowthChartData,
   CategoryChartData,
-  ContributionAmountChartData,
+  ContributionAndWithdrawalAmountChartData,
   NetWorthChartData,
 } from "@/lib/types/chart-data-types";
 import { Category, Contributor } from "@/lib/types/types";
@@ -38,10 +38,10 @@ const assetGrowthChartConfig = {
   },
 } satisfies StrictChartConfig<AssetGrowthChartData>;
 
-// shared between amount, percent, and cumulative contributions
-const contributionChartConfig = {
+// shared between amount, percent, and cumulative contributions and withdrawals
+const contributionAndWithdrawalsChartConfig = {
   [Contributor.All]: {
-    label: "Total",
+    label: "Total contributions",
     color: "black",
   },
   [Contributor.Self]: {
@@ -52,7 +52,15 @@ const contributionChartConfig = {
     label: "Non-self",
     color: "orange",
   },
-} satisfies StrictChartConfig<ContributionAmountChartData>;
+  withdrawals: {
+    label: "Withdrawals",
+    color: "red",
+  },
+  netContributions: {
+    label: "Net contributions",
+    color: "gray",
+  },
+} satisfies StrictChartConfig<ContributionAndWithdrawalAmountChartData>;
 
 const categoryChartConfig = {
   [Category.AfterTax]: {
@@ -77,19 +85,11 @@ const categoryChartConfig = {
   },
 } satisfies StrictChartConfig<CategoryChartData>;
 
-const withdrawalsChartConfig = {
-  withdrawals: {
-    color: "black",
-    label: "Withdrawals",
-  },
-};
-
 export const chartConfig = {
   ...netWorthChartConfig,
   ...assetGrowthChartConfig,
-  ...contributionChartConfig,
+  ...contributionAndWithdrawalsChartConfig,
   ...categoryChartConfig,
-  ...withdrawalsChartConfig,
 } satisfies ChartConfig;
 
 export type DataKey = keyof typeof chartConfig;

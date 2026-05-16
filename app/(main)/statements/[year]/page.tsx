@@ -6,12 +6,12 @@ import { StatementDataAggregator } from "@/lib/utils/statement-data-aggregator";
 import { SearchParams } from "next/dist/server/request/search-params";
 import AddEntry from "./components/add-entry";
 import CategoryChart from "./components/charts/category-chart";
-import ContributionChart from "./components/charts/contribution-chart";
+import ContributionWithdrawalChart from "./components/charts/contribution-withdrawal-chart";
 import IncomeChart, { IncomeChartData } from "./components/charts/income-chart";
 import NetWorthChart from "./components/charts/net-worth-chart";
 import AssetTable from "./components/tables/asset-table";
 import CategoryTable from "./components/tables/category-table";
-import ContributionTable from "./components/tables/contribution-table";
+import ContributionWithdrawalTable from "./components/tables/contribution-withdrawal-table";
 import IncomeTable from "./components/tables/income-table";
 import LiabilityTable from "./components/tables/liability-table";
 import NetWorthTable from "./components/tables/net-worth-table";
@@ -77,15 +77,15 @@ export default async function Page({ params, searchParams }: PageProps) {
     }),
     {
       metric: "Withdrawals",
-      amount: data.totalWithdrawals,
-      percentOfIncome: data.totalWithdrawalsPercentOfSalary,
-      fill: "black",
+      amount: data.withdrawals.amount,
+      percentOfIncome: data.withdrawals.percentOfSalary,
+      fill: chartConfig.withdrawals.color,
     },
     {
       metric: "Net contributions",
-      amount: data.netContributions,
-      percentOfIncome: data.netContributionsPercentOfSalary,
-      fill: "black",
+      amount: data.netContributions.amount,
+      percentOfIncome: data.netContributions.percentOfSalary,
+      fill: chartConfig.netContributions.color,
     },
   ];
 
@@ -143,11 +143,11 @@ export default async function Page({ params, searchParams }: PageProps) {
       ) : (
         <IncomeChart data={incomeData} />
       )}
-      <h2>Contribution analysis</h2>
+      <h2>Contribution & Withdrawal analysis</h2>
       {view === "table" ? (
-        <ContributionTable data={contributionData} />
+        <ContributionWithdrawalTable data={contributionData} />
       ) : (
-        <ContributionChart data={contributionData} />
+        <ContributionWithdrawalChart data={contributionData} />
       )}
     </>
   );

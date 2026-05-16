@@ -12,15 +12,15 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { ContributionTableData } from "../tables/contribution-table";
+import { ContributionWithdrawalTableData } from "../tables/contribution-withdrawal-table";
 import StatementChartContainer from "./statement-chart-container";
 
-type ContributionChartData = ContributionTableData & Fill;
+type ContributionWithdrawalChartData = ContributionWithdrawalTableData & Fill;
 
-export default function ContributionChart({
+export default function ContributionWithdrawalChart({
   data,
 }: {
-  data: ContributionChartData[];
+  data: ContributionWithdrawalChartData[];
 }) {
   function getPctOfIncome(val: number) {
     return `${formatAsPercent(val)} of salary`;
