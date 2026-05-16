@@ -78,6 +78,12 @@ export default async function Home() {
       <ChartCard title="Withdrawal Amount vs. Time">
         <WithdrawalsChart chartData={plotData.withdrawals} />
       </ChartCard>
+      <ChartCard title="Withdrawal Amount Percent of Salary vs. Time">
+        <WithdrawalsChart
+          chartData={plotData.withdrawalsPercentOfSalary}
+          yAxisFormat="percent"
+        />
+      </ChartCard>
       <ChartCard title="Cumulative Withdrawal Amount vs. Time">
         <WithdrawalsChart chartData={plotData.cumulativeWithdrawals} />
       </ChartCard>

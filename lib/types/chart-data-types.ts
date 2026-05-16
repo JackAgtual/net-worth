@@ -28,6 +28,10 @@ export type WithdrawalsChartType = Year & {
   withdrawals: number;
 };
 
+export type WithdrawalsPercentChartType = Year & {
+  withdrawals: number | undefined;
+};
+
 export type CategoryChartData = Year & Record<Category, number>;
 
 export enum IncomeData {

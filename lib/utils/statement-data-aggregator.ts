@@ -6,6 +6,7 @@ import {
   ContributionValues,
   NetWorthChartData,
   WithdrawalsChartType,
+  WithdrawalsPercentChartType,
 } from "../types/chart-data-types";
 import { StatementHydrated } from "../types/statement-types";
 import { Category, Contributor } from "../types/types";
@@ -106,6 +107,7 @@ export class StatementDataAggregator {
         return acc;
       }, {} as ContributionValues);
     const withdrawals: WithdrawalsChartType[] = [];
+    const withdrawalsPercentOfSalary: WithdrawalsPercentChartType[] = [];
     const cumulativeWithdrawals: WithdrawalsChartType[] = [];
     let curCumulativeWithdrawals = 0;
 
@@ -152,6 +154,10 @@ export class StatementDataAggregator {
       const curWithdrawals = data.totalWithdrawals;
       curCumulativeWithdrawals += curWithdrawals;
 
+      withdrawalsPercentOfSalary.push({
+        year,
+        withdrawals: data.totalWithdrawalsPercentOfSalary,
+      });
       withdrawals.push({ year, withdrawals: curWithdrawals });
       cumulativeWithdrawals.push({
         year,
@@ -168,6 +174,7 @@ export class StatementDataAggregator {
       cumulativeContributionAmount,
       withdrawals,
       cumulativeWithdrawals,
+      withdrawalsPercentOfSalary,
     };
   }
 
