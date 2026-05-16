@@ -32,6 +32,7 @@ function getData(userId: string): YearData[] {
           title: "Checking Account",
           amount: 3200,
           category: Category.Cash,
+          withdrawals: 500,
         },
         {
           userId,
@@ -94,6 +95,7 @@ function getData(userId: string): YearData[] {
           title: "Savings Account",
           amount: 7200,
           category: Category.Cash,
+          withdrawals: 1200,
         },
         {
           userId,
@@ -153,6 +155,7 @@ function getData(userId: string): YearData[] {
           title: "Savings Account",
           amount: 9500,
           category: Category.Cash,
+          withdrawals: 2000,
         },
         {
           userId,
@@ -248,6 +251,7 @@ function getData(userId: string): YearData[] {
           title: "Brokerage Account",
           amount: 8200,
           category: Category.AfterTax,
+          withdrawals: 3000, // down payment savings top-up
         },
       ],
       liabilities: [
@@ -437,6 +441,7 @@ function getData(userId: string): YearData[] {
           title: "Brokerage Account",
           amount: 22000,
           category: Category.AfterTax,
+          withdrawals: 5000,
         },
         {
           userId,
@@ -573,6 +578,7 @@ function getData(userId: string): YearData[] {
           title: "Brokerage Account",
           amount: 36000,
           category: Category.AfterTax,
+          withdrawals: 8000,
         },
         {
           userId,
@@ -608,6 +614,7 @@ function getData(userId: string): YearData[] {
           title: "Savings Account",
           amount: 35000,
           category: Category.Cash,
+          withdrawals: 4000,
         },
         {
           userId,
@@ -690,6 +697,7 @@ function getData(userId: string): YearData[] {
           includeInGrowthCalculation: true,
           amountOneYearAgo: 68667,
           contribution: { self: 4750 },
+          withdrawals: 10000,
         },
         {
           userId,
@@ -752,6 +760,7 @@ function getData(userId: string): YearData[] {
           title: "Savings Account",
           amount: 60000,
           category: Category.Cash,
+          withdrawals: 6000,
         },
         {
           userId,
@@ -933,6 +942,7 @@ function getData(userId: string): YearData[] {
           title: "Brokerage Account",
           amount: 105000,
           category: Category.AfterTax,
+          withdrawals: 7500,
         },
         { userId, title: "HSA", amount: 23500, category: Category.TaxFree },
         {
@@ -970,6 +980,7 @@ function getData(userId: string): YearData[] {
           title: "Savings Account",
           amount: 72000,
           category: Category.Cash,
+          withdrawals: 5000,
         },
         {
           userId,

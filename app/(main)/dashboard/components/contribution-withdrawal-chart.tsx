@@ -1,16 +1,16 @@
 "use client";
 
 import CustomLine from "@/components/chart/CustomLine";
-import { ContributionPercentChartData } from "@/lib/types/chart-data-types";
+import { ContributionAndWithdrawalPercentChartData } from "@/lib/types/chart-data-types";
 import { Contributor } from "@/lib/types/types";
 import { NumberVsYearLineChart } from "./number-vs-year-line-chart";
 
 type ContributionChartProps = {
-  chartData: ContributionPercentChartData[];
+  chartData: ContributionAndWithdrawalPercentChartData[];
   yAxisFormat?: "dollar" | "percent";
 };
 
-export function ContributionChart({
+export function ContributionWithdrawalChart({
   chartData,
   yAxisFormat = "dollar",
 }: ContributionChartProps) {
@@ -19,6 +19,8 @@ export function ContributionChart({
       {Object.values(Contributor).map((contributor) => {
         return CustomLine({ dataKey: contributor });
       })}
+      {CustomLine({ dataKey: "withdrawals" })}
+      {CustomLine({ dataKey: "netContributions", dashed: true })}
     </NumberVsYearLineChart>
   );
 }

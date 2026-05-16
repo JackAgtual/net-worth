@@ -5,25 +5,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Contributor } from "@/lib/types/types";
 import { formatAsDollar, formatAsPercent } from "@/lib/utils/format-utils";
 
-export type ContributionTableData = {
-  contributor: Contributor;
+export type ContributionWithdrawalTableData = {
+  metric: string;
   amount: number;
   percentOfIncome: number | undefined;
 };
 
-export default async function ContributionTable({
+export default async function ContributionWithdrawalTable({
   data,
 }: {
-  data: ContributionTableData[];
+  data: ContributionWithdrawalTableData[];
 }) {
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Contributor</TableHead>
+          <TableHead>Metric</TableHead>
           <TableHead>Amount</TableHead>
           <TableHead>Percent of income</TableHead>
         </TableRow>
@@ -32,7 +31,7 @@ export default async function ContributionTable({
         {data.map((row, index) => {
           return (
             <TableRow key={index}>
-              <TableCell>{row.contributor}</TableCell>
+              <TableCell>{row.metric}</TableCell>
               <TableCell>{formatAsDollar(row.amount)}</TableCell>
               <TableCell>{formatAsPercent(row.percentOfIncome)}</TableCell>
             </TableRow>

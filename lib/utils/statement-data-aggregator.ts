@@ -1,8 +1,8 @@
 import {
   AssetGrowthChartData,
   CategoryChartData,
-  ContributionAmountChartData,
-  ContributionPercentChartData,
+  ContributionAndWithdrawalAmountChartData,
+  ContributionAndWithdrawalPercentChartData,
   ContributionValues,
   NetWorthChartData,
 } from "../types/chart-data-types";
@@ -51,12 +51,6 @@ export class StatementDataAggregator {
       ),
     };
 
-    const categoryPercentagePromises = Object.fromEntries(
-      Object.values(Category).map((category) => {
-        return [category, statement.getPercentOfAssetsByCategory(category)];
-      })
-    ) as Record<Category, Promise<number>>;
-
     const categories = {
       amount: mapCategories((c) => statement.getTotalAssetAmountByCategory(c)),
       percent: mapCategories((c) => statement.getPercentOfAssetsByCategory(c)),
@@ -71,6 +65,14 @@ export class StatementDataAggregator {
         statement.getLastYearAssetGrowthPercentOfSalary(),
       categories,
       contributions,
+      withdrawals: {
+        amount: statement.getTotalWithdrawals(),
+        percentOfSalary: statement.getTotalWithdrawalsPercentOfSalary(),
+      },
+      netContributions: {
+        amount: statement.getNetContributions(),
+        percentOfSalary: statement.getNetContributionsPercentOfSalary(),
+      },
     };
 
     return {
@@ -96,14 +98,19 @@ export class StatementDataAggregator {
     const netWorth: NetWorthChartData[] = [];
     const assetGrowth: AssetGrowthChartData[] = [];
     const categoryPercentage: CategoryChartData[] = [];
-    const contributionAmount: ContributionAmountChartData[] = [];
-    const cumulativeContributionAmount: ContributionAmountChartData[] = [];
-    const contributionPercentOfSalary: ContributionPercentChartData[] = [];
+    const contributionWithdrawalAmount: ContributionAndWithdrawalAmountChartData[] =
+      [];
+    const cumulativeContributionWithdrawalAmount: ContributionAndWithdrawalAmountChartData[] =
+      [];
+    const contributionWithdrawalPercentOfSalary: ContributionAndWithdrawalPercentChartData[] =
+      [];
     const curCumilativeContributions: ContributionValues =
       StatementDataAggregator.contributors.reduce((acc, cur) => {
         acc[cur] = 0;
         return acc;
       }, {} as ContributionValues);
+    let curCumulativeWithdrawals = 0;
+    let curNetContributions = 0;
 
     for (const data of allData) {
       const { year, lastYearSalary } = data;
@@ -125,24 +132,34 @@ export class StatementDataAggregator {
         ...data.categories.percent,
       });
 
-      const { amount, percentOfSalary } = data.contributions;
-      contributionAmount.push({
+      const { contributions, withdrawals, netContributions } = data;
+
+      contributionWithdrawalAmount.push({
         year,
-        ...amount,
+        ...contributions.amount,
+        withdrawals: withdrawals.amount,
+        netContributions: netContributions.amount,
       });
 
-      contributionPercentOfSalary.push({
+      contributionWithdrawalPercentOfSalary.push({
         year,
-        ...percentOfSalary,
+        ...contributions.percentOfSalary,
+        withdrawals: withdrawals.percentOfSalary,
+        netContributions: netContributions.percentOfSalary,
       });
 
+      curNetContributions += netContributions.amount;
+      curCumulativeWithdrawals += withdrawals.amount;
       StatementDataAggregator.contributors.forEach((contributor) => {
-        curCumilativeContributions[contributor] += amount[contributor];
+        curCumilativeContributions[contributor] +=
+          contributions.amount[contributor];
       });
 
-      cumulativeContributionAmount.push({
+      cumulativeContributionWithdrawalAmount.push({
         year,
         ...curCumilativeContributions,
+        withdrawals: curCumulativeWithdrawals,
+        netContributions: curNetContributions,
       });
     }
 
@@ -150,9 +167,9 @@ export class StatementDataAggregator {
       netWorth,
       assetGrowth,
       categoryPercentage,
-      contributionAmount,
-      contributionPercentOfSalary,
-      cumulativeContributionAmount,
+      contributionWithdrawalAmount,
+      contributionWithdrawalPercentOfSalary,
+      cumulativeContributionWithdrawalAmount,
     };
   }
 

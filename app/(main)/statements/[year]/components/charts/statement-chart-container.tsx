@@ -10,10 +10,7 @@ export default function StatementChartContainer({
   children: ReactElement;
 }) {
   return (
-    <ChartContainer
-      config={chartConfig}
-      className="mx-auto aspect-square max-h-[500px]"
-    >
+    <ChartContainer config={chartConfig} className="mx-auto max-h-[500px]">
       {children}
     </ChartContainer>
   );

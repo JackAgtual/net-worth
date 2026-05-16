@@ -19,10 +19,14 @@ export type AssetGrowthChartData = Year & {
 
 export type ContributionValues<T = number> = Record<Contributor, T>;
 
-export type ContributionAmountChartData = Year & ContributionValues;
+export type ContributionAndWithdrawalAmountChartData<T = number> = Year &
+  ContributionValues<T> & {
+    withdrawals: T;
+    netContributions: T;
+  };
 
-export type ContributionPercentChartData = Year &
-  ContributionValues<number | undefined>;
+export type ContributionAndWithdrawalPercentChartData =
+  ContributionAndWithdrawalAmountChartData<number | undefined>;
 
 export type CategoryChartData = Year & Record<Category, number>;
 
