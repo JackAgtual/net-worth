@@ -24,6 +24,10 @@ export type ContributionAmountChartData = Year & ContributionValues;
 export type ContributionPercentChartData = Year &
   ContributionValues<number | undefined>;
 
+export type WithdrawalsChartType = Year & {
+  withdrawals: number;
+};
+
 export type CategoryChartData = Year & Record<Category, number>;
 
 export enum IncomeData {

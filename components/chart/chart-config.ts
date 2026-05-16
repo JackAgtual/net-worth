@@ -77,11 +77,19 @@ const categoryChartConfig = {
   },
 } satisfies StrictChartConfig<CategoryChartData>;
 
+const withdrawalsChartConfig = {
+  withdrawals: {
+    color: "black",
+    label: "Withdrawals",
+  },
+};
+
 export const chartConfig = {
   ...netWorthChartConfig,
   ...assetGrowthChartConfig,
   ...contributionChartConfig,
   ...categoryChartConfig,
+  ...withdrawalsChartConfig,
 } satisfies ChartConfig;
 
 export type DataKey = keyof typeof chartConfig;

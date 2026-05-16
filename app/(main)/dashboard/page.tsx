@@ -8,6 +8,7 @@ import { CategoryPercentageChart } from "./components/category-percentage-chart"
 import ChartCard from "./components/chart-card";
 import { ContributionChart } from "./components/contribution-chart";
 import { NetWorthChart } from "./components/net-worth-chart";
+import { WithdrawalsChart } from "./components/withdrawals-chart";
 
 export default async function Home() {
   const allStatements = await getAllStatements();
@@ -73,6 +74,12 @@ export default async function Home() {
       </ChartCard>
       <ChartCard title="Cumulative Contribution Amount vs. Time">
         <ContributionChart chartData={plotData.cumulativeContributionAmount} />
+      </ChartCard>
+      <ChartCard title="Withdrawal Amount vs. Time">
+        <WithdrawalsChart chartData={plotData.withdrawals} />
+      </ChartCard>
+      <ChartCard title="Cumulative Withdrawal Amount vs. Time">
+        <WithdrawalsChart chartData={plotData.cumulativeWithdrawals} />
       </ChartCard>
     </>
   );
