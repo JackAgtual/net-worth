@@ -14,6 +14,12 @@ import { Checkbox } from "../ui/checkbox";
 import { Field, FieldContent, FieldDescription, FieldLabel } from "../ui/field";
 import DollarInput from "./DollarInput";
 
+type TDollarInput = {
+  name: FieldPath<TAssetForm>;
+  label: string;
+  placeholder: string;
+};
+
 type ContributionFormProps<
   TForm extends FieldValues & TAssetForm = TAssetForm,
 > = {
@@ -31,13 +37,30 @@ export default function ContributionForm<
   getName,
   setIncludeContributions,
 }: ContributionFormProps<TForm>) {
+  const dollarInputs: TDollarInput[] = [
+    {
+      name: "amountOneYearAgo",
+      label: "Amount one year ago",
+      placeholder: "10,000",
+    },
+    {
+      name: "contribution.self",
+      label: "Self contribution",
+      placeholder: "1,000",
+    },
+    {
+      name: "contribution.nonSelf",
+      label: "Non-self contribution",
+      placeholder: "500",
+    },
+    { name: "withdrawals", label: "Withdrawals", placeholder: "250" },
+  ];
+  const includeInGrowth: FieldPath<TAssetForm> = "includeInGrowthCalculation";
+
   function handleContributionClose() {
     const fieldsToClear: FieldPath<TAssetForm>[] = [
-      "amountOneYearAgo",
-      "contribution.self",
-      "contribution.nonSelf",
-      "withdrawals",
-      "includeInGrowthCalculation",
+      ...dollarInputs.map((input) => input.name),
+      includeInGrowth,
     ];
 
     fieldsToClear.forEach((field) =>
@@ -55,43 +78,28 @@ export default function ContributionForm<
         </Button>
       </CardHeader>
       <CardContent>
-        <DollarInput
-          control={control}
-          label="Amount one year ago"
-          name={getName("amountOneYearAgo")}
-          placeholder="10,000"
-        />
-        <DollarInput
-          control={control}
-          label="Self contribution"
-          name={getName("contribution.self")}
-          placeholder="1,000"
-        />
-        <DollarInput
-          control={control}
-          label="Non-self contribution"
-          name={getName("contribution.nonSelf")}
-          placeholder="500"
-        />
-        <DollarInput
-          control={control}
-          label="Withdrawals"
-          name={getName("withdrawals")}
-          placeholder="250"
-        />
+        {dollarInputs.map(({ label, name, placeholder }) => (
+          <DollarInput
+            key={name}
+            control={control}
+            label={label}
+            name={getName(name)}
+            placeholder={placeholder}
+          />
+        ))}
         <Controller
-          name={getName("includeInGrowthCalculation")}
+          name={getName(includeInGrowth)}
           control={control}
           render={({ field }) => (
             <Field orientation="horizontal">
               <Checkbox
-                id={getName("includeInGrowthCalculation")}
-                name={getName("includeInGrowthCalculation")}
+                id={getName(includeInGrowth)}
+                name={getName(includeInGrowth)}
                 checked={field.value}
                 onCheckedChange={field.onChange}
               />
               <FieldContent>
-                <FieldLabel htmlFor={getName("includeInGrowthCalculation")}>
+                <FieldLabel htmlFor={getName(includeInGrowth)}>
                   Include in growth calculation
                 </FieldLabel>
                 <FieldDescription>
