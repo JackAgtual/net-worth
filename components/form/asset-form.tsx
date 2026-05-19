@@ -1,6 +1,5 @@
 import { AssetForm as TAssetForm } from "@/lib/types/asset-types";
 import { Category } from "@/lib/types/types";
-import { XIcon } from "lucide-react";
 import { useState } from "react";
 import {
   Control,
@@ -10,15 +9,8 @@ import {
   UseFormSetValue,
 } from "react-hook-form";
 import { Button } from "../ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Checkbox } from "../ui/checkbox";
-import {
-  Field,
-  FieldContent,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-} from "../ui/field";
+import { Field, FieldError, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import {
   Select,
@@ -29,6 +21,7 @@ import {
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
 import DollarInput from "./DollarInput";
+import ContributionForm from "./contribution-form";
 
 type AssetFormProps<TForm extends FieldValues & TAssetForm = TAssetForm> = {
   control: Control<any>; // TODO: Fix types
@@ -53,21 +46,6 @@ export default function AssetForm<
     if (!baseName) return name as FieldPath<TForm>;
 
     return `${baseName}.${name}` as FieldPath<TForm>;
-  }
-
-  function handleContributionClose() {
-    const fieldsToClear: FieldPath<TAssetForm>[] = [
-      "amountOneYearAgo",
-      "contribution.self",
-      "contribution.nonSelf",
-      "withdrawals",
-      "includeInGrowthCalculation",
-    ];
-
-    fieldsToClear.forEach((field) =>
-      setValue(getName(field), undefined as any)
-    );
-    setIncludeContributions(false);
   }
 
   return (
@@ -130,7 +108,14 @@ export default function AssetForm<
           </Field>
         )}
       />
-      {!includeContributions && (
+      {includeContributions ? (
+        <ContributionForm
+          control={control}
+          getName={getName}
+          setIncludeContributions={setIncludeContributions}
+          setValue={setValue}
+        />
+      ) : (
         <Button
           type="button"
           variant="secondary"
@@ -138,69 +123,6 @@ export default function AssetForm<
         >
           Include contribution details
         </Button>
-      )}
-      {includeContributions && (
-        <Card>
-          <CardHeader className="flex flex-row justify-between">
-            <CardTitle>Contribution Details</CardTitle>
-            <Button
-              variant="ghost"
-              type="button"
-              onClick={handleContributionClose}
-            >
-              <XIcon />
-            </Button>
-          </CardHeader>
-          <CardContent>
-            <DollarInput
-              control={control}
-              label="Amount one year ago"
-              name={getName("amountOneYearAgo")}
-              placeholder="10,000"
-            />
-            <DollarInput
-              control={control}
-              label="Self contribution"
-              name={getName("contribution.self")}
-              placeholder="1,000"
-            />
-            <DollarInput
-              control={control}
-              label="Non-self contribution"
-              name={getName("contribution.nonSelf")}
-              placeholder="500"
-            />
-            <DollarInput
-              control={control}
-              label="Withdrawals"
-              name={getName("withdrawals")}
-              placeholder="250"
-            />
-            <Controller
-              name={getName("includeInGrowthCalculation")}
-              control={control}
-              render={({ field }) => (
-                <Field orientation="horizontal">
-                  <Checkbox
-                    id={getName("includeInGrowthCalculation")}
-                    name={getName("includeInGrowthCalculation")}
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                  <FieldContent>
-                    <FieldLabel htmlFor={getName("includeInGrowthCalculation")}>
-                      Include in growth calculation
-                    </FieldLabel>
-                    <FieldDescription>
-                      By clicking this checkbox, this asset will be counted
-                      towards your asset growth metric.
-                    </FieldDescription>
-                  </FieldContent>
-                </Field>
-              )}
-            />
-          </CardContent>
-        </Card>
       )}
       <Controller
         name={getName("notes")}
