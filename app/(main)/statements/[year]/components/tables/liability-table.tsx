@@ -25,6 +25,7 @@ export default async function LiabilityTable({
           <TableHead>Amount</TableHead>
           <TableHead>Amount one year ago</TableHead>
           <TableHead>Payments made</TableHead>
+          <TableHead>Growth from interest</TableHead>
           <TableHead>Notes</TableHead>
           <TableHead className="text-right">Action</TableHead>
         </TableRow>
@@ -50,6 +51,9 @@ export default async function LiabilityTable({
                 {formatAsDollar(liability.amountOneYearAgo)}
               </TableCell>
               <TableCell>{formatAsDollar(liability.paymentsMade)}</TableCell>
+              <TableCell>
+                {formatAsDollar(liability.getGrowthFromInterest())}
+              </TableCell>
               <TableCell>{liability.notes}</TableCell>
               <TableCell className="text-right">
                 <EntryDropDown
