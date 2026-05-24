@@ -58,10 +58,14 @@ export default function LiabilityDialog(props: LiabilityDialogProps) {
   };
 
   const handleEdit = async (data: TLiabilityForm) => {
+    const serializable = JSON.parse(
+      JSON.stringify(data, (_, v) => (v === undefined ? null : v))
+    );
+
     const result = await updateLiability({
       liabilityId,
       statementId,
-      data,
+      data: serializable,
       path,
     });
 
