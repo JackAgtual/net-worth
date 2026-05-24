@@ -3,7 +3,10 @@ import { entrySchema } from "./types";
 import { HydratedDocument, Model } from "mongoose";
 import { Control } from "react-hook-form";
 
-export const liabilitySchema = entrySchema;
+export const liabilitySchema = entrySchema.extend({
+  amountOneYearAgo: z.number().nullable().optional(),
+  paymentsMade: z.number().nullable().optional(),
+});
 
 export const liabilityFormSchema = liabilitySchema.omit({ userId: true });
 

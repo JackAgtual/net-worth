@@ -7,6 +7,8 @@ const liabilityMongooseSchema = new Schema<LiabilityDoc, LiabilityModelType>({
   userId: { type: String, required },
   title: { type: String, trim: true, required },
   amount: { type: Number, required },
+  amountOneYearAgo: Number,
+  paymentsMade: Number,
   notes: String,
 });
 
