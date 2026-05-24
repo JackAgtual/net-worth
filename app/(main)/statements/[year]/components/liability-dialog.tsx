@@ -88,19 +88,18 @@ export default function LiabilityDialog(props: LiabilityDialogProps) {
     setOpen(false);
   };
 
-  let handler;
+  let onSubmit;
   switch (action) {
     case "create":
-      handler = handleCreate;
+      onSubmit = handleSubmit(handleCreate);
       break;
     case "edit":
-      handler = handleEdit;
+      onSubmit = handleSubmit(handleEdit);
       break;
     case "delete":
-      handler = handleDelete;
+      onSubmit = handleDelete;
       break;
   }
-  const onSubmit = handleSubmit(handler);
 
   return (
     <EntryDialog
