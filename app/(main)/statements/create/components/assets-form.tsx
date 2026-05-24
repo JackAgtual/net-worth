@@ -4,18 +4,20 @@ import AssetForm from "@/components/form/asset-form";
 import { Button } from "@/components/ui/button";
 import { FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
 import { Separator } from "@/components/ui/separator";
+import { AssetForm as TAssetForm } from "@/lib/types/asset-types";
 import {
   StatementForm,
   StatementFormControl,
 } from "@/lib/types/statement-types";
 import { Category } from "@/types/types";
-import { FieldPath, useFieldArray } from "react-hook-form";
+import { FieldPath, useFieldArray, UseFormSetValue } from "react-hook-form";
 
 type AssetsFormProps = {
   control: StatementFormControl;
+  setValue: UseFormSetValue<StatementForm>;
 };
 
-export default function AssetsForm({ control }: AssetsFormProps) {
+export default function AssetsForm({ control, setValue }: AssetsFormProps) {
   const { fields, append, remove } = useFieldArray({
     control,
     name: "assets",
@@ -29,7 +31,11 @@ export default function AssetsForm({ control }: AssetsFormProps) {
           const baseName: FieldPath<StatementForm> = `assets.${index}`;
           return (
             <FieldGroup key={field.id}>
-              <AssetForm baseName={baseName} control={control} />
+              <AssetForm
+                baseName={baseName}
+                control={control}
+                setValue={setValue}
+              />
               <Button
                 type="button"
                 variant="outline"
