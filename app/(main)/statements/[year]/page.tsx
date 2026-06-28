@@ -11,9 +11,7 @@ import IncomeChart, { IncomeChartData } from "./components/charts/income-chart";
 import NetWorthChart from "./components/charts/net-worth-chart";
 import AssetTable from "./components/tables/asset-table";
 import CategoryTable from "./components/tables/category-table";
-import AmountAndPercentOfIncomeTable, {
-  AmountAndPercentOfIncomeTableData,
-} from "./components/tables/contribution-withdrawal-table";
+import AmountAndPercentOfIncomeTable from "./components/tables/contribution-withdrawal-table";
 import IncomeTable from "./components/tables/income-table";
 import LiabilityTable from "./components/tables/liability-table";
 import NetWorthTable from "./components/tables/net-worth-table";
@@ -91,17 +89,19 @@ export default async function Page({ params, searchParams }: PageProps) {
     },
   ];
 
-  const liabilityPaymentsData: AmountAndPercentOfIncomeTableData[] = [
+  const liabilityPaymentsData = [
     {
       metric: "Total payments made",
       amount: data.liabilityPaymentData.paymentsMade.amount,
       percentOfIncome: data.liabilityPaymentData.paymentsMade.percentOfSalary,
+      fill: chartConfig.totalPaymentsMade.color,
     },
     {
       metric: "Total growth from interest",
       amount: data.liabilityPaymentData.growthFromInterest.amount,
       percentOfIncome:
         data.liabilityPaymentData.growthFromInterest.percentOfSalary,
+      fill: chartConfig.totalGrowthFromInterest.color,
     },
   ];
 
@@ -166,7 +166,11 @@ export default async function Page({ params, searchParams }: PageProps) {
         <AmountAndPercentOfIncomeChart data={contributionData} />
       )}
       <h2>Liability payments</h2>
-      <AmountAndPercentOfIncomeTable data={liabilityPaymentsData} />
+      {view === "table" ? (
+        <AmountAndPercentOfIncomeTable data={liabilityPaymentsData} />
+      ) : (
+        <AmountAndPercentOfIncomeChart data={liabilityPaymentsData} />
+      )}
     </>
   );
 }
