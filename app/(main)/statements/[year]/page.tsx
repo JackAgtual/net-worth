@@ -6,12 +6,14 @@ import { StatementDataAggregator } from "@/lib/utils/statement-data-aggregator";
 import { SearchParams } from "next/dist/server/request/search-params";
 import AddEntry from "./components/add-entry";
 import CategoryChart from "./components/charts/category-chart";
-import ContributionWithdrawalChart from "./components/charts/contribution-withdrawal-chart";
+import AmountAndPercentOfIncomeChart from "./components/charts/contribution-withdrawal-chart";
 import IncomeChart, { IncomeChartData } from "./components/charts/income-chart";
 import NetWorthChart from "./components/charts/net-worth-chart";
 import AssetTable from "./components/tables/asset-table";
 import CategoryTable from "./components/tables/category-table";
-import ContributionWithdrawalTable from "./components/tables/contribution-withdrawal-table";
+import AmountAndPercentOfIncomeTable, {
+  AmountAndPercentOfIncomeTableData,
+} from "./components/tables/contribution-withdrawal-table";
 import IncomeTable from "./components/tables/income-table";
 import LiabilityTable from "./components/tables/liability-table";
 import NetWorthTable from "./components/tables/net-worth-table";
@@ -89,6 +91,20 @@ export default async function Page({ params, searchParams }: PageProps) {
     },
   ];
 
+  const liabilityPaymentsData: AmountAndPercentOfIncomeTableData[] = [
+    {
+      metric: "Total payments made",
+      amount: data.liabilityPaymentData.paymentsMade.amount,
+      percentOfIncome: data.liabilityPaymentData.paymentsMade.percentOfSalary,
+    },
+    {
+      metric: "Total growth from interest",
+      amount: data.liabilityPaymentData.growthFromInterest.amount,
+      percentOfIncome:
+        data.liabilityPaymentData.growthFromInterest.percentOfSalary,
+    },
+  ];
+
   const incomeData: IncomeChartData[] = [
     {
       name: IncomeData.LastYearIncome,
@@ -145,10 +161,12 @@ export default async function Page({ params, searchParams }: PageProps) {
       )}
       <h2>Contribution & Withdrawal analysis</h2>
       {view === "table" ? (
-        <ContributionWithdrawalTable data={contributionData} />
+        <AmountAndPercentOfIncomeTable data={contributionData} />
       ) : (
-        <ContributionWithdrawalChart data={contributionData} />
+        <AmountAndPercentOfIncomeChart data={contributionData} />
       )}
+      <h2>Liability payments</h2>
+      <AmountAndPercentOfIncomeTable data={liabilityPaymentsData} />
     </>
   );
 }

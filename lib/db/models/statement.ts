@@ -161,6 +161,30 @@ const statementMongooseSchema = new Schema<
           .filter((asset) => asset.retirement && asset.category === category)
           .reduce((acc, cur) => acc + cur.amount, 0);
       },
+      async getTotalLiabilityPaymentsMade() {
+        const liabilities = await this.getLiabilities();
+        return liabilities.reduce(
+          (acc, cur) => acc + (cur.paymentsMade ?? 0),
+          0
+        );
+      },
+      async getTotalLiabilityPaymentsMadePercentOfSalary() {
+        const totalLiabilityPaymentsMade =
+          await this.getTotalLiabilityPaymentsMade();
+        return this.getPercentOfSalary(totalLiabilityPaymentsMade);
+      },
+      async getTotalLiabilityGrowthFromInterest() {
+        const liabilities = await this.getLiabilities();
+        return liabilities.reduce(
+          (acc, cur) => acc + (cur.getGrowthFromInterest() ?? 0),
+          0
+        );
+      },
+      async getTotalLiabilityGrowthFromInterestPercentOfSalary() {
+        const totalLiabilityGrowthFromInterest =
+          await this.getTotalLiabilityGrowthFromInterest();
+        return this.getPercentOfSalary(totalLiabilityGrowthFromInterest);
+      },
       getPercentOfSalary(number) {
         if (!this.lastYearSalary) return undefined;
 

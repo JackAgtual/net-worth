@@ -69,6 +69,12 @@ export type StatementMethods = {
   getLastYearAssetGrowthPercentOfSalary(): Promise<number | undefined>;
   getTotalRetirementAssets(): Promise<number>;
   getRetirementAssetsByCategory(category: Category): Promise<number>;
+  getTotalLiabilityPaymentsMade(): Promise<number>;
+  getTotalLiabilityPaymentsMadePercentOfSalary(): Promise<number | undefined>;
+  getTotalLiabilityGrowthFromInterest(): Promise<number>;
+  getTotalLiabilityGrowthFromInterestPercentOfSalary(): Promise<
+    number | undefined
+  >;
   getPercentOfSalary(number: number): number | undefined;
   addLiability(liability: LiabilityDoc): Promise<LiabilityHydrated>;
   addLiabilities(liabilities: LiabilityDoc[]): Promise<void>;
