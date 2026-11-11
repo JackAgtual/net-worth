@@ -2,6 +2,7 @@ import {
   AssetGrowthChartData,
   CategoryChartData,
   ContributionAndWithdrawalAmountChartData,
+  LiabilityPaymentsChart,
   NetWorthChartData,
 } from "@/lib/types/chart-data-types";
 import { Category, Contributor } from "@/lib/types/types";
@@ -62,6 +63,17 @@ const contributionAndWithdrawalsChartConfig = {
   },
 } satisfies StrictChartConfig<ContributionAndWithdrawalAmountChartData>;
 
+const liabilityPaymentsChartConfig = {
+  totalPaymentsMade: {
+    label: "Total payments made",
+    color: "black",
+  },
+  totalGrowthFromInterest: {
+    label: "Total growth from interest",
+    color: "red",
+  },
+} satisfies StrictChartConfig<LiabilityPaymentsChart>;
+
 const categoryChartConfig = {
   [Category.AfterTax]: {
     color: "#1D4ED8",
@@ -90,6 +102,7 @@ export const chartConfig = {
   ...assetGrowthChartConfig,
   ...contributionAndWithdrawalsChartConfig,
   ...categoryChartConfig,
+  ...liabilityPaymentsChartConfig,
 } satisfies ChartConfig;
 
 export type DataKey = keyof typeof chartConfig;

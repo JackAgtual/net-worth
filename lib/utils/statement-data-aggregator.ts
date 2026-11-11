@@ -73,6 +73,18 @@ export class StatementDataAggregator {
         amount: statement.getNetContributions(),
         percentOfSalary: statement.getNetContributionsPercentOfSalary(),
       },
+      liabilityPaymentData: {
+        paymentsMade: {
+          amount: statement.getTotalLiabilityPaymentsMade(),
+          percentOfSalary:
+            statement.getTotalLiabilityPaymentsMadePercentOfSalary(),
+        },
+        growthFromInterest: {
+          amount: statement.getTotalLiabilityGrowthFromInterest(),
+          percentOfSalary:
+            statement.getTotalLiabilityGrowthFromInterestPercentOfSalary(),
+        },
+      },
     };
 
     return {
