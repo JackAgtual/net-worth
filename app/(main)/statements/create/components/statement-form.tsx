@@ -23,6 +23,7 @@ export default function StatementForm({
 }) {
   const {
     control,
+    setValue,
     handleSubmit,
     setError,
     formState: { errors },
@@ -75,7 +76,7 @@ export default function StatementForm({
         name="lastYearSalary"
         placeholder="70,000"
       />
-      <AssetsForm control={control} />
+      <AssetsForm control={control} setValue={setValue} />
       <LiabilitiesForm control={control} />
 
       <Button type="submit">Create</Button>

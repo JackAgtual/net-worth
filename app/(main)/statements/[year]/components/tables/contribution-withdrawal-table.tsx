@@ -7,16 +7,16 @@ import {
 } from "@/components/ui/table";
 import { formatAsDollar, formatAsPercent } from "@/lib/utils/format-utils";
 
-export type ContributionWithdrawalTableData = {
+export type AmountAndPercentOfIncomeTableData = {
   metric: string;
   amount: number;
   percentOfIncome: number | undefined;
 };
 
-export default async function ContributionWithdrawalTable({
+export default async function AmountAndPercentOfIncomeTable({
   data,
 }: {
-  data: ContributionWithdrawalTableData[];
+  data: AmountAndPercentOfIncomeTableData[];
 }) {
   return (
     <Table>

@@ -8,8 +8,8 @@ import {
   updateAsset,
 } from "@/lib/actions/asset-actions";
 import {
-  AssetForm as TAssetForm,
   assetFormSchema,
+  AssetForm as TAssetForm,
 } from "@/lib/types/asset-types";
 import type { AssetDialogProps } from "@/lib/types/entry-dialog-types";
 import { setFormErrors } from "@/lib/utils/form-utils";
@@ -36,6 +36,7 @@ export default function AssetDialog(props: AssetDialogProps) {
 
   const {
     control,
+    setValue,
     handleSubmit,
     formState: { isSubmitting, errors },
     setError,
@@ -101,6 +102,13 @@ export default function AssetDialog(props: AssetDialogProps) {
       break;
   }
 
+  const includesContributionData =
+    !!data?.amountOneYearAgo ||
+    !!data?.contribution?.self ||
+    !!data?.contribution?.nonSelf ||
+    !!data?.withdrawals ||
+    !!data?.includeInGrowthCalculation;
+
   return (
     <EntryDialog
       open={open}
@@ -113,7 +121,11 @@ export default function AssetDialog(props: AssetDialogProps) {
     >
       {action !== "delete" && (
         <>
-          <AssetForm control={control} />
+          <AssetForm
+            control={control}
+            setValue={setValue}
+            initialIncludeContributions={includesContributionData}
+          />
           {errors.root && (
             <FieldError errors={[{ message: errors.root.message }]} />
           )}

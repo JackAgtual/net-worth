@@ -58,10 +58,14 @@ export default function LiabilityDialog(props: LiabilityDialogProps) {
   };
 
   const handleEdit = async (data: TLiabilityForm) => {
+    const serializable = JSON.parse(
+      JSON.stringify(data, (_, v) => (v === undefined ? null : v))
+    );
+
     const result = await updateLiability({
       liabilityId,
       statementId,
-      data,
+      data: serializable,
       path,
     });
 
@@ -88,19 +92,18 @@ export default function LiabilityDialog(props: LiabilityDialogProps) {
     setOpen(false);
   };
 
-  let handler;
+  let onSubmit;
   switch (action) {
     case "create":
-      handler = handleCreate;
+      onSubmit = handleSubmit(handleCreate);
       break;
     case "edit":
-      handler = handleEdit;
+      onSubmit = handleSubmit(handleEdit);
       break;
     case "delete":
-      handler = handleDelete;
+      onSubmit = handleDelete;
       break;
   }
-  const onSubmit = handleSubmit(handler);
 
   return (
     <EntryDialog

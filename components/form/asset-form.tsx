@@ -1,14 +1,16 @@
 import { AssetForm as TAssetForm } from "@/lib/types/asset-types";
 import { Category } from "@/lib/types/types";
-import { Control, Controller, FieldPath, FieldValues } from "react-hook-form";
-import { Checkbox } from "../ui/checkbox";
+import { useState } from "react";
 import {
-  Field,
-  FieldContent,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-} from "../ui/field";
+  Control,
+  Controller,
+  FieldPath,
+  FieldValues,
+  UseFormSetValue,
+} from "react-hook-form";
+import { Button } from "../ui/button";
+import { Checkbox } from "../ui/checkbox";
+import { Field, FieldError, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import {
   Select,
@@ -19,15 +21,27 @@ import {
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
 import DollarInput from "./DollarInput";
+import ContributionForm from "./contribution-form";
 
 type AssetFormProps<TForm extends FieldValues & TAssetForm = TAssetForm> = {
   control: Control<any>; // TODO: Fix types
+  setValue: UseFormSetValue<any>; // TODO: Fix types
   baseName?: FieldPath<TForm>;
+  initialIncludeContributions?: boolean;
 };
 
 export default function AssetForm<
   TForm extends FieldValues & TAssetForm = TAssetForm,
->({ control, baseName }: AssetFormProps<TForm>) {
+>({
+  control,
+  setValue,
+  baseName,
+  initialIncludeContributions = false,
+}: AssetFormProps<TForm>) {
+  const [includeContributions, setIncludeContributions] = useState(
+    initialIncludeContributions
+  );
+
   function getName(name: FieldPath<TAssetForm>): FieldPath<TForm> {
     if (!baseName) return name as FieldPath<TForm>;
 
@@ -94,53 +108,22 @@ export default function AssetForm<
           </Field>
         )}
       />
-      <DollarInput
-        control={control}
-        label="Amount one year ago"
-        name={getName("amountOneYearAgo")}
-        placeholder="10,000"
-      />
-      <DollarInput
-        control={control}
-        label="Self contribution"
-        name={getName("contribution.self")}
-        placeholder="1,000"
-      />
-      <DollarInput
-        control={control}
-        label="Non-self contribution"
-        name={getName("contribution.nonSelf")}
-        placeholder="500"
-      />
-      <DollarInput
-        control={control}
-        label="Withdrawals"
-        name={getName("withdrawals")}
-        placeholder="250"
-      />
-      <Controller
-        name={getName("includeInGrowthCalculation")}
-        control={control}
-        render={({ field }) => (
-          <Field orientation="horizontal">
-            <Checkbox
-              id={getName("includeInGrowthCalculation")}
-              name={getName("includeInGrowthCalculation")}
-              checked={field.value}
-              onCheckedChange={field.onChange}
-            />
-            <FieldContent>
-              <FieldLabel htmlFor={getName("includeInGrowthCalculation")}>
-                Include in growth calculation
-              </FieldLabel>
-              <FieldDescription>
-                By clicking this checkbox, this asset will be counted towards
-                your asset growth metric.
-              </FieldDescription>
-            </FieldContent>
-          </Field>
-        )}
-      />
+      {includeContributions ? (
+        <ContributionForm
+          control={control}
+          getName={getName}
+          setIncludeContributions={setIncludeContributions}
+          setValue={setValue}
+        />
+      ) : (
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={() => setIncludeContributions(true)}
+        >
+          Include contribution details
+        </Button>
+      )}
       <Controller
         name={getName("notes")}
         control={control}

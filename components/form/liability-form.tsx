@@ -41,6 +41,16 @@ export default function LiabilityForm<
         )}
       />
       <DollarInput control={control} label="Amount" name={getName("amount")} />
+      <DollarInput
+        control={control}
+        label="Amount one year ago"
+        name={getName("amountOneYearAgo")}
+      />
+      <DollarInput
+        control={control}
+        label="Payments made"
+        name={getName("paymentsMade")}
+      />
       <Controller
         name={getName("notes")}
         control={control}
