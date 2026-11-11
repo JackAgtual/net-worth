@@ -7,7 +7,7 @@ import AssetsForm from "./assets-form";
 
 function TestForm() {
   const { control } = useForm<StatementForm>();
-  return <AssetsForm control={control} />;
+  return <AssetsForm control={control} setValue={() => {}} />;
 }
 
 describe("AssetsForm", () => {
