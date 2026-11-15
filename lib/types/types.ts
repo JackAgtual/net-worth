@@ -1,3 +1,4 @@
+import { Prisma } from "@/generated/prisma/client";
 import { z } from "zod";
 
 export const userItemSchema = z.object({ userId: z.string() });
@@ -25,3 +26,7 @@ export enum Contributor {
   NonSelf = "Non self",
   All = "All",
 }
+
+export type FullStatement = Prisma.StatementGetPayload<{
+  include: { assets: true; liabilities: true };
+}>;

@@ -5,7 +5,6 @@ import { toDecimal } from "../utils/decimal-utils";
 export function getGrowthFromInterest(liability: Liability): Decimal | void {
   if (liability.amountOneYearAgo == null) return;
 
-  const x: Decimal = liability.amountOneYearAgo;
   return liability.amount
     .sub(liability.amountOneYearAgo)
     .add(toDecimal(liability.paymentsMade));
