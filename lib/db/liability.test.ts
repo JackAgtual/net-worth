@@ -20,11 +20,11 @@ describe("Liability getGrowthFromInterest(liability)", () => {
   it("returns correct growth when both optional fields are present", () => {
     liability.amountOneYearAgo = Decimal(14000);
     liability.paymentsMade = Decimal(2000);
-    expect(getGrowthFromInterest(liability)).toBe(3000);
+    expect(getGrowthFromInterest(liability)).toEqual(Decimal(3000));
 
     liability.amountOneYearAgo = Decimal(16000);
     liability.paymentsMade = Decimal(1100);
-    expect(getGrowthFromInterest(liability)).toBe(100);
+    expect(getGrowthFromInterest(liability)).toEqual(Decimal(100));
   });
 
   it("returns undefined when amountOneYearAgo is missing", () => {
@@ -34,7 +34,7 @@ describe("Liability getGrowthFromInterest(liability)", () => {
 
   it("calculates growth from interest when paymentsMade is missing", () => {
     liability.amountOneYearAgo = Decimal(14000);
-    expect(getGrowthFromInterest(liability)).toBe(1000);
+    expect(getGrowthFromInterest(liability)).toEqual(Decimal(1000));
   });
 
   it("returns undefined when both optional fields are missing", () => {
@@ -44,12 +44,12 @@ describe("Liability getGrowthFromInterest(liability)", () => {
   it("treats paymentsMade=0 as present (not null/undefined)", () => {
     liability.amountOneYearAgo = Decimal(14000);
     liability.paymentsMade = Decimal(0);
-    expect(getGrowthFromInterest(liability)).toBe(1000);
+    expect(getGrowthFromInterest(liability)).toEqual(Decimal(1000));
   });
 
   it("treats amountOneYearAgo=0 as present (not null/undefined)", () => {
     liability.amountOneYearAgo = Decimal(0);
     liability.paymentsMade = Decimal(1000);
-    expect(getGrowthFromInterest(liability)).toBe(16000);
+    expect(getGrowthFromInterest(liability)).toEqual(Decimal(16000));
   });
 });

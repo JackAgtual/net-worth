@@ -1,16 +1,12 @@
 import type { Liability } from "@/generated/prisma/client";
 import { Decimal } from "@prisma/client/runtime/client";
 
-export function getGrowthFromInterest(liability: Liability) {
+export function getGrowthFromInterest(liability: Liability): Decimal | void {
   if (liability.amountOneYearAgo == null) return;
 
   const paymentsMade =
-    liability.paymentsMade == null ? 0 : liability.paymentsMade.toNumber();
+    liability.paymentsMade == null ? Decimal(0) : liability.paymentsMade;
 
   const x: Decimal = liability.amountOneYearAgo;
-  return (
-    liability.amount.toNumber() -
-    liability.amountOneYearAgo.toNumber() +
-    paymentsMade
-  );
+  return liability.amount.sub(liability.amountOneYearAgo).add(paymentsMade);
 }
