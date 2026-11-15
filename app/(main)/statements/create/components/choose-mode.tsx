@@ -6,7 +6,7 @@ import {
   ItemGroup,
   ItemTitle,
 } from "@/components/ui/item";
-import { checkSession } from "@/lib/auth/auth-utils";
+import { getValidSessionOrRedirect } from "@/lib/auth/auth-utils";
 import { getAllStatements } from "@/lib/dal/statement-dal";
 import dbConnect from "@/lib/db/mongodb";
 import { ExternalLinkIcon } from "lucide-react";
@@ -16,7 +16,7 @@ import PrefillForm from "./prefill-form";
 
 export default async function ChooseMode() {
   await dbConnect();
-  const session = await checkSession();
+  const session = await getValidSessionOrRedirect();
 
   const blankParams = new URLSearchParams({ mode: "blank" }).toString();
   const blankFormHref = `/statements/create?${blankParams}`;

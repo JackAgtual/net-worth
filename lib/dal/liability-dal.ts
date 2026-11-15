@@ -1,4 +1,4 @@
-import { checkSession } from "../auth/auth-utils";
+import { getValidSessionOrRedirect } from "../auth/auth-utils";
 import { LiabilityForm } from "../types/liability-types";
 import { getStatementFromId } from "./statement-dal";
 
@@ -6,7 +6,7 @@ export async function addLiabilityToStatement(
   statementId: string,
   data: LiabilityForm
 ) {
-  const session = await checkSession();
+  const session = await getValidSessionOrRedirect();
   const statementDoc = await getStatementFromId(statementId);
 
   if (!statementDoc) return null;

@@ -1,11 +1,10 @@
 "use server";
 
-import { getValidSession } from "../auth/auth-utils";
+import { getValidSessionOrThrow } from "../auth/auth-utils";
 import {
   deleteStatement,
   statementYearAlreadyExists,
 } from "../dal/statement-dal";
-import { Statement } from "../db/models";
 import dbConnect from "../db/mongodb";
 import { ActionResponse } from "../types/action-types";
 import { StatementForm, statementFormSchema } from "../types/statement-types";
@@ -26,7 +25,7 @@ export async function createStatement(
     return dataParseResult;
   }
 
-  const session = await getValidSession();
+  const session = await getValidSessionOrThrow();
 
   const statementData = dataParseResult.data;
   const userId = session.user.id;

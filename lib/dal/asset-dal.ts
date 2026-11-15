@@ -1,4 +1,4 @@
-import { checkSession } from "../auth/auth-utils";
+import { getValidSessionOrRedirect } from "../auth/auth-utils";
 import { AssetForm } from "../types/asset-types";
 import { getStatementFromId } from "./statement-dal";
 
@@ -6,7 +6,7 @@ export async function addAssetToStatement(
   statementId: string,
   data: AssetForm
 ) {
-  const session = await checkSession();
+  const session = await getValidSessionOrRedirect();
 
   const statementDoc = await getStatementFromId(statementId);
 

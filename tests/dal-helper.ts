@@ -1,5 +1,5 @@
 import { Statement } from "@/lib/db/models";
-import { checkSession } from "@/lib/auth/auth-utils";
+import { getValidSessionOrRedirect } from "@/lib/auth/auth-utils";
 
 export const USER_A = "user-aaa";
 export const USER_B = "user-bbb";
@@ -15,8 +15,11 @@ export async function createStatement(userId: string, year: number) {
 }
 
 export function mockSession(userId: string) {
-  const mockCheckSession = checkSession as jest.MockedFunction<
-    typeof checkSession
-  >;
-  mockCheckSession.mockResolvedValue({ user: { id: userId } } as any);
+  const mockgetValidSessionOrRedirect =
+    getValidSessionOrRedirect as jest.MockedFunction<
+      typeof getValidSessionOrRedirect
+    >;
+  mockgetValidSessionOrRedirect.mockResolvedValue({
+    user: { id: userId },
+  } as any);
 }

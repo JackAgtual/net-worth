@@ -1,9 +1,9 @@
-import { checkSession } from "../auth/auth-utils";
+import { getValidSessionOrRedirect } from "../auth/auth-utils";
 import { Statement } from "../db/models";
 import { StatementForm } from "../types/statement-types";
 
 export async function getStatementFormPrefillData(year: number) {
-  const session = await checkSession();
+  const session = await getValidSessionOrRedirect();
   const prefillStatement = await Statement.findOne({
     userId: session.user.id,
     year,

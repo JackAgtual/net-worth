@@ -1,9 +1,9 @@
-import { checkSession } from "../auth/auth-utils";
+import { getValidSessionOrRedirect } from "../auth/auth-utils";
 import { Statement } from "../db/models";
 import { StatementForm } from "../types/statement-types";
 
 export async function getAllStatements(sortAscending: boolean = true) {
-  const session = await checkSession();
+  const session = await getValidSessionOrRedirect();
 
   return Statement.find({
     userId: session.user.id,
@@ -11,7 +11,7 @@ export async function getAllStatements(sortAscending: boolean = true) {
 }
 
 export async function getStatementFromYear(year: number) {
-  const session = await checkSession();
+  const session = await getValidSessionOrRedirect();
 
   return Statement.findOne({
     year,
@@ -20,7 +20,7 @@ export async function getStatementFromYear(year: number) {
 }
 
 export async function getStatementFromId(id: string) {
-  const session = await checkSession();
+  const session = await getValidSessionOrRedirect();
 
   return Statement.findOne({
     userId: session.user.id,
@@ -29,7 +29,7 @@ export async function getStatementFromId(id: string) {
 }
 
 export async function statementYearAlreadyExists(year: number) {
-  const session = await checkSession();
+  const session = await getValidSessionOrRedirect();
 
   const existingStatements = await Statement.find({
     userId: session.user.id,
