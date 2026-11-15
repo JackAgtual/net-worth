@@ -94,8 +94,8 @@ model Liability {
     statementId Int
     title String
     amount Decimal @db.Decimal(10, 2)
-    amountOneYearAgo Decimal @db.Decimal(10, 2)
-    paymentsMade Decimal @db.Decimal(10, 2)
+    amountOneYearAgo Decimal? @db.Decimal(10, 2)
+    paymentsMade Decimal? @db.Decimal(10, 2)
     notes String?
 }
 
