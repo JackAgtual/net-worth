@@ -86,6 +86,8 @@ model Statement {
 
     liabilities Liability[]
     assets Asset[]
+
+    @@unique([userId, year])
 }
 
 model Liability {
