@@ -14,7 +14,7 @@ import { setupMongoTestDb } from "@/tests/setup-mongo";
 
 setupMongoTestDb();
 
-jest.mock("@/lib/auth/auth-utils");
+vi.mock("@/lib/auth/auth-utils");
 
 const defaultLiabilityData = { title: "Mortgage", amount: 150000 };
 const liabilityData = { title: "Car Loan", amount: 10000 };

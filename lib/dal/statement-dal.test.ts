@@ -14,7 +14,7 @@ import { setupMongoTestDb } from "@/tests/setup-mongo";
 
 setupMongoTestDb();
 
-jest.mock("@/lib/auth/auth-utils");
+vi.mock("@/lib/auth/auth-utils");
 
 describe("Statement DAL", () => {
   describe("getAllStatements", () => {

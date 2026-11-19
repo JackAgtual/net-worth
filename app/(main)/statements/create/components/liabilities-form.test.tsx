@@ -1,5 +1,4 @@
 import { StatementForm } from "@/lib/types/statement-types";
-import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
 import { useForm } from "react-hook-form";

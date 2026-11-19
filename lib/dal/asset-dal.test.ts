@@ -16,7 +16,7 @@ import { Category } from "../types/types";
 
 setupMongoTestDb();
 
-jest.mock("@/lib/auth/auth-utils");
+vi.mock("@/lib/auth/auth-utils");
 
 const defaultAssetData: AssetForm = {
   title: "Savings Account",
