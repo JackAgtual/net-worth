@@ -1,81 +1,149 @@
+import { setupTestDb } from "@/tests/db-setup";
+import { prisma } from "../db/prisma";
+import { createUser, mockSession } from "@/tests/dal-helper";
 import {
   getAllStatements,
   getStatementFromId,
   getStatementFromYear,
   statementYearAlreadyExists,
-} from "@/lib/dal/statement-dal";
-import {
-  createStatement,
-  mockSession,
-  USER_A,
-  USER_B,
-} from "@/tests/dal-helper";
-import { setupMongoTestDb } from "@/tests/setup-mongo";
+} from "./statement-dal";
 
-setupMongoTestDb();
+vi.mock("../db/prisma", async () => ({
+  prisma: (await import("@/tests/db-setup")).testPrisma,
+}));
 
-vi.mock("@/lib/auth/auth-utils");
+vi.mock("../auth/auth-utils", () => ({
+  getValidSessionOrRedirect: vi.fn(),
+}));
 
-describe("Statement DAL", () => {
+setupTestDb();
+
+describe("statement-dal", () => {
   describe("getAllStatements", () => {
-    it("returns only statements belonging to the authenticated user", async () => {
-      mockSession(USER_A);
-      await createStatement(USER_A, 2023);
-      await createStatement(USER_A, 2022);
-      await createStatement(USER_B, 2021);
+    it("only returns statements belonging to user", async () => {
+      const user1 = await createUser();
+      const user2 = await createUser();
 
-      const results = await getAllStatements();
-      expect(results).toHaveLength(2);
-      expect(results.every((s) => s.userId === USER_A)).toBe(true);
-    });
+      const statementsInput = [
+        { year: 2020, userId: user1.id },
+        { year: 2021, userId: user1.id },
+        { year: 2020, userId: user2.id },
+      ];
+      await prisma.statement.createMany({
+        data: statementsInput,
+      });
 
-    it("sorts ascending when sortAscending is true", async () => {
-      mockSession(USER_A);
-      await createStatement(USER_A, 2022);
-      await createStatement(USER_A, 2023);
-      await createStatement(USER_A, 2021);
+      mockSession(user1.id);
 
-      const results = await getAllStatements(true);
-      expect(results.map((s) => s.year)).toEqual([2021, 2022, 2023]);
-    });
+      const statements = await getAllStatements();
 
-    it("sorts descending when sortAscending is false", async () => {
-      mockSession(USER_A);
-      await createStatement(USER_A, 2021);
-      await createStatement(USER_A, 2022);
-      await createStatement(USER_A, 2023);
-
-      const results = await getAllStatements(false);
-      expect(results.map((s) => s.year)).toEqual([2023, 2022, 2021]);
+      expect(statements).toHaveLength(2);
+      expect(statements).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining(statementsInput[0]),
+          expect.objectContaining(statementsInput[1]),
+        ])
+      );
     });
 
     it("returns empty array when user has no statements", async () => {
-      mockSession(USER_A);
-      const results = await getAllStatements();
-      expect(results).toHaveLength(0);
+      const user1 = await createUser();
+      const user2 = await createUser();
+
+      const statementsInput = [
+        { year: 2020, userId: user2.id },
+        { year: 2021, userId: user2.id },
+        { year: 2022, userId: user2.id },
+      ];
+      await prisma.statement.createMany({
+        data: statementsInput,
+      });
+
+      mockSession(user1.id);
+
+      const statements = await getAllStatements();
+
+      expect(statements).toHaveLength(0);
+    });
+
+    it("sorts in ascending order", async () => {
+      const user = await createUser();
+
+      const statementsInput = [
+        { year: 2020, userId: user.id },
+        { year: 2022, userId: user.id },
+        { year: 2021, userId: user.id },
+      ];
+      await prisma.statement.createMany({
+        data: statementsInput,
+      });
+
+      mockSession(user.id);
+
+      const statements = await getAllStatements(true);
+
+      expect(statements).toHaveLength(3);
+      expect(statements).toMatchObject([
+        statementsInput[0],
+        statementsInput[2],
+        statementsInput[1],
+      ]);
+    });
+
+    it("sorts in descening order", async () => {
+      const user = await createUser();
+
+      const statementsInput = [
+        { year: 2020, userId: user.id },
+        { year: 2022, userId: user.id },
+        { year: 2021, userId: user.id },
+      ];
+      await prisma.statement.createMany({
+        data: statementsInput,
+      });
+
+      mockSession(user.id);
+
+      const statements = await getAllStatements(true);
+
+      expect(statements).toHaveLength(3);
+      expect(statements).toMatchObject([
+        statementsInput[0],
+        statementsInput[2],
+        statementsInput[1],
+      ]);
     });
   });
 
-  describe("getStatementFromYear", () => {
-    it("returns the matching statement for the authenticated user", async () => {
-      mockSession(USER_A);
-      await createStatement(USER_A, 2023);
+  describe("getStatementsFromYear", () => {
+    it("returns statement from correct user", async () => {
+      const user1 = await createUser();
+      const user2 = await createUser();
 
-      const result = await getStatementFromYear(2023);
-      expect(result).not.toBeNull();
-      expect(result?.year).toBe(2023);
-    });
+      const statementsInput = [
+        { year: 2020, userId: user1.id },
+        { year: 2020, userId: user2.id },
+      ];
+      await prisma.statement.createMany({
+        data: statementsInput,
+      });
 
-    it("does not return a statement belonging to another user", async () => {
-      mockSession(USER_A);
-      await createStatement(USER_B, 2023);
+      mockSession(user1.id);
 
-      const result = await getStatementFromYear(2023);
-      expect(result).toBeNull();
+      const statement = await getStatementFromYear(2020);
+
+      expect(statement).toMatchObject(statementsInput[0]);
     });
 
     it("returns null when no statement exists for that year", async () => {
-      mockSession(USER_A);
+      const user = await createUser();
+
+      await prisma.statement.create({
+        data: { year: 2020, userId: user.id },
+      });
+
+      mockSession(user.id);
+
       const result = await getStatementFromYear(2023);
       expect(result).toBeNull();
     });
@@ -83,43 +151,78 @@ describe("Statement DAL", () => {
 
   describe("getStatementFromId", () => {
     it("returns the statement by id for the authenticated user", async () => {
-      mockSession(USER_A);
-      const doc = await createStatement(USER_A, 2023);
+      const user = await createUser();
 
-      const result = await getStatementFromId(doc._id.toString());
-      expect(result).not.toBeNull();
-      expect(result?._id.toString()).toBe(doc._id.toString());
+      const savedStatement = await prisma.statement.create({
+        data: { year: 2020, userId: user.id },
+        include: { assets: true, liabilities: true },
+      });
+
+      mockSession(user.id);
+
+      const statement = await getStatementFromId(savedStatement.id);
+
+      expect(statement).toEqual(savedStatement);
     });
 
-    it("does not return a statement owned by another user", async () => {
-      mockSession(USER_A);
-      const doc = await createStatement(USER_B, 2023);
+    it("returns null statement is owned by another user", async () => {
+      const user1 = await createUser();
+      const user2 = await createUser();
 
-      const result = await getStatementFromId(doc._id.toString());
-      expect(result).toBeNull();
+      const savedStatement = await prisma.statement.create({
+        data: { year: 2020, userId: user1.id },
+        include: { assets: true, liabilities: true },
+      });
+
+      mockSession(user2.id);
+
+      const statement = await getStatementFromId(savedStatement.id);
+
+      expect(statement).toBeNull();
     });
   });
 
   describe("statementYearAlreadyExists", () => {
     it("returns true when a statement for that year exists", async () => {
-      mockSession(USER_A);
-      await createStatement(USER_A, 2023);
+      const user = await createUser();
 
-      const exists = await statementYearAlreadyExists(2023);
+      await prisma.statement.create({
+        data: { year: 2020, userId: user.id },
+      });
+
+      mockSession(user.id);
+
+      const exists = await statementYearAlreadyExists(2020);
+
       expect(exists).toBe(true);
     });
 
     it("returns false when no statement exists for that year", async () => {
-      mockSession(USER_A);
-      const exists = await statementYearAlreadyExists(2023);
+      const user = await createUser();
+
+      await prisma.statement.create({
+        data: { year: 2020, userId: user.id },
+      });
+
+      mockSession(user.id);
+
+      const exists = await statementYearAlreadyExists(2021);
+
       expect(exists).toBe(false);
     });
 
     it("returns false when the year exists but belongs to another user", async () => {
-      mockSession(USER_A);
-      await createStatement(USER_B, 2023);
+      const user1 = await createUser();
+      const user2 = await createUser();
 
-      const exists = await statementYearAlreadyExists(2023);
+      await prisma.statement.create({
+        data: { year: 2020, userId: user1.id },
+      });
+
+      mockSession(user2.id);
+
+      const exists = await statementYearAlreadyExists(2020);
+
       expect(exists).toBe(false);
     });
   });

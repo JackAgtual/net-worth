@@ -1,44 +1,45 @@
 import { getValidSessionOrRedirect } from "../auth/auth-utils";
-import { Statement } from "../db/models";
-import { StatementForm } from "../types/statement-types";
+import { prisma } from "../db/prisma";
 
 export async function getAllStatements(sortAscending: boolean = true) {
-  const session = await getValidSessionOrRedirect();
+  const { user } = await getValidSessionOrRedirect();
 
-  return Statement.find({
-    userId: session.user.id,
-  }).sort({ year: sortAscending ? 1 : -1 });
-}
-
-export async function getStatementFromYear(year: number) {
-  const session = await getValidSessionOrRedirect();
-
-  return Statement.findOne({
-    year,
-    userId: session.user.id,
+  return prisma.statement.findMany({
+    where: { userId: user.id },
+    orderBy: { year: sortAscending ? "asc" : "desc" },
+    include: { assets: true, liabilities: true },
   });
 }
 
-export async function getStatementFromId(id: string) {
-  const session = await getValidSessionOrRedirect();
+export async function getStatementFromYear(year: number) {
+  const { user } = await getValidSessionOrRedirect();
 
-  return Statement.findOne({
-    userId: session.user.id,
-    _id: id,
+  return prisma.statement.findUnique({
+    where: { userId_year: { userId: user.id, year } },
+    include: { assets: true, liabilities: true },
+  });
+}
+
+export async function getStatementFromId(id: number) {
+  const { user } = await getValidSessionOrRedirect();
+
+  return prisma.statement.findUnique({
+    where: { id, userId: user.id },
+    include: { assets: true, liabilities: true },
   });
 }
 
 export async function statementYearAlreadyExists(year: number) {
-  const session = await getValidSessionOrRedirect();
+  const { user } = await getValidSessionOrRedirect();
 
-  const existingStatements = await Statement.find({
-    userId: session.user.id,
-    year,
+  const count = await prisma.statement.count({
+    where: { userId: user.id, year },
   });
-
-  return existingStatements.length !== 0;
+  return count > 0;
 }
 
-export async function deleteStatement(statementData: Partial<StatementForm>) {
-  await Statement.deleteOne(statementData);
+export async function deleteStatement(id: number) {
+  const { user } = await getValidSessionOrRedirect();
+
+  await prisma.statement.delete({ where: { id, userId: user.id } });
 }
