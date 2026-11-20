@@ -1,7 +1,16 @@
-import { setupTestDb } from "@/tests/db-setup";
-import { prisma } from "../db/prisma";
-import { createUser, mockSession } from "@/tests/dal-helper";
+import { AssetCategory } from "@/generated/prisma/enums";
 import {
+  createUser,
+  logout,
+  mockSession,
+  nextRedirect,
+} from "@/tests/dal-helper";
+import { setupTestDb } from "@/tests/db-setup";
+import { Decimal } from "@prisma/client/runtime/client";
+import { prisma } from "../db/prisma";
+import { StatementForm } from "../types/statement-types";
+import {
+  createStatement,
   getAllStatements,
   getStatementFromId,
   getStatementFromYear,
@@ -18,7 +27,79 @@ vi.mock("../auth/auth-utils", () => ({
 
 setupTestDb();
 
-describe("statement-dal", () => {
+describe("statement DAL", () => {
+  describe("createStatement", () => {
+    const data: StatementForm = {
+      year: 2020,
+      lastYearSalary: 100_000,
+      assets: [
+        {
+          title: "a1",
+          amount: 200,
+          category: AssetCategory.CASH,
+          includeInGrowthCalculation: false,
+          retirement: false,
+        },
+        {
+          title: "a2",
+          amount: 1000,
+          category: AssetCategory.TAX_DEFERRED,
+          includeInGrowthCalculation: true,
+          retirement: true,
+        },
+      ],
+      liabilities: [{ title: "l1", amount: 1000, amountOneYearAgo: null }],
+    };
+
+    it("adds statement, assets, and liabilities to db", async () => {
+      const user = await createUser();
+
+      mockSession(user.id);
+
+      await createStatement(data);
+
+      const statements = await prisma.statement.findMany();
+      const statement = statements.at(0);
+      const assets = await prisma.asset.findMany();
+      const liabilities = await prisma.liability.findMany();
+
+      expect(statements.length).toBe(1);
+      expect(statement).toMatchObject({
+        userId: user.id,
+        year: 2020,
+        lastYearSalary: Decimal(100_000),
+      });
+      expect(assets.length).toBe(2);
+      expect(assets).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            statementId: statement?.id,
+            title: "a1",
+            amount: Decimal(200),
+            category: AssetCategory.CASH,
+            includeInGrowthCalculation: false,
+            retirement: false,
+          }),
+          expect.objectContaining({
+            statementId: statement?.id,
+            title: "a2",
+            amount: Decimal(1000),
+            category: AssetCategory.TAX_DEFERRED,
+            includeInGrowthCalculation: true,
+            retirement: true,
+          }),
+        ])
+      );
+      expect(liabilities.length).toBe(1);
+    });
+
+    it("throws error if unauthenticated", async () => {
+      logout();
+
+      await expect(createStatement(data)).rejects.toThrow(nextRedirect);
+    });
+  });
+
   describe("getAllStatements", () => {
     it("only returns statements belonging to user", async () => {
       const user1 = await createUser();
@@ -44,6 +125,12 @@ describe("statement-dal", () => {
           expect.objectContaining(statementsInput[1]),
         ])
       );
+    });
+
+    it("throws error if unauthenticated", async () => {
+      logout();
+
+      await expect(getAllStatements()).rejects.toThrow(nextRedirect);
     });
 
     it("returns empty array when user has no statements", async () => {
@@ -135,6 +222,12 @@ describe("statement-dal", () => {
       expect(statement).toMatchObject(statementsInput[0]);
     });
 
+    it("throws error if unauthenticated", async () => {
+      logout();
+
+      await expect(getStatementFromYear(2020)).rejects.toThrow(nextRedirect);
+    });
+
     it("returns null when no statement exists for that year", async () => {
       const user = await createUser();
 
@@ -163,6 +256,12 @@ describe("statement-dal", () => {
       const statement = await getStatementFromId(savedStatement.id);
 
       expect(statement).toEqual(savedStatement);
+    });
+
+    it("throws error if unauthenticated", async () => {
+      logout();
+
+      await expect(getStatementFromId(1)).rejects.toThrow(nextRedirect);
     });
 
     it("returns null statement is owned by another user", async () => {
@@ -195,6 +294,14 @@ describe("statement-dal", () => {
       const exists = await statementYearAlreadyExists(2020);
 
       expect(exists).toBe(true);
+    });
+
+    it("throws error if unauthenticated", async () => {
+      logout();
+
+      await expect(statementYearAlreadyExists(2020)).rejects.toThrow(
+        nextRedirect
+      );
     });
 
     it("returns false when no statement exists for that year", async () => {

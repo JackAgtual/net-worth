@@ -1,5 +1,21 @@
 import { getValidSessionOrRedirect } from "../auth/auth-utils";
 import { prisma } from "../db/prisma";
+import { StatementForm } from "../types/statement-types";
+
+export async function createStatement(data: StatementForm) {
+  const { user } = await getValidSessionOrRedirect();
+
+  const { assets, liabilities, ...statement } = data;
+
+  await prisma.statement.create({
+    data: {
+      ...statement,
+      userId: user.id,
+      assets: { create: assets },
+      liabilities: { create: liabilities },
+    },
+  });
+}
 
 export async function getAllStatements(sortAscending: boolean = true) {
   const { user } = await getValidSessionOrRedirect();
