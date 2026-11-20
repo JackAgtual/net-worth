@@ -3,8 +3,8 @@
 import { revalidatePath } from "next/cache";
 import {
   addLiabilityToStatement,
-  removeLiabilityFromStatement,
-  updateLiabilityOnStatement,
+  deleteLiability,
+  updateLiability,
 } from "../dal/liability-dal";
 import dbConnect from "../db/mongodb";
 import { ActionResponse } from "../types/action-types";
@@ -79,10 +79,7 @@ export async function deleteLiability({
 
   const inputs = validatedInputs.data;
 
-  const deleted = await removeLiabilityFromStatement(
-    inputs.statementId,
-    inputs.entryId
-  );
+  const deleted = await deleteLiability(inputs.statementId, inputs.entryId);
 
   if (!deleted) {
     return liabilityNotFound;
@@ -123,7 +120,7 @@ export async function updateLiability({
     return dataParseResult;
   }
 
-  const liabilityDoc = updateLiabilityOnStatement(
+  const liabilityDoc = updateLiability(
     inputs.statementId,
     inputs.entryId,
     dataParseResult.data
