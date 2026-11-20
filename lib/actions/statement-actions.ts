@@ -2,37 +2,29 @@
 
 import { getValidSessionOrThrow } from "../auth/auth-utils";
 import {
-  deleteStatement,
+  createStatement,
   statementYearAlreadyExists,
 } from "../dal/statement-dal";
-import dbConnect from "../db/mongodb";
 import { ActionResponse } from "../types/action-types";
 import { StatementForm, statementFormSchema } from "../types/statement-types";
 import { parseFormData } from "./action-utils";
 
-const somethingWentWrong: ActionResponse<StatementForm> = {
-  success: false,
-  errors: [{ path: "root", message: "Something went wrong" }],
-};
-
-export async function createStatement(
+export async function createStatementAction(
   formData: unknown
 ): Promise<ActionResponse<StatementForm>> {
-  await dbConnect();
+  await getValidSessionOrThrow();
 
   const dataParseResult = parseFormData(formData, statementFormSchema);
   if (!dataParseResult.success) {
     return dataParseResult;
   }
 
-  const session = await getValidSessionOrThrow();
-
   const statementData = dataParseResult.data;
-  const userId = session.user.id;
 
   const statementAlreadyExists = await statementYearAlreadyExists(
     statementData.year
   );
+
   if (statementAlreadyExists) {
     return {
       success: false,
@@ -45,41 +37,6 @@ export async function createStatement(
     };
   }
 
-  const statementLevelData = {
-    userId,
-    year: statementData.year,
-    lastYearSalary: statementData.lastYearSalary,
-  };
-  try {
-    const statementDoc = new Statement(statementLevelData);
-    await statementDoc.save();
-
-    if (!statementDoc) {
-      return somethingWentWrong;
-    }
-
-    await statementDoc.addAssets(
-      statementData.assets?.map((asset) => {
-        return {
-          userId,
-          ...asset,
-        };
-      }) ?? []
-    );
-
-    await statementDoc.addLiabilities(
-      statementData.liabilities?.map((liability) => {
-        return {
-          userId,
-          ...liability,
-        };
-      }) ?? []
-    );
-
-    return { success: true };
-  } catch (error) {
-    console.error(error);
-    await deleteStatement(statementLevelData);
-    return somethingWentWrong;
-  }
+  await createStatement(statementData);
+  return { success: true };
 }

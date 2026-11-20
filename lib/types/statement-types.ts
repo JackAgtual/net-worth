@@ -6,7 +6,7 @@ import {
 import { Control } from "react-hook-form";
 import { z } from "zod";
 
-const statementFormSchema = StatementInputSchema.omit({
+export const statementFormSchema = StatementInputSchema.omit({
   user: true,
   userId: true,
 }).extend({

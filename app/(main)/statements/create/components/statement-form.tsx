@@ -4,7 +4,7 @@ import DollarInput from "@/components/form/DollarInput";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { createStatement } from "@/lib/actions/statement-actions";
+import { createStatementAction } from "@/lib/actions/statement-actions";
 import {
   StatementForm as TStatementForm,
   statementFormSchema,
@@ -33,7 +33,7 @@ export default function StatementForm({
   });
 
   const onSubmit = async (data: TStatementForm) => {
-    const response = await createStatement(data);
+    const response = await createStatementAction(data);
 
     if (response.success) {
       redirect(`/statements/${data.year}`);
