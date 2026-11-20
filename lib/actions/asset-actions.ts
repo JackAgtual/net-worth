@@ -3,8 +3,8 @@
 import { revalidatePath } from "next/cache";
 import {
   addAssetToStatement,
-  removeAssetFromStatement,
-  updateAssetOnStatement,
+  deleteAsset,
+  updateAsset,
 } from "../dal/asset-dal";
 import dbConnect from "../db/mongodb";
 import { ActionResponse } from "../types/action-types";
@@ -78,7 +78,7 @@ export async function deleteAsset({
 
   const inputs = validatedInputs.data;
 
-  const deleted = removeAssetFromStatement(inputs.statementId, inputs.entryId);
+  const deleted = deleteAsset(inputs.statementId, inputs.entryId);
 
   if (!deleted) {
     return assetNotFound;
@@ -118,7 +118,7 @@ export async function updateAsset({
     return dataParseResult;
   }
 
-  const assetDoc = await updateAssetOnStatement(
+  const assetDoc = await updateAsset(
     inputs.statementId,
     inputs.entryId,
     dataParseResult.data

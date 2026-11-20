@@ -1,250 +1,219 @@
+import { Asset, Statement, User } from "@/generated/prisma/client";
+import { AssetCategory } from "@/generated/prisma/enums";
+import { AssetInputType } from "@/generated/prisma/schemas";
 import {
   addAssetToStatement,
-  removeAssetFromStatement,
-  updateAssetOnStatement,
+  deleteAsset,
+  updateAsset,
 } from "@/lib/dal/asset-dal";
-import { Asset, Statement } from "@/lib/db/models";
 import {
   createStatement,
+  createUser,
+  logout,
   mockSession,
-  USER_A,
-  USER_B,
+  nextRedirect,
 } from "@/tests/dal-helper";
-import { setupMongoTestDb } from "@/tests/setup-mongo";
-import { AssetForm } from "../types/asset-types";
-import { Category } from "../types/types";
+import { setupTestDb } from "@/tests/db-setup";
+import { prisma } from "../db/prisma";
 
-setupMongoTestDb();
+vi.mock("../db/prisma", async () => ({
+  prisma: (await import("@/tests/db-setup")).testPrisma,
+}));
 
-vi.mock("@/lib/auth/auth-utils");
+vi.mock("../auth/auth-utils", () => ({
+  getValidSessionOrRedirect: vi.fn(),
+}));
 
-const defaultAssetData: AssetForm = {
-  title: "Savings Account",
-  amount: 10000,
-  category: Category.Cash,
-};
-const assetData: AssetForm = {
-  title: "Brokerage Account",
-  amount: 5000,
-  category: Category.AfterTax,
-};
-
-async function createStatementWithAsset(userId: string, year: number) {
-  const statement = await createStatement(userId, year);
-  const asset = await Asset.create({ userId, ...defaultAssetData });
-  statement.assets.push(asset._id);
-  await statement.save();
-  return { statement, asset };
-}
+setupTestDb();
 
 describe("Asset DAL", () => {
-  describe("addAssetToStatement", () => {
-    it("creates an asset and adds it to the statement", async () => {
-      mockSession(USER_A);
-      const { statement } = await createStatementWithAsset(USER_A, 2023);
+  let user: User;
+  let statement: Statement;
+  let existingAsset1: Asset;
+  let existingAsset2: Asset;
 
-      const asset = await addAssetToStatement(
-        statement._id.toString(),
-        assetData
-      );
+  beforeEach(async () => {
+    user = await createUser();
+
+    mockSession(user.id);
+
+    statement = await createStatement(user.id, 2020);
+    existingAsset1 = await prisma.asset.create({
+      data: {
+        statementId: statement.id,
+        title: "Asset 1",
+        amount: 200,
+        category: AssetCategory.CASH,
+      },
+    });
+    existingAsset2 = await prisma.asset.create({
+      data: {
+        statementId: statement.id,
+        title: "Asset 2",
+        amount: 300,
+        category: AssetCategory.TAX_DEFERRED,
+      },
+    });
+  });
+
+  describe("addAssetToStatement", () => {
+    const assetData: AssetInputType = {
+      title: "Brokerage Account",
+      amount: 5000,
+      category: AssetCategory.AFTER_TAX,
+      statement: null,
+      includeInGrowthCalculation: false,
+      retirement: false,
+      amountOneYearAgo: null,
+      nonSelfContributions: null,
+      notes: null,
+      selfContributions: null,
+      withdrawals: null,
+    };
+
+    it("creates an asset and adds it to the statement", async () => {
+      const asset = await addAssetToStatement(statement.id, assetData);
 
       expect(asset).not.toBeNull();
+      expect(asset?.statementId).toEqual(statement.id);
       expect(asset?.title).toBe(assetData.title);
-      expect(asset?.amount).toBe(assetData.amount);
-
-      const updatedStatement = await Statement.findById(statement._id);
-      expect(updatedStatement?.assets).toHaveLength(2);
+      expect(asset?.amount.toNumber()).toBe(assetData.amount);
+      expect(asset?.category).toBe(assetData.category);
     });
 
-    it("sets the userId from the session on the asset", async () => {
-      mockSession(USER_A);
-      const { statement } = await createStatementWithAsset(USER_A, 2023);
+    it("throws error if unauthenticated", async () => {
+      logout();
 
-      const asset = await addAssetToStatement(
-        statement._id.toString(),
-        assetData
-      );
+      await expect(
+        addAssetToStatement(statement.id, assetData)
+      ).rejects.toThrow(nextRedirect);
 
-      expect(asset?.userId).toBe(USER_A);
-    });
-
-    it("does not modify existing assets", async () => {
-      mockSession(USER_A);
-      const { statement, asset: existing } = await createStatementWithAsset(
-        USER_A,
-        2023
-      );
-
-      await addAssetToStatement(statement._id.toString(), assetData);
-
-      const unchangedAsset = await Asset.findById(existing._id);
-      expect(unchangedAsset).toMatchObject(defaultAssetData);
+      expect(await prisma.asset.count()).toBe(2);
     });
 
     it("returns null when statement does not exist", async () => {
-      mockSession(USER_A);
-      const { statement } = await createStatementWithAsset(USER_A, 2023);
-      await Statement.findByIdAndDelete(statement._id);
+      const asset = await addAssetToStatement(9999, assetData);
 
-      const result = await addAssetToStatement(
-        statement._id.toString(),
-        assetData
-      );
-
-      expect(result).toBeNull();
+      expect(asset).toBeNull();
     });
 
     it("returns null when statement belongs to another user", async () => {
-      mockSession(USER_A);
-      const { statement } = await createStatementWithAsset(USER_B, 2023);
+      const otherUser = await createUser();
 
-      const result = await addAssetToStatement(
-        statement._id.toString(),
-        assetData
-      );
+      mockSession(otherUser.id);
 
-      expect(result).toBeNull();
+      const asset = await addAssetToStatement(9999, assetData);
+
+      expect(asset).toBeNull();
     });
   });
 
-  describe("removeAssetFromStatement", () => {
-    let statement: InstanceType<typeof Statement>;
-    let existing: InstanceType<typeof Asset>;
-    let assetToRemove: InstanceType<typeof Asset>;
-
-    beforeEach(async () => {
-      mockSession(USER_A);
-      const result = await createStatementWithAsset(USER_A, 2023);
-      statement = result.statement;
-      existing = result.asset;
-      assetToRemove = await Asset.create({ userId: USER_A, ...assetData });
-      statement.assets.push(assetToRemove._id);
-      await statement.save();
-    });
-
+  describe("deleteAsset", () => {
     it("deletes only the target asset", async () => {
-      await removeAssetFromStatement(
-        statement._id.toString(),
-        assetToRemove._id.toString()
-      );
+      const deleted = await deleteAsset(existingAsset1.id);
+      const assets = await prisma.asset.findMany();
 
-      const updatedStatement = await Statement.findById(statement._id);
-      expect(updatedStatement?.assets).toHaveLength(1);
-      expect(updatedStatement?.assets[0].toString()).toBe(
-        existing._id.toString()
-      );
+      expect(deleted).toBeTruthy();
+      expect(assets.length).toEqual(1);
+      expect(assets.at(0)?.id).toEqual(existingAsset2.id);
     });
 
-    it("deletes the asset document", async () => {
-      await removeAssetFromStatement(
-        statement._id.toString(),
-        assetToRemove._id.toString()
+    it("throws error if unauthenticated", async () => {
+      logout();
+
+      await expect(deleteAsset(existingAsset1.id)).rejects.toThrow(
+        nextRedirect
       );
-
-      const deletedAsset = await Asset.findById(assetToRemove._id);
-      expect(deletedAsset).toBeNull();
-    });
-
-    it("does not modify other asset documents", async () => {
-      await removeAssetFromStatement(
-        statement._id.toString(),
-        assetToRemove._id.toString()
-      );
-
-      const unchangedAsset = await Asset.findById(existing._id);
-      expect(unchangedAsset).toMatchObject(defaultAssetData);
+      expect(await prisma.asset.count()).toBe(2);
     });
 
     it("returns false when asset does not exist", async () => {
-      await Asset.findByIdAndDelete(assetToRemove._id);
+      const deleted = await deleteAsset(999);
+      const assets = await prisma.asset.findMany();
 
-      const result = await removeAssetFromStatement(
-        statement._id.toString(),
-        assetToRemove._id.toString()
-      );
-
-      expect(result).toBe(false);
+      expect(deleted).toBeFalsy();
+      expect(assets.length).toEqual(2);
     });
 
-    it("returns null when statement does not exist", async () => {
-      await Statement.findByIdAndDelete(statement._id);
+    it("does not allow user to delete a different user's asset", async () => {
+      const otherUser = await createUser();
+      mockSession(otherUser.id);
 
-      const result = await removeAssetFromStatement(
-        statement._id.toString(),
-        assetToRemove._id.toString()
-      );
+      const deleted = await deleteAsset(existingAsset1.id);
 
-      expect(result).toBeNull();
+      const assets = await prisma.asset.findMany();
+
+      expect(deleted).toBeFalsy();
+      expect(assets.length).toEqual(2);
     });
   });
 
-  describe("updateAssetOnStatement", () => {
-    let statement: InstanceType<typeof Statement>;
-    let existing: InstanceType<typeof Asset>;
-    let assetToUpdate: InstanceType<typeof Asset>;
-    const updates = {
-      title: "Roth IRA",
-      amount: 8000,
-      category: Category.TaxFree,
-    };
+  describe("updateAsset", () => {
+    it("updates the target asset with new data", async () => {
+      const updates: Asset = {
+        ...existingAsset1,
+        category: AssetCategory.PROPERTY,
+        title: "Asset 1 updated",
+      };
 
-    beforeEach(async () => {
-      mockSession(USER_A);
-      const result = await createStatementWithAsset(USER_A, 2023);
-      statement = result.statement;
-      existing = result.asset;
-      assetToUpdate = await Asset.create({ userId: USER_A, ...assetData });
-      statement.assets.push(assetToUpdate._id);
-      await statement.save();
+      const wasUpdated = await updateAsset(updates);
+      const updatedAsset = await prisma.asset.findUnique({
+        where: { id: existingAsset1.id },
+      });
+
+      expect(wasUpdated).toBeTruthy();
+      expect(updatedAsset).not.toBeNull();
+      expect(updatedAsset).toStrictEqual(updates);
     });
 
-    it("updates the target asset with new data", async () => {
-      const updated = await updateAssetOnStatement(
-        statement._id.toString(),
-        assetToUpdate._id.toString(),
-        updates
-      );
+    it("throws error if unauthenticated", async () => {
+      const updates: Asset = {
+        ...existingAsset1,
+        category: AssetCategory.PROPERTY,
+        title: "Asset 1 updated",
+      };
 
-      expect(updated).not.toBeNull();
-      expect(updated).toMatchObject(updates);
+      logout();
+
+      await expect(updateAsset(updates)).rejects.toThrow(nextRedirect);
+
+      expect(await prisma.asset.count()).toBe(2);
     });
 
     it("does not modify other assets", async () => {
-      await updateAssetOnStatement(
-        statement._id.toString(),
-        assetToUpdate._id.toString(),
-        updates
-      );
+      const updates: Asset = {
+        ...existingAsset1,
+        category: AssetCategory.PROPERTY,
+        title: "Asset 1 updated",
+      };
 
-      const unchangedAsset = await Asset.findById(existing._id);
-      expect(unchangedAsset).toMatchObject(defaultAssetData);
+      await updateAsset(updates);
+      const unAffectedAsset = await prisma.asset.findUnique({
+        where: { id: existingAsset2.id },
+      });
+
+      expect(unAffectedAsset).not.toBeNull();
+      expect(unAffectedAsset).toStrictEqual(existingAsset2);
     });
 
-    it("returns null when the asset is not on the statement", async () => {
-      const { statement: otherStatement } = await createStatementWithAsset(
-        USER_A,
-        2022
-      );
+    it("throws error if asset does not exist", async () => {
+      const updates: Asset = {
+        ...existingAsset1,
+        id: 9999,
+        category: AssetCategory.PROPERTY,
+        title: "Asset 1 updated",
+      };
 
-      const result = await updateAssetOnStatement(
-        otherStatement._id.toString(),
-        assetToUpdate._id.toString(),
-        updates
-      );
-
-      expect(result).toBeNull();
+      await expect(updateAsset(updates)).rejects.toThrow();
     });
 
-    it("returns null when statement does not exist", async () => {
-      await Statement.findByIdAndDelete(statement._id);
+    it("throws error if asset id doesn't belong to statement id", async () => {
+      const updates: Asset = {
+        ...existingAsset1,
+        statementId: 999,
+      };
 
-      const result = await updateAssetOnStatement(
-        statement._id.toString(),
-        assetToUpdate._id.toString(),
-        updates
-      );
-
-      expect(result).toBeNull();
+      await expect(updateAsset(updates)).rejects.toThrow();
     });
   });
 });
