@@ -2,23 +2,21 @@ name: Build
 
 on:
   push:
-  pull_request:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: 25.6.1
+          node-version: 26.13.1
           cache: "npm"
-      - run: docker compose up -d mongo
-      - run: docker compose up -d --wait mongo
-      - run: docker compose up mongo-init
-      - run: npm ci
-      - run: npm run build
-        env:
-          MONGODB_URI: mongodb://127.0.0.1:27017/dev?replicaSet=rs0
-          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
-      - run: docker compose down
+      - name: Install dependencies
+        run: npm ci
+      - name: Generate prisma types
+        run: npx prisma generate
+      - name: Build app
+        run: npm run build
+      - name: Test
+        run: npm test
