@@ -1,21 +1,19 @@
 import type { Asset } from "@/generated/prisma/client";
-import { Decimal } from "@prisma/client/runtime/client";
 import { toDecimal } from "../utils/decimal-utils";
+import { Numberify } from "./numberify";
 
-export function getTotalContributions(asset: Asset): Decimal {
-  return toDecimal(asset.selfContributions).add(
-    toDecimal(asset.nonSelfContributions)
-  );
+export function getTotalContributions(asset: Numberify<Asset>): number {
+  return (asset.selfContributions ?? 0) + (asset.nonSelfContributions ?? 0);
 }
 
-export function getNetContributions(asset: Asset): Decimal {
-  return getTotalContributions(asset).sub(toDecimal(asset.withdrawals));
+export function getNetContributions(asset: Numberify<Asset>): number {
+  return getTotalContributions(asset) - (asset.withdrawals ?? 0);
 }
 
-export function getGrowthFromAppreciation(asset: Asset): Decimal | undefined {
+export function getGrowthFromAppreciation(
+  asset: Numberify<Asset>
+): number | undefined {
   if (!asset.amountOneYearAgo) return undefined;
 
-  return toDecimal(asset.amount)
-    .sub(asset.amountOneYearAgo)
-    .sub(getNetContributions(asset));
+  return asset.amount - asset.amountOneYearAgo - getNetContributions(asset);
 }

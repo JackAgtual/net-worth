@@ -1,11 +1,14 @@
 import type { Liability } from "@/generated/prisma/client";
-import { Decimal } from "@prisma/client/runtime/client";
-import { toDecimal } from "../utils/decimal-utils";
+import { Numberify } from "./numberify";
 
-export function getGrowthFromInterest(liability: Liability): Decimal | void {
+export function getGrowthFromInterest(
+  liability: Numberify<Liability>
+): number | void {
   if (liability.amountOneYearAgo == null) return;
 
-  return liability.amount
-    .sub(liability.amountOneYearAgo)
-    .add(toDecimal(liability.paymentsMade));
+  return (
+    liability.amount -
+    liability.amountOneYearAgo +
+    (liability.paymentsMade ?? 0)
+  );
 }
