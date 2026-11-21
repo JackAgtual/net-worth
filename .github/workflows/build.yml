@@ -18,5 +18,7 @@ jobs:
         run: npx prisma generate
       - name: Build app
         run: npm run build
+        env:
+          DATABASE_URL: postgresql://admin:password@localhost:5432/db?schema=public # Only required for build, not used at runtime
       - name: Test
         run: npm test
