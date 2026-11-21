@@ -64,7 +64,7 @@ describe("Liability DAL", () => {
       paymentsMade: null,
     };
 
-    it("creates a liability and adds it to the statement", async () => {
+    it("creates a liability and adds it to the statement and returns numberified type", async () => {
       const liability = await addLiabilityToStatement(
         statement.id,
         liabilityData
@@ -73,7 +73,7 @@ describe("Liability DAL", () => {
       expect(liability).not.toBeNull();
       expect(liability?.statementId).toEqual(statement.id);
       expect(liability?.title).toBe(liabilityData.title);
-      expect(liability?.amount.toNumber()).toBe(liabilityData.amount);
+      expect(liability?.amount).toBe(liabilityData.amount);
     });
 
     it("throws error if unauthenticated", async () => {

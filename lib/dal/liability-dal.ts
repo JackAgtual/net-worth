@@ -1,4 +1,5 @@
 import { getValidSessionOrRedirect } from "../auth/auth-utils";
+import { numberify } from "../db/numberify";
 import { prisma } from "../db/prisma";
 import { LiabilityForm } from "../types/liability-types";
 import { getStatementFromId } from "./statement-dal";
@@ -12,7 +13,10 @@ export async function addLiabilityToStatement(
 
   if (!statementDoc) return null;
 
-  return prisma.liability.create({ data: { ...data, statementId } });
+  const liability = await prisma.liability.create({
+    data: { ...data, statementId },
+  });
+  return numberify(liability);
 }
 
 export async function deleteLiability(id: number) {

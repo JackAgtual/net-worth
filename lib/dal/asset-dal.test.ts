@@ -64,21 +64,19 @@ describe("Asset DAL", () => {
       category: AssetCategory.AFTER_TAX,
       includeInGrowthCalculation: false,
       retirement: false,
-      amountOneYearAgo: null,
+      amountOneYearAgo: 4000,
       nonSelfContributions: null,
       notes: null,
-      selfContributions: null,
+      selfContributions: 400,
       withdrawals: null,
     };
 
-    it("creates an asset and adds it to the statement", async () => {
+    it("creates an asset and adds it to the statement and returns numberified type", async () => {
       const asset = await addAssetToStatement(statement.id, assetData);
 
       expect(asset).not.toBeNull();
       expect(asset?.statementId).toEqual(statement.id);
-      expect(asset?.title).toBe(assetData.title);
-      expect(asset?.amount.toNumber()).toBe(assetData.amount);
-      expect(asset?.category).toBe(assetData.category);
+      expect(asset).toMatchObject(assetData);
     });
 
     it("throws error if unauthenticated", async () => {

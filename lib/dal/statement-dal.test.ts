@@ -127,6 +127,59 @@ describe("statement DAL", () => {
       );
     });
 
+    it("returns assets and liabilities and is numberify type", async () => {
+      const user = await createUser();
+      mockSession(user.id);
+
+      await prisma.statement.create({
+        data: {
+          year: 2020,
+          userId: user.id,
+          lastYearSalary: 100_000,
+          assets: {
+            create: [
+              { title: "a1", amount: 100, category: AssetCategory.CASH },
+              {
+                title: "a2",
+                amount: 500_000,
+                category: AssetCategory.PROPERTY,
+              },
+            ],
+          },
+          liabilities: {
+            create: [
+              { title: "Credit card", amount: 1000 },
+              { title: "Mortgage", amount: 200_000 },
+              { title: "Loan", amount: 500 },
+            ],
+          },
+        },
+      });
+
+      const statements = await getAllStatements();
+
+      const statement = statements.at(0);
+
+      expect(statement).toMatchObject({
+        year: 2020,
+        userId: user.id,
+        lastYearSalary: 100_000,
+        assets: [
+          { title: "a1", amount: 100, category: AssetCategory.CASH },
+          {
+            title: "a2",
+            amount: 500_000,
+            category: AssetCategory.PROPERTY,
+          },
+        ],
+        liabilities: [
+          { title: "Credit card", amount: 1000 },
+          { title: "Mortgage", amount: 200_000 },
+          { title: "Loan", amount: 500 },
+        ],
+      });
+    });
+
     it("throws error if unauthenticated", async () => {
       logout();
 
@@ -222,6 +275,57 @@ describe("statement DAL", () => {
       expect(statement).toMatchObject(statementsInput[0]);
     });
 
+    it("returns assets and liabilities and is numberify type", async () => {
+      const user = await createUser();
+      mockSession(user.id);
+
+      await prisma.statement.create({
+        data: {
+          year: 2020,
+          userId: user.id,
+          lastYearSalary: 100_000,
+          assets: {
+            create: [
+              { title: "a1", amount: 100, category: AssetCategory.CASH },
+              {
+                title: "a2",
+                amount: 500_000,
+                category: AssetCategory.PROPERTY,
+              },
+            ],
+          },
+          liabilities: {
+            create: [
+              { title: "Credit card", amount: 1000 },
+              { title: "Mortgage", amount: 200_000 },
+              { title: "Loan", amount: 500 },
+            ],
+          },
+        },
+      });
+
+      const statement = await getStatementFromYear(2020);
+
+      expect(statement).toMatchObject({
+        year: 2020,
+        userId: user.id,
+        lastYearSalary: 100_000,
+        assets: [
+          { title: "a1", amount: 100, category: AssetCategory.CASH },
+          {
+            title: "a2",
+            amount: 500_000,
+            category: AssetCategory.PROPERTY,
+          },
+        ],
+        liabilities: [
+          { title: "Credit card", amount: 1000 },
+          { title: "Mortgage", amount: 200_000 },
+          { title: "Loan", amount: 500 },
+        ],
+      });
+    });
+
     it("throws error if unauthenticated", async () => {
       logout();
 
@@ -256,6 +360,57 @@ describe("statement DAL", () => {
       const statement = await getStatementFromId(savedStatement.id);
 
       expect(statement).toEqual(savedStatement);
+    });
+
+    it("returns assets and liabilities and is numberify type", async () => {
+      const user = await createUser();
+      mockSession(user.id);
+
+      const savedStatement = await prisma.statement.create({
+        data: {
+          year: 2020,
+          userId: user.id,
+          lastYearSalary: 100_000,
+          assets: {
+            create: [
+              { title: "a1", amount: 100, category: AssetCategory.CASH },
+              {
+                title: "a2",
+                amount: 500_000,
+                category: AssetCategory.PROPERTY,
+              },
+            ],
+          },
+          liabilities: {
+            create: [
+              { title: "Credit card", amount: 1000 },
+              { title: "Mortgage", amount: 200_000 },
+              { title: "Loan", amount: 500 },
+            ],
+          },
+        },
+      });
+
+      const statement = await getStatementFromId(savedStatement.id);
+
+      expect(statement).toMatchObject({
+        year: 2020,
+        userId: user.id,
+        lastYearSalary: 100_000,
+        assets: [
+          { title: "a1", amount: 100, category: AssetCategory.CASH },
+          {
+            title: "a2",
+            amount: 500_000,
+            category: AssetCategory.PROPERTY,
+          },
+        ],
+        liabilities: [
+          { title: "Credit card", amount: 1000 },
+          { title: "Mortgage", amount: 200_000 },
+          { title: "Loan", amount: 500 },
+        ],
+      });
     });
 
     it("throws error if unauthenticated", async () => {
