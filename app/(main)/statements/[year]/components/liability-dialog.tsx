@@ -64,7 +64,6 @@ export default function LiabilityDialog(props: LiabilityDialogProps) {
 
     const result = await updateLiabilityAction({
       liabilityId,
-      statementId,
       data: serializable,
       path,
     });
@@ -80,7 +79,6 @@ export default function LiabilityDialog(props: LiabilityDialogProps) {
   const handleDelete = async () => {
     const result = await deleteLiabilityAction({
       liabilityId,
-      statementId,
       path,
     });
 

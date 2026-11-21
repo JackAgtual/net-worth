@@ -12,8 +12,7 @@ export default async function Page() {
   }
 
   const statementDataAggregator = new StatementDataAggregator(allStatements);
-  const statementOverview =
-    await statementDataAggregator.getStatementOverviewData();
+  const statementOverview = statementDataAggregator.getStatementOverviewData();
 
   return (
     <>

@@ -51,6 +51,10 @@ describe("formatAsPercent", () => {
     expect(formatAsPercent(undefined)).toEqual("0%");
   });
 
+  it("returns 0% for null input", () => {
+    expect(formatAsPercent(null)).toEqual("0%");
+  });
+
   it("returns percent as integer", () => {
     expect(formatAsPercent(0.384)).toEqual("38%");
     expect(formatAsPercent(0.3999)).toEqual("40%");

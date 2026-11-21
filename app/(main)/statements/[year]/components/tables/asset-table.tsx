@@ -6,16 +6,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { AssetForm, AssetHydrated } from "@/lib/types/asset-types";
+import { Asset } from "@/generated/prisma/client";
+import { AssetForm } from "@/lib/types/asset-types";
 import { formatAsDollar } from "@/lib/utils/format-utils";
 import EntryDropDown from "../entry-drop-down";
+import { Numberify } from "@/lib/db/numberify";
+import { getGrowthFromAppreciation } from "@/lib/db/asset";
 
 export default async function AssetTable({
   assets,
   statementId,
 }: {
-  assets: AssetHydrated[];
-  statementId: string;
+  assets: Numberify<Asset>[];
+  statementId: number;
 }) {
   return (
     <Table>
@@ -37,7 +40,7 @@ export default async function AssetTable({
       </TableHeader>
       <TableBody>
         {assets.map((asset) => {
-          const id = asset._id.toString();
+          const { id } = asset;
 
           // TODO: Find a better way to do this
           const assetFormData: AssetForm = {
@@ -46,10 +49,8 @@ export default async function AssetTable({
             category: asset.category,
             retirement: asset.retirement,
             amountOneYearAgo: asset.amountOneYearAgo,
-            contribution: {
-              self: asset.contribution?.self,
-              nonSelf: asset.contribution?.nonSelf,
-            },
+            selfContributions: asset.selfContributions,
+            nonSelfContributions: asset.nonSelfContributions,
             withdrawals: asset.withdrawals,
             includeInGrowthCalculation: asset.includeInGrowthCalculation,
             notes: asset.notes,
@@ -65,13 +66,13 @@ export default async function AssetTable({
               </TableCell>
               <TableCell>{formatAsDollar(asset.amount)}</TableCell>
               <TableCell>{formatAsDollar(asset.amountOneYearAgo)}</TableCell>
-              <TableCell>{formatAsDollar(asset.contribution?.self)}</TableCell>
+              <TableCell>{formatAsDollar(asset.selfContributions)}</TableCell>
               <TableCell>
-                {formatAsDollar(asset.contribution?.nonSelf)}
+                {formatAsDollar(asset.nonSelfContributions)}
               </TableCell>
               <TableCell>{formatAsDollar(asset.withdrawals)}</TableCell>
               <TableCell>
-                {formatAsDollar(asset.getGrowthFromAppreciation())}
+                {formatAsDollar(getGrowthFromAppreciation(asset))}
               </TableCell>
               <TableCell>{asset.notes}</TableCell>
               <TableCell className="text-right">

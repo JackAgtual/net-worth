@@ -1,5 +1,5 @@
+import { AssetCategory } from "@/generated/prisma/enums";
 import { AssetForm as TAssetForm } from "@/lib/types/asset-types";
-import { Category } from "@/lib/types/types";
 import { useState } from "react";
 import {
   Control,
@@ -79,7 +79,7 @@ export default function AssetForm<
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
-                {Object.values(Category).map((value) => (
+                {Object.values(AssetCategory).map((value) => (
                   <SelectItem key={value} value={value}>
                     {value}
                   </SelectItem>

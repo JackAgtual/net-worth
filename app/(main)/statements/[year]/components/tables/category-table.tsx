@@ -5,11 +5,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { AssetCategory } from "@/generated/prisma/enums";
 import { formatAsDollar, formatAsPercent } from "@/lib/utils/format-utils";
-import { Category } from "@/types/types";
 
 export type CategoryTableData = {
-  category: Category;
+  category: AssetCategory;
   amount: number;
   percent: number;
 };

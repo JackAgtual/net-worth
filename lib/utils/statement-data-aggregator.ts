@@ -1,3 +1,24 @@
+import { AssetCategory } from "@/generated/prisma/enums";
+import { Numberify } from "../db/numberify";
+import {
+  getContributionAmountByContributor,
+  getContributioPercentOfSalaryByContributor,
+  getLastYearAssetGrowth,
+  getLastYearAssetGrowthPercentOfSalary,
+  getNetContributions,
+  getNetContributionsPercentOfSalary,
+  getNetWorth,
+  getPercentOfAssetsByCategory,
+  getTotalAssetAmount,
+  getTotalAssetAmountByCategory,
+  getTotalLiabilityAmount,
+  getTotalLiabilityGrowthFromInterest,
+  getTotalLiabilityGrowthFromInterestPercentOfSalary,
+  getTotalLiabilityPaymentsMade,
+  getTotalLiabilityPaymentsMadePercentOfSalary,
+  getTotalWithdrawals,
+  getTotalWithdrawalsPercentOfSalary,
+} from "../db/statement";
 import {
   AssetGrowthChartData,
   CategoryChartData,
@@ -6,17 +27,15 @@ import {
   ContributionValues,
   NetWorthChartData,
 } from "../types/chart-data-types";
-import { StatementHydrated } from "../types/statement-types";
-import { Category, Contributor } from "../types/types";
-import { deepResolveObject } from "./object-utils";
+import { Contributor, FullStatement } from "../types/types";
 
 export class StatementDataAggregator {
-  mostRecentStatement: StatementHydrated;
-  statements: StatementHydrated[];
+  mostRecentStatement: Numberify<FullStatement>;
+  statements: Numberify<FullStatement>[];
 
   static contributors = Object.values(Contributor);
 
-  constructor(statements: StatementHydrated[]) {
+  constructor(statements: Numberify<FullStatement>[]) {
     if (statements.length === 0) {
       throw new Error(
         "StatementDataAggregator requires a non-empty statement array"
@@ -26,7 +45,7 @@ export class StatementDataAggregator {
     this.mostRecentStatement = statements[statements.length - 1];
   }
 
-  static async getAllDataFromStatement(statement: StatementHydrated) {
+  static getAllDataFromStatement(statement: Numberify<FullStatement>) {
     const mapContributions = <T>(fn: (c: Contributor) => T) => {
       return Object.fromEntries(
         StatementDataAggregator.contributors.map((contributor) => [
@@ -36,61 +55,57 @@ export class StatementDataAggregator {
       ) as Record<Contributor, T>;
     };
 
-    const mapCategories = <T>(fn: (c: Category) => T) => {
+    const mapCategories = <T>(fn: (c: AssetCategory) => T) => {
       return Object.fromEntries(
-        Object.values(Category).map((category) => [category, fn(category)])
-      ) as Record<Category, T>;
+        Object.values(AssetCategory).map((category) => [category, fn(category)])
+      ) as Record<AssetCategory, T>;
     };
 
     const contributions = {
       amount: mapContributions((c) =>
-        statement.getContributionAmountByContributor(c)
+        getContributionAmountByContributor(statement, c)
       ),
       percentOfSalary: mapContributions((c) =>
-        statement.getContributioPercentOfSalaryByContributor(c)
+        getContributioPercentOfSalaryByContributor(statement, c)
       ),
     };
 
     const categories = {
-      amount: mapCategories((c) => statement.getTotalAssetAmountByCategory(c)),
-      percent: mapCategories((c) => statement.getPercentOfAssetsByCategory(c)),
-    };
-
-    const promises = {
-      netWorth: statement.getNetWorth(),
-      assetAmount: statement.getTotalAssetAmount(),
-      liabilityAmount: statement.getTotalLiabilityAmount(),
-      lastYearAssetGrowth: statement.getLastYearAssetGrowth(),
-      lastYearAssetGrowthPercentOfSalary:
-        statement.getLastYearAssetGrowthPercentOfSalary(),
-      categories,
-      contributions,
-      withdrawals: {
-        amount: statement.getTotalWithdrawals(),
-        percentOfSalary: statement.getTotalWithdrawalsPercentOfSalary(),
-      },
-      netContributions: {
-        amount: statement.getNetContributions(),
-        percentOfSalary: statement.getNetContributionsPercentOfSalary(),
-      },
-      liabilityPaymentData: {
-        paymentsMade: {
-          amount: statement.getTotalLiabilityPaymentsMade(),
-          percentOfSalary:
-            statement.getTotalLiabilityPaymentsMadePercentOfSalary(),
-        },
-        growthFromInterest: {
-          amount: statement.getTotalLiabilityGrowthFromInterest(),
-          percentOfSalary:
-            statement.getTotalLiabilityGrowthFromInterestPercentOfSalary(),
-        },
-      },
+      amount: mapCategories((c) => getTotalAssetAmountByCategory(statement, c)),
+      percent: mapCategories((c) => getPercentOfAssetsByCategory(statement, c)),
     };
 
     return {
       year: statement.year,
       lastYearSalary: statement.lastYearSalary,
-      ...(await deepResolveObject(promises)),
+      netWorth: getNetWorth(statement),
+      assetAmount: getTotalAssetAmount(statement),
+      liabilityAmount: getTotalLiabilityAmount(statement),
+      lastYearAssetGrowth: getLastYearAssetGrowth(statement),
+      lastYearAssetGrowthPercentOfSalary:
+        getLastYearAssetGrowthPercentOfSalary(statement),
+      categories,
+      contributions,
+      withdrawals: {
+        amount: getTotalWithdrawals(statement),
+        percentOfSalary: getTotalWithdrawalsPercentOfSalary(statement),
+      },
+      netContributions: {
+        amount: getNetContributions(statement),
+        percentOfSalary: getNetContributionsPercentOfSalary(statement),
+      },
+      liabilityPaymentData: {
+        paymentsMade: {
+          amount: getTotalLiabilityPaymentsMade(statement),
+          percentOfSalary:
+            getTotalLiabilityPaymentsMadePercentOfSalary(statement),
+        },
+        growthFromInterest: {
+          amount: getTotalLiabilityGrowthFromInterest(statement),
+          percentOfSalary:
+            getTotalLiabilityGrowthFromInterestPercentOfSalary(statement),
+        },
+      },
     };
   }
 
@@ -185,12 +200,9 @@ export class StatementDataAggregator {
     };
   }
 
-  async getStatementOverviewData() {
-    return Promise.all(
-      this.statements.map(async (statement) => {
-        const netWorth = await statement.getNetWorth();
-        return { year: statement.year, netWorth };
-      })
-    );
+  getStatementOverviewData() {
+    return this.statements.map((statement) => {
+      return { year: statement.year, netWorth: getNetWorth(statement) };
+    });
   }
 }

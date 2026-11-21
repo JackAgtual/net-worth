@@ -2,8 +2,8 @@
 
 import { chartConfig } from "@/components/chart/chart-config";
 import { ChartContainer } from "@/components/ui/chart";
+import { AssetCategory } from "@/generated/prisma/enums";
 import { CategoryChartData } from "@/lib/types/chart-data-types";
-import { Category } from "@/lib/types/types";
 import { Area, AreaChart } from "recharts";
 import { CommonChartSetup } from "./common-chart-setup";
 
@@ -27,7 +27,7 @@ export function CategoryPercentageChart({ chartData }: ContributionChartProps) {
           yAxisFormat: "percent",
           xAxisReferenceLine: false,
         })}
-        {Object.values(Category).map((category) => {
+        {Object.values(AssetCategory).map((category) => {
           return (
             <Area
               dataKey={category}

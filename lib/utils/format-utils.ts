@@ -24,7 +24,7 @@ export function formatAsDollar(
   return "$-";
 }
 
-export function formatAsPercent(amount: number | undefined): string {
-  if (amount === undefined) return "0%";
+export function formatAsPercent(amount: number | undefined | null): string {
+  if (amount === undefined || amount === null) return "0%";
   return `${Math.round(amount * 100)}%`;
 }

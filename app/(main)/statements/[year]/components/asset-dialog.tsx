@@ -65,7 +65,6 @@ export default function AssetDialog(props: AssetDialogProps) {
 
     const result = await updateAssetAction({
       assetId,
-      statementId,
       data: serializable,
       path,
     });
@@ -79,7 +78,7 @@ export default function AssetDialog(props: AssetDialogProps) {
   };
 
   const handleDelete = async () => {
-    const result = await deleteAssetAction({ assetId, statementId, path });
+    const result = await deleteAssetAction({ assetId, path });
 
     if (!result.success) {
       setFormErrors(result.errors, setError);
@@ -104,8 +103,8 @@ export default function AssetDialog(props: AssetDialogProps) {
 
   const includesContributionData =
     !!data?.amountOneYearAgo ||
-    !!data?.contribution?.self ||
-    !!data?.contribution?.nonSelf ||
+    !!data?.selfContributions ||
+    !!data?.nonSelfContributions ||
     !!data?.withdrawals ||
     !!data?.includeInGrowthCalculation;
 

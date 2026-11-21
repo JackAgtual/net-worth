@@ -6,16 +6,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { LiabilityForm, LiabilityHydrated } from "@/lib/types/liability-types";
+import { Liability } from "@/generated/prisma/client";
+import { LiabilityForm } from "@/lib/types/liability-types";
 import { formatAsDollar } from "@/lib/utils/format-utils";
 import EntryDropDown from "../entry-drop-down";
+import { Numberify } from "@/lib/db/numberify";
+import { getGrowthFromInterest } from "@/lib/db/liability";
 
 export default async function LiabilityTable({
   liabilities,
   statementId,
 }: {
-  liabilities: LiabilityHydrated[];
-  statementId: string;
+  liabilities: Numberify<Liability>[];
+  statementId: number;
 }) {
   return (
     <Table>
@@ -32,7 +35,7 @@ export default async function LiabilityTable({
       </TableHeader>
       <TableBody>
         {liabilities.map((liability) => {
-          const id = liability._id.toString();
+          const { id } = liability;
 
           // TODO: Find a better way to do this
           const liabilityFormData: LiabilityForm = {
@@ -52,7 +55,7 @@ export default async function LiabilityTable({
               </TableCell>
               <TableCell>{formatAsDollar(liability.paymentsMade)}</TableCell>
               <TableCell>
-                {formatAsDollar(liability.getGrowthFromInterest())}
+                {formatAsDollar(getGrowthFromInterest(liability))}
               </TableCell>
               <TableCell>{liability.notes}</TableCell>
               <TableCell className="text-right">

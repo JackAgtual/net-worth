@@ -1,4 +1,5 @@
-import { Category, Contributor } from "./types";
+import { AssetCategory } from "@/generated/prisma/enums";
+import { Contributor } from "./types";
 
 type Year = { year: number };
 
@@ -13,7 +14,7 @@ export type NetWorthChartData = Year & {
 };
 
 export type AssetGrowthChartData = Year & {
-  lastYearSalary: number | undefined;
+  lastYearSalary: number | null;
   lastYearAssetGrowth: number;
 };
 
@@ -32,7 +33,7 @@ export type LiabilityPaymentsChart = {
   totalPaymentsMade: number | undefined;
   totalGrowthFromInterest: number | undefined;
 };
-export type CategoryChartData = Year & Record<Category, number>;
+export type CategoryChartData = Year & Record<AssetCategory, number>;
 
 export enum IncomeData {
   LastYearIncome = "Last year income",

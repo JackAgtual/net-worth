@@ -17,3 +17,8 @@ export const statementFormSchema = StatementInputSchema.omit({
 export type StatementForm = z.infer<typeof statementFormSchema>;
 
 export type StatementFormControl = Control<StatementForm>;
+
+export type StatementOverview = {
+  year: number;
+  netWorth: number;
+};

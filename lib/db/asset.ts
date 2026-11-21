@@ -1,5 +1,4 @@
 import type { Asset } from "@/generated/prisma/client";
-import { toDecimal } from "../utils/decimal-utils";
 import { Numberify } from "./numberify";
 
 export function getTotalContributions(asset: Numberify<Asset>): number {

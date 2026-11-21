@@ -29,7 +29,7 @@ describe("Liability getGrowthFromInterest(liability)", () => {
 
   it("returns undefined when amountOneYearAgo is missing", () => {
     liability.paymentsMade = 1000;
-    expect(getGrowthFromInterest(liability)).toBeUndefined();
+    expect(getGrowthFromInterest(liability)).toBeNull();
   });
 
   it("calculates growth from interest when paymentsMade is missing", () => {
@@ -38,7 +38,7 @@ describe("Liability getGrowthFromInterest(liability)", () => {
   });
 
   it("returns undefined when both optional fields are missing", () => {
-    expect(getGrowthFromInterest(liability)).toBeUndefined();
+    expect(getGrowthFromInterest(liability)).toBeNull();
   });
 
   it("treats paymentsMade=0 as present (not null/undefined)", () => {
