@@ -14,8 +14,7 @@ export type FailedActionResponse<T extends FieldValues> = {
 };
 
 export type ActionResponse<T extends FieldValues> =
-  | { success: true }
-  | FailedActionResponse<T>;
+  { success: true } | FailedActionResponse<T>;
 
 export type ActionInputs = {
   entryId?: unknown;
@@ -27,8 +26,8 @@ export type ActionInputs = {
 };
 
 type ValidatedActionInputs = {
-  entryId: string;
-  statementId: string;
+  entryId: number;
+  statementId: number;
   path: string;
   liabilityFormData: LiabilityForm;
   assetFormData: AssetForm;
@@ -43,7 +42,7 @@ export type ValidatedShape<T> = {
 
 export type InputValidationResponse<
   U extends ActionInputs,
-  T extends FieldValues = never
+  T extends FieldValues = never,
 > =
   | {
       success: true;

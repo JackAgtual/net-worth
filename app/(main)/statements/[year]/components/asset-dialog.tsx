@@ -3,9 +3,9 @@
 import AssetForm from "@/components/form/asset-form";
 import { FieldError } from "@/components/ui/field";
 import {
-  createAsset,
-  deleteAsset,
-  updateAsset,
+  createAssetAction,
+  deleteAssetAction,
+  updateAssetAction,
 } from "@/lib/actions/asset-actions";
 import {
   assetFormSchema,
@@ -48,7 +48,7 @@ export default function AssetDialog(props: AssetDialogProps) {
   const path = usePathname();
 
   const handleCreate = async (data: TAssetForm) => {
-    const result = await createAsset({ statementId, data, path });
+    const result = await createAssetAction({ statementId, data, path });
 
     if (!result.success) {
       setFormErrors(result.errors, setError);
@@ -63,7 +63,7 @@ export default function AssetDialog(props: AssetDialogProps) {
       JSON.stringify(data, (_, v) => (v === undefined ? null : v))
     );
 
-    const result = await updateAsset({
+    const result = await updateAssetAction({
       assetId,
       statementId,
       data: serializable,
@@ -79,7 +79,7 @@ export default function AssetDialog(props: AssetDialogProps) {
   };
 
   const handleDelete = async () => {
-    const result = await deleteAsset({ assetId, statementId, path });
+    const result = await deleteAssetAction({ assetId, statementId, path });
 
     if (!result.success) {
       setFormErrors(result.errors, setError);

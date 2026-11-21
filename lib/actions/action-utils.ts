@@ -8,7 +8,6 @@ import {
   InputValidationResponse,
   ValidatedShape,
 } from "../types/action-types";
-import { mongoIdSchema } from "../types/mongo-types";
 
 function getErrors<T extends FieldValues>(issues: $ZodIssue[]): FormError<T>[] {
   return issues.map((issue) => {
@@ -20,7 +19,7 @@ function getErrors<T extends FieldValues>(issues: $ZodIssue[]): FormError<T>[] {
 }
 
 function safeParseId(id: unknown) {
-  return mongoIdSchema.safeParse(id);
+  return z.number().safeParse(id);
 }
 
 function safeParsePath(path: unknown) {

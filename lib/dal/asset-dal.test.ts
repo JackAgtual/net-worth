@@ -1,6 +1,5 @@
 import { Asset, Statement, User } from "@/generated/prisma/client";
 import { AssetCategory } from "@/generated/prisma/enums";
-import { AssetInputType } from "@/generated/prisma/schemas";
 import {
   addAssetToStatement,
   deleteAsset,
@@ -14,7 +13,9 @@ import {
   nextRedirect,
 } from "@/tests/dal-helper";
 import { setupTestDb } from "@/tests/db-setup";
+import { Decimal } from "@prisma/client/runtime/client";
 import { prisma } from "../db/prisma";
+import { AssetForm } from "../types/asset-types";
 
 vi.mock("../db/prisma", async () => ({
   prisma: (await import("@/tests/db-setup")).testPrisma,
@@ -57,11 +58,10 @@ describe("Asset DAL", () => {
   });
 
   describe("addAssetToStatement", () => {
-    const assetData: AssetInputType = {
+    const assetData: AssetForm = {
       title: "Brokerage Account",
       amount: 5000,
       category: AssetCategory.AFTER_TAX,
-      statement: null,
       includeInGrowthCalculation: false,
       retirement: false,
       amountOneYearAgo: null,
@@ -149,45 +149,49 @@ describe("Asset DAL", () => {
   });
 
   describe("updateAsset", () => {
-    it("updates the target asset with new data", async () => {
-      const updates: Asset = {
-        ...existingAsset1,
-        category: AssetCategory.PROPERTY,
-        title: "Asset 1 updated",
-      };
+    const updates: AssetForm = {
+      category: AssetCategory.PROPERTY,
+      title: "Asset 1 updated",
+      amount: 550,
+      includeInGrowthCalculation: true,
+      retirement: true,
+      amountOneYearAgo: 100,
+      selfContributions: 50,
+      nonSelfContributions: 25,
+      withdrawals: 10,
+      notes: "some notes",
+    };
 
-      const wasUpdated = await updateAsset(updates);
+    it("updates the target asset with new data", async () => {
+      const wasUpdated = await updateAsset(existingAsset1.id, updates);
       const updatedAsset = await prisma.asset.findUnique({
         where: { id: existingAsset1.id },
       });
 
       expect(wasUpdated).toBeTruthy();
       expect(updatedAsset).not.toBeNull();
-      expect(updatedAsset).toStrictEqual(updates);
+      expect(updatedAsset).toMatchObject({
+        ...updates,
+        amount: Decimal(updates.amount),
+        amountOneYearAgo: Decimal(updates.amountOneYearAgo ?? 0),
+        selfContributions: Decimal(updates.selfContributions ?? 0),
+        nonSelfContributions: Decimal(updates.nonSelfContributions ?? 0),
+        withdrawals: Decimal(updates.withdrawals ?? 0),
+      });
     });
 
     it("throws error if unauthenticated", async () => {
-      const updates: Asset = {
-        ...existingAsset1,
-        category: AssetCategory.PROPERTY,
-        title: "Asset 1 updated",
-      };
-
       logout();
 
-      await expect(updateAsset(updates)).rejects.toThrow(nextRedirect);
+      await expect(updateAsset(existingAsset1.id, updates)).rejects.toThrow(
+        nextRedirect
+      );
 
       expect(await prisma.asset.count()).toBe(2);
     });
 
     it("does not modify other assets", async () => {
-      const updates: Asset = {
-        ...existingAsset1,
-        category: AssetCategory.PROPERTY,
-        title: "Asset 1 updated",
-      };
-
-      await updateAsset(updates);
+      await updateAsset(existingAsset1.id, updates);
       const unAffectedAsset = await prisma.asset.findUnique({
         where: { id: existingAsset2.id },
       });
@@ -197,23 +201,7 @@ describe("Asset DAL", () => {
     });
 
     it("throws error if asset does not exist", async () => {
-      const updates: Asset = {
-        ...existingAsset1,
-        id: 9999,
-        category: AssetCategory.PROPERTY,
-        title: "Asset 1 updated",
-      };
-
-      await expect(updateAsset(updates)).rejects.toThrow();
-    });
-
-    it("throws error if asset id doesn't belong to statement id", async () => {
-      const updates: Asset = {
-        ...existingAsset1,
-        statementId: 999,
-      };
-
-      await expect(updateAsset(updates)).rejects.toThrow();
+      await expect(updateAsset(999, updates)).rejects.toThrow();
     });
   });
 });

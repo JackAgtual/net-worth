@@ -1,12 +1,11 @@
-import { Asset } from "@/generated/prisma/client";
-import { AssetInputType } from "@/generated/prisma/schemas";
 import { getValidSessionOrRedirect } from "../auth/auth-utils";
 import { prisma } from "../db/prisma";
+import { AssetForm } from "../types/asset-types";
 import { getStatementFromId } from "./statement-dal";
 
 export async function addAssetToStatement(
   statementId: number,
-  data: AssetInputType
+  data: AssetForm
 ) {
   await getValidSessionOrRedirect();
 
@@ -16,11 +15,9 @@ export async function addAssetToStatement(
     return null;
   }
 
-  const { statement: _statement, ...assetData } = data;
-
   return prisma.asset.create({
     data: {
-      ...assetData,
+      ...data,
       statementId,
     },
   });
@@ -36,11 +33,11 @@ export async function deleteAsset(id: number) {
   return count > 0;
 }
 
-export async function updateAsset(data: Asset) {
+export async function updateAsset(id: number, data: AssetForm) {
   const { user } = await getValidSessionOrRedirect();
 
   const updated = await prisma.asset.update({
-    where: { id: data.id, statement: { userId: user.id } },
+    where: { id, statement: { userId: user.id } },
     data,
   });
 
