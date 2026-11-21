@@ -20,13 +20,14 @@ import ViewSelector from "./components/view-selector";
 
 type PageProps = {
   params: Promise<{
-    year: number;
+    year: string;
   }>;
   searchParams: Promise<SearchParams>;
 };
 
 export default async function Page({ params, searchParams }: PageProps) {
-  const { year } = await params;
+  const { year: yearParam } = await params;
+  const year = Number(yearParam);
 
   const { view = "table" } = await searchParams;
 
