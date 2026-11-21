@@ -12,8 +12,9 @@ import {
   nextRedirect,
 } from "@/tests/dal-helper";
 import { setupTestDb } from "@/tests/db-setup";
+import { Decimal } from "@prisma/client/runtime/client";
 import { prisma } from "../db/prisma";
-import { LiabilityInputType } from "@/generated/prisma/schemas";
+import { LiabilityForm } from "../types/liability-types";
 
 vi.mock("../db/prisma", async () => ({
   prisma: (await import("@/tests/db-setup")).testPrisma,
@@ -55,10 +56,9 @@ describe("Liability DAL", () => {
   });
 
   describe("addLiabilityToStatement", () => {
-    const liabilityData: LiabilityInputType = {
+    const liabilityData: LiabilityForm = {
       title: "Credit card",
       amount: 500,
-      statement: null,
       amountOneYearAgo: null,
       notes: null,
       paymentsMade: null,
@@ -144,42 +144,42 @@ describe("Liability DAL", () => {
   });
 
   describe("updateAsset", () => {
-    it("updates the target liability with new data", async () => {
-      const updates: Liability = {
-        ...existingLiability1,
-        title: "Liability 1 updated",
-      };
+    const updates: LiabilityForm = {
+      title: "Liability 1 updated",
+      amount: 125,
+      amountOneYearAgo: 200,
+      paymentsMade: 100,
+      notes: "Some notes",
+    };
 
-      const wasUpdated = await updateLiability(updates);
+    it("updates the target liability with new data", async () => {
+      const wasUpdated = await updateLiability(existingLiability1.id, updates);
       const updatedLiability = await prisma.liability.findUnique({
         where: { id: existingLiability1.id },
       });
 
       expect(wasUpdated).toBeTruthy();
       expect(updatedLiability).not.toBeNull();
-      expect(updatedLiability).toStrictEqual(updates);
+      expect(updatedLiability).toMatchObject({
+        ...updates,
+        amount: Decimal(updates.amount),
+        amountOneYearAgo: Decimal(updates.amountOneYearAgo ?? 0),
+        paymentsMade: Decimal(updates.paymentsMade ?? 0),
+      });
     });
 
     it("throws error if unauthenticated", async () => {
-      const updates: Liability = {
-        ...existingLiability1,
-        title: "Liability 1 updated",
-      };
-
       logout();
 
-      await expect(updateLiability(updates)).rejects.toThrow(nextRedirect);
+      await expect(
+        updateLiability(existingLiability1.id, updates)
+      ).rejects.toThrow(nextRedirect);
 
       expect(await prisma.liability.count()).toBe(2);
     });
 
     it("does not modify other assets", async () => {
-      const updates: Liability = {
-        ...existingLiability1,
-        title: "Liability 1 updated",
-      };
-
-      await updateLiability(updates);
+      await updateLiability(existingLiability1.id, updates);
       const unAffectedAsset = await prisma.liability.findUnique({
         where: { id: existingLiability2.id },
       });
@@ -189,22 +189,7 @@ describe("Liability DAL", () => {
     });
 
     it("throws error if liability does not exist", async () => {
-      const updates: Liability = {
-        ...existingLiability1,
-        id: 9999,
-        title: "Liability 1 updated",
-      };
-
-      await expect(updateLiability(updates)).rejects.toThrow();
-    });
-
-    it("throws error if liability id doesn't belong to statement id", async () => {
-      const updates: Liability = {
-        ...existingLiability1,
-        statementId: 999,
-      };
-
-      await expect(updateLiability(updates)).rejects.toThrow();
+      await expect(updateLiability(999, updates)).rejects.toThrow();
     });
   });
 });

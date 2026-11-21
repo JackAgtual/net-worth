@@ -1,21 +1,18 @@
-import { Liability } from "@/generated/prisma/client";
-import { LiabilityInputType } from "@/generated/prisma/schemas";
 import { getValidSessionOrRedirect } from "../auth/auth-utils";
 import { prisma } from "../db/prisma";
+import { LiabilityForm } from "../types/liability-types";
 import { getStatementFromId } from "./statement-dal";
 
 export async function addLiabilityToStatement(
   statementId: number,
-  data: LiabilityInputType
+  data: LiabilityForm
 ) {
   await getValidSessionOrRedirect();
   const statementDoc = await getStatementFromId(statementId);
 
   if (!statementDoc) return null;
 
-  const { statement: _statement, ...liabilityData } = data;
-
-  return prisma.liability.create({ data: { ...liabilityData, statementId } });
+  return prisma.liability.create({ data: { ...data, statementId } });
 }
 
 export async function deleteLiability(id: number) {
@@ -28,11 +25,11 @@ export async function deleteLiability(id: number) {
   return count > 0;
 }
 
-export async function updateLiability(data: Liability) {
+export async function updateLiability(id: number, data: LiabilityForm) {
   const { user } = await getValidSessionOrRedirect();
 
   const updated = await prisma.liability.update({
-    where: { id: data.id, statement: { userId: user.id } },
+    where: { id, statement: { userId: user.id } },
     data,
   });
 
