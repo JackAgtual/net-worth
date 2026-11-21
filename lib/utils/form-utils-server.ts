@@ -1,24 +1,17 @@
 import { getValidSessionOrRedirect } from "../auth/auth-utils";
-import { Statement } from "../db/models";
+import { getStatementFromYear } from "../dal/statement-dal";
 import { StatementForm } from "../types/statement-types";
 
 export async function getStatementFormPrefillData(year: number) {
-  const session = await getValidSessionOrRedirect();
-  const prefillStatement = await Statement.findOne({
-    userId: session.user.id,
-    year,
-  });
+  await getValidSessionOrRedirect();
+
+  const prefillStatement = await getStatementFromYear(year);
 
   if (!prefillStatement)
     throw new Error(`Could not populate statement data from ${year}`);
 
-  const [prefillAssets, prefillLiabilities] = await Promise.all([
-    prefillStatement.getAssets(),
-    prefillStatement.getLiabilities(),
-  ]);
-
   return {
-    assets: prefillAssets.map((asset) => {
+    assets: prefillStatement.assets.map((asset) => {
       return {
         title: asset.title,
         category: asset.category,
@@ -27,7 +20,7 @@ export async function getStatementFormPrefillData(year: number) {
         amountOneYearAgo: asset.amount,
       };
     }),
-    liabilities: prefillLiabilities.map((liability) => {
+    liabilities: prefillStatement.liabilities.map((liability) => {
       return {
         title: liability.title,
       };
