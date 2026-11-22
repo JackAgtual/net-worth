@@ -43,7 +43,11 @@ export default function AssetDialog(props: AssetDialogProps) {
     reset,
   } = useForm<TAssetForm>({
     resolver: zodResolver(assetFormSchema),
-    defaultValues: data,
+    defaultValues: {
+      retirement: false,
+      includeInGrowthCalculation: false,
+      ...data,
+    },
   });
   const path = usePathname();
 
@@ -91,10 +95,10 @@ export default function AssetDialog(props: AssetDialogProps) {
   let onSubmit;
   switch (action) {
     case "create":
-      onSubmit = handleSubmit(handleCreate);
+      onSubmit = handleSubmit(handleCreate, (e) => console.error(e));
       break;
     case "edit":
-      onSubmit = handleSubmit(handleEdit);
+      onSubmit = handleSubmit(handleEdit, (e) => console.error(e));
       break;
     case "delete":
       onSubmit = handleDelete;
