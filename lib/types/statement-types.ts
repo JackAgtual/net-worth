@@ -1,3 +1,4 @@
+import { Prisma } from "@/generated/prisma/client";
 import {
   AssetInputSchema,
   LiabilityInputSchema,
@@ -22,3 +23,7 @@ export type StatementOverview = {
   year: number;
   netWorth: number;
 };
+
+export type FullStatement = Prisma.StatementGetPayload<{
+  include: { assets: true; liabilities: true };
+}>;

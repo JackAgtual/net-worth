@@ -27,7 +27,8 @@ import {
   ContributionValues,
   NetWorthChartData,
 } from "../types/chart-data-types";
-import { Contributor, FullStatement } from "../types/types";
+import { FullStatement } from "../types/statement-types";
+import { Contributor } from "../types/types";
 
 export class StatementDataAggregator {
   mostRecentStatement: Numberify<FullStatement>;

@@ -1,7 +1,6 @@
 import { AssetCategory } from "@/generated/prisma/enums";
-import { Contributor, FullStatement } from "@/types/types";
-import { Decimal } from "@prisma/client/runtime/client";
-import { toDecimal } from "../utils/decimal-utils";
+import { Contributor } from "@/types/types";
+import { FullStatement } from "../types/statement-types";
 import { getGrowthFromAppreciation, getTotalContributions } from "./asset";
 import { getGrowthFromInterest } from "./liability";
 import { Numberify } from "./numberify";

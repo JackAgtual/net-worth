@@ -3,7 +3,8 @@ import {
   type Liability,
   AssetCategory,
 } from "@/generated/prisma/client";
-import { Contributor, FullStatement } from "@/types/types";
+import { Contributor } from "@/types/types";
+import { FullStatement } from "../types/statement-types";
 import { Numberify } from "./numberify";
 import {
   getContributionAmountByContributor,
