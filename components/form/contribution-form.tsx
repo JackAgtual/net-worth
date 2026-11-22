@@ -11,7 +11,14 @@ import {
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Checkbox } from "../ui/checkbox";
-import { Field, FieldContent, FieldDescription, FieldLabel } from "../ui/field";
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldSet,
+} from "../ui/field";
 import DollarInput from "./DollarInput";
 
 type TDollarInput = {
@@ -78,38 +85,40 @@ export default function ContributionForm<
         </Button>
       </CardHeader>
       <CardContent>
-        {dollarInputs.map(({ label, name, placeholder }) => (
-          <DollarInput
-            key={name}
+        <FieldGroup>
+          {dollarInputs.map(({ label, name, placeholder }) => (
+            <DollarInput
+              key={name}
+              control={control}
+              label={label}
+              name={getName(name)}
+              placeholder={placeholder}
+            />
+          ))}
+          <Controller
+            name={getName(includeInGrowth)}
             control={control}
-            label={label}
-            name={getName(name)}
-            placeholder={placeholder}
+            render={({ field }) => (
+              <Field orientation="horizontal">
+                <Checkbox
+                  id={getName(includeInGrowth)}
+                  name={getName(includeInGrowth)}
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+                <FieldContent>
+                  <FieldLabel htmlFor={getName(includeInGrowth)}>
+                    Include in growth calculation
+                  </FieldLabel>
+                  <FieldDescription>
+                    By clicking this checkbox, this asset will be counted
+                    towards your asset growth metric.
+                  </FieldDescription>
+                </FieldContent>
+              </Field>
+            )}
           />
-        ))}
-        <Controller
-          name={getName(includeInGrowth)}
-          control={control}
-          render={({ field }) => (
-            <Field orientation="horizontal">
-              <Checkbox
-                id={getName(includeInGrowth)}
-                name={getName(includeInGrowth)}
-                checked={field.value}
-                onCheckedChange={field.onChange}
-              />
-              <FieldContent>
-                <FieldLabel htmlFor={getName(includeInGrowth)}>
-                  Include in growth calculation
-                </FieldLabel>
-                <FieldDescription>
-                  By clicking this checkbox, this asset will be counted towards
-                  your asset growth metric.
-                </FieldDescription>
-              </FieldContent>
-            </Field>
-          )}
-        />
+        </FieldGroup>
       </CardContent>
     </Card>
   );

@@ -2,7 +2,12 @@
 
 import DollarInput from "@/components/form/DollarInput";
 import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { createStatementAction } from "@/lib/actions/statement-actions";
 import {
@@ -50,34 +55,37 @@ export default function StatementForm({
         console.error(err);
       })}
     >
-      <Controller
-        name="year"
-        control={control}
-        render={({ field, fieldState }) => (
-          <Field>
-            <FieldLabel>Year</FieldLabel>
-            <Input
-              {...field}
-              id="year"
-              aria-invalid={fieldState.invalid}
-              placeholder="2023"
-              type="text"
-              onChange={(e) => {
-                const val = e.target.value.replace(/\D/g, "");
-                field.onChange(val === "" ? undefined : Number(val));
-              }}
-              value={field.value ?? ""}
-            />
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-          </Field>
-        )}
-      />
-      <DollarInput
-        control={control}
-        label="Last year salary"
-        name="lastYearSalary"
-        placeholder="70,000"
-      />
+      <FieldGroup>
+        <Controller
+          name="year"
+          control={control}
+          render={({ field, fieldState }) => (
+            <Field>
+              <FieldLabel>Year</FieldLabel>
+              <Input
+                {...field}
+                id="year"
+                aria-invalid={fieldState.invalid}
+                placeholder="2023"
+                type="text"
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, "");
+                  field.onChange(val === "" ? undefined : Number(val));
+                }}
+                value={field.value ?? ""}
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <DollarInput
+          control={control}
+          label="Last year salary"
+          name="lastYearSalary"
+          placeholder="70,000"
+        />
+      </FieldGroup>
+
       <AssetsForm
         control={control}
         setValue={setValue}
