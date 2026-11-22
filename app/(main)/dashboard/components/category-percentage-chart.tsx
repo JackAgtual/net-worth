@@ -30,6 +30,7 @@ export function CategoryPercentageChart({ chartData }: ContributionChartProps) {
         {Object.values(AssetCategory).map((category) => {
           return (
             <Area
+              key={category}
               dataKey={category}
               stackId="a"
               fill={chartConfig[category].color}

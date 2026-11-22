@@ -17,6 +17,7 @@ export default function CustomLine({
 }: CustomLineProps) {
   return (
     <Line
+      key={dataKey}
       dataKey={dataKey}
       stroke={chartConfig[dataKey].color}
       strokeWidth={strokeWidth}
