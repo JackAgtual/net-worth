@@ -12,6 +12,7 @@ import { formatAsDollar } from "@/lib/utils/format-utils";
 import EntryDropDown from "../entry-drop-down";
 import { Numberify } from "@/lib/db/numberify";
 import { getGrowthFromInterest } from "@/lib/db/liability";
+import { NotesTableCellWrapper } from "./notes-table-cell-wrapper";
 
 export default async function LiabilityTable({
   liabilities,
@@ -55,7 +56,9 @@ export default async function LiabilityTable({
               <TableCell>
                 {formatAsDollar(getGrowthFromInterest(liability))}
               </TableCell>
-              <TableCell>{liability.notes}</TableCell>
+              <TableCell>
+                <NotesTableCellWrapper>{liability.notes}</NotesTableCellWrapper>
+              </TableCell>
               <TableCell className="text-right">
                 <EntryDropDown
                   entryId={id}

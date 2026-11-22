@@ -12,6 +12,7 @@ import { formatAsDollar } from "@/lib/utils/format-utils";
 import EntryDropDown from "../entry-drop-down";
 import { Numberify } from "@/lib/db/numberify";
 import { getGrowthFromAppreciation } from "@/lib/db/asset";
+import { NotesTableCellWrapper } from "./notes-table-cell-wrapper";
 
 export default async function AssetTable({
   assets,
@@ -67,7 +68,9 @@ export default async function AssetTable({
               <TableCell>
                 {formatAsDollar(getGrowthFromAppreciation(asset))}
               </TableCell>
-              <TableCell>{asset.notes}</TableCell>
+              <TableCell>
+                <NotesTableCellWrapper>{asset.notes}</NotesTableCellWrapper>
+              </TableCell>
               <TableCell className="text-right">
                 <EntryDropDown
                   entryId={id}
