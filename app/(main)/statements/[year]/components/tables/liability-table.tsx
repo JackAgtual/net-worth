@@ -35,7 +35,14 @@ export default async function LiabilityTable({
       </TableHeader>
       <TableBody>
         {liabilities.map((liability) => {
-          const { id } = liability;
+          // Need to remove fields that do not exist in form data
+          const {
+            id,
+            statementId: _statementId,
+            createdAt: _createdAt,
+            updatedAt: _updatedAt,
+            ...formData
+          } = liability;
 
           return (
             <TableRow key={id}>
@@ -54,7 +61,7 @@ export default async function LiabilityTable({
                   entryId={id}
                   statementId={statementId}
                   entityType="liability"
-                  data={liability}
+                  data={formData}
                 />
               </TableCell>
             </TableRow>

@@ -40,7 +40,14 @@ export default async function AssetTable({
       </TableHeader>
       <TableBody>
         {assets.map((asset) => {
-          const { id } = asset;
+          // Need to remove fields that do not exist in form data
+          const {
+            id,
+            statementId: _statementId,
+            createdAt: _createdAt,
+            updatedAt: _updatedAt,
+            ...formData
+          } = asset;
 
           return (
             <TableRow key={id}>
@@ -66,7 +73,7 @@ export default async function AssetTable({
                   entryId={id}
                   statementId={statementId}
                   entityType="asset"
-                  data={asset}
+                  data={formData}
                 />
               </TableCell>
             </TableRow>

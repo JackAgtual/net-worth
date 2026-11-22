@@ -93,10 +93,10 @@ export default function LiabilityDialog(props: LiabilityDialogProps) {
   let onSubmit;
   switch (action) {
     case "create":
-      onSubmit = handleSubmit(handleCreate);
+      onSubmit = handleSubmit(handleCreate, (e) => console.error(e));
       break;
     case "edit":
-      onSubmit = handleSubmit(handleEdit);
+      onSubmit = handleSubmit(handleEdit, (e) => console.error(e));
       break;
     case "delete":
       onSubmit = handleDelete;
