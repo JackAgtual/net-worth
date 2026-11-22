@@ -34,7 +34,10 @@ export async function getStatementFromYear(year: number) {
 
   const statement = await prisma.statement.findUnique({
     where: { userId_year: { userId: user.id, year } },
-    include: { assets: true, liabilities: true },
+    include: {
+      assets: { orderBy: { createdAt: "asc" } },
+      liabilities: { orderBy: { createdAt: "asc" } },
+    },
   });
   return numberify(statement);
 }
