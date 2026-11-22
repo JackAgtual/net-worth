@@ -4,7 +4,7 @@ import DollarInput from "@/components/form/DollarInput";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { createStatement } from "@/lib/actions/statement-actions";
+import { createStatementAction } from "@/lib/actions/statement-actions";
 import {
   StatementForm as TStatementForm,
   statementFormSchema,
@@ -18,8 +18,10 @@ import LiabilitiesForm from "./liabilities-form";
 
 export default function StatementForm({
   defaultValues,
+  showAllContributionSubForms = false,
 }: {
   defaultValues?: TStatementForm;
+  showAllContributionSubForms?: boolean;
 }) {
   const {
     control,
@@ -33,7 +35,7 @@ export default function StatementForm({
   });
 
   const onSubmit = async (data: TStatementForm) => {
-    const response = await createStatement(data);
+    const response = await createStatementAction(data);
 
     if (response.success) {
       redirect(`/statements/${data.year}`);
@@ -76,7 +78,11 @@ export default function StatementForm({
         name="lastYearSalary"
         placeholder="70,000"
       />
-      <AssetsForm control={control} setValue={setValue} />
+      <AssetsForm
+        control={control}
+        setValue={setValue}
+        showAllContributionSubForms={showAllContributionSubForms}
+      />
       <LiabilitiesForm control={control} />
 
       <Button type="submit">Create</Button>

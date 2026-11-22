@@ -3,9 +3,9 @@
 import LiabilityForm from "@/components/form/liability-form";
 import { FieldError } from "@/components/ui/field";
 import {
-  createLiability,
-  deleteLiability,
-  updateLiability,
+  createLiabilityAction,
+  deleteLiabilityAction,
+  updateLiabilityAction,
 } from "@/lib/actions/liability-actions";
 import { LiabilityDialogProps } from "@/lib/types/entry-dialog-types";
 import {
@@ -47,7 +47,7 @@ export default function LiabilityDialog(props: LiabilityDialogProps) {
   const path = usePathname();
 
   const handleCreate = async (data: TLiabilityForm) => {
-    const result = await createLiability({ statementId, data, path });
+    const result = await createLiabilityAction({ statementId, data, path });
 
     if (!result.success) {
       setFormErrors(result.errors, setError);
@@ -62,9 +62,8 @@ export default function LiabilityDialog(props: LiabilityDialogProps) {
       JSON.stringify(data, (_, v) => (v === undefined ? null : v))
     );
 
-    const result = await updateLiability({
+    const result = await updateLiabilityAction({
       liabilityId,
-      statementId,
       data: serializable,
       path,
     });
@@ -78,9 +77,8 @@ export default function LiabilityDialog(props: LiabilityDialogProps) {
   };
 
   const handleDelete = async () => {
-    const result = await deleteLiability({
+    const result = await deleteLiabilityAction({
       liabilityId,
-      statementId,
       path,
     });
 

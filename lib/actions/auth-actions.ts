@@ -12,7 +12,6 @@ import { redirect } from "next/navigation";
 import { auth } from "../auth/auth";
 import { ActionResponse } from "../types/action-types";
 import { parseFormData } from "./action-utils";
-import dbConnect from "../db/mongodb";
 
 export async function createAccount(
   formData: unknown
@@ -23,9 +22,6 @@ export async function createAccount(
   }
 
   const { name, email, password } = result.data;
-
-  await dbConnect();
-  console.log("connected to db");
 
   try {
     await auth.api.signUpEmail({

@@ -1,12 +1,14 @@
-import { checkSession } from "../auth/auth-utils";
+import { getValidSessionOrRedirect } from "../auth/auth-utils";
+import { numberify } from "../db/numberify";
+import { prisma } from "../db/prisma";
 import { AssetForm } from "../types/asset-types";
 import { getStatementFromId } from "./statement-dal";
 
 export async function addAssetToStatement(
-  statementId: string,
+  statementId: number,
   data: AssetForm
 ) {
-  const session = await checkSession();
+  await getValidSessionOrRedirect();
 
   const statementDoc = await getStatementFromId(statementId);
 
@@ -14,35 +16,32 @@ export async function addAssetToStatement(
     return null;
   }
 
-  return statementDoc.addAsset({
-    userId: session.user.id,
-    ...data,
+  const asset = await prisma.asset.create({
+    data: {
+      ...data,
+      statementId,
+    },
   });
+  return numberify(asset);
 }
 
-export async function removeAssetFromStatement(
-  statementId: string,
-  assetId: string
-) {
-  const statementDoc = await getStatementFromId(statementId);
+export async function deleteAsset(id: number) {
+  const { user } = await getValidSessionOrRedirect();
 
-  if (!statementDoc) {
-    return null;
-  }
+  const { count } = await prisma.asset.deleteMany({
+    where: { id, statement: { userId: user.id } },
+  });
 
-  return statementDoc.deleteAsset(assetId);
+  return count > 0;
 }
 
-export async function updateAssetOnStatement(
-  statementId: string,
-  assetId: string,
-  data: AssetForm
-) {
-  const statementDoc = await getStatementFromId(statementId);
+export async function updateAsset(id: number, data: AssetForm) {
+  const { user } = await getValidSessionOrRedirect();
 
-  if (!statementDoc) {
-    return null;
-  }
+  const updated = await prisma.asset.update({
+    where: { id, statement: { userId: user.id } },
+    data,
+  });
 
-  return statementDoc.updateAsset(assetId, data);
+  return !!updated;
 }

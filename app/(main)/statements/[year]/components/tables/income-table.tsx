@@ -9,7 +9,7 @@ import { formatAsDollar, formatAsPercent } from "@/lib/utils/format-utils";
 
 export type IncomeTableData = {
   name: string;
-  value: number | undefined;
+  value: number | null | undefined;
   format: "dollar" | "percent";
 };
 

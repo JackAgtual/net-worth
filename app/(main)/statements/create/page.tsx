@@ -1,4 +1,4 @@
-import { checkSession } from "@/lib/auth/auth-utils";
+import { getValidSessionOrRedirect } from "@/lib/auth/auth-utils";
 import { getStatementFormPrefillData } from "@/lib/utils/form-utils-server";
 import { SearchParams } from "next/dist/server/request/search-params";
 import { z } from "zod";
@@ -11,7 +11,7 @@ export default async function Page({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  await checkSession();
+  await getValidSessionOrRedirect();
 
   const { mode, year } = await searchParams;
 
@@ -30,7 +30,10 @@ export default async function Page({
   const defaultVals = await getStatementFormPrefillData(yearInt);
   return (
     <StatementFormCard>
-      <StatementForm defaultValues={defaultVals} />
+      <StatementForm
+        defaultValues={defaultVals}
+        showAllContributionSubForms={true} // Need to show contributions because amount one year ago is pre-filled
+      />
     </StatementFormCard>
   );
 }

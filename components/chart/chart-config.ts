@@ -5,8 +5,9 @@ import {
   LiabilityPaymentsChart,
   NetWorthChartData,
 } from "@/lib/types/chart-data-types";
-import { Category, Contributor } from "@/lib/types/types";
+import { Contributor } from "@/lib/types/types";
 import { ChartConfig } from "../ui/chart";
+import { AssetCategory } from "@/generated/prisma/enums";
 
 type ChartConfigItem = ChartConfig[string];
 type StrictChartConfig<T> = {
@@ -75,25 +76,25 @@ const liabilityPaymentsChartConfig = {
 } satisfies StrictChartConfig<LiabilityPaymentsChart>;
 
 const categoryChartConfig = {
-  [Category.AfterTax]: {
+  [AssetCategory.AFTER_TAX]: {
     color: "#1D4ED8",
-    label: Category.AfterTax,
+    label: AssetCategory.AFTER_TAX,
   },
-  [Category.Cash]: {
+  [AssetCategory.CASH]: {
     color: "green",
-    label: Category.Cash,
+    label: AssetCategory.CASH,
   },
-  [Category.Property]: {
+  [AssetCategory.PROPERTY]: {
     color: "gray",
-    label: Category.Property,
+    label: AssetCategory.PROPERTY,
   },
-  [Category.TaxDeferred]: {
+  [AssetCategory.TAX_DEFERRED]: {
     color: "#F59E0B",
-    label: Category.TaxDeferred,
+    label: AssetCategory.TAX_DEFERRED,
   },
-  [Category.TaxFree]: {
+  [AssetCategory.TAX_FREE]: {
     color: "#8B5CF6",
-    label: Category.TaxFree,
+    label: AssetCategory.TAX_FREE,
   },
 } satisfies StrictChartConfig<CategoryChartData>;
 

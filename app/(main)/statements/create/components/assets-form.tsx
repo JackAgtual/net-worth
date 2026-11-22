@@ -4,20 +4,24 @@ import AssetForm from "@/components/form/asset-form";
 import { Button } from "@/components/ui/button";
 import { FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
 import { Separator } from "@/components/ui/separator";
-import { AssetForm as TAssetForm } from "@/lib/types/asset-types";
+import { AssetCategory } from "@/generated/prisma/enums";
 import {
   StatementForm,
   StatementFormControl,
 } from "@/lib/types/statement-types";
-import { Category } from "@/types/types";
 import { FieldPath, useFieldArray, UseFormSetValue } from "react-hook-form";
 
 type AssetsFormProps = {
   control: StatementFormControl;
   setValue: UseFormSetValue<StatementForm>;
+  showAllContributionSubForms?: boolean;
 };
 
-export default function AssetsForm({ control, setValue }: AssetsFormProps) {
+export default function AssetsForm({
+  control,
+  setValue,
+  showAllContributionSubForms = false,
+}: AssetsFormProps) {
   const { fields, append, remove } = useFieldArray({
     control,
     name: "assets",
@@ -35,6 +39,7 @@ export default function AssetsForm({ control, setValue }: AssetsFormProps) {
                 baseName={baseName}
                 control={control}
                 setValue={setValue}
+                initialIncludeContributions={showAllContributionSubForms}
               />
               <Button
                 type="button"
@@ -57,7 +62,7 @@ export default function AssetsForm({ control, setValue }: AssetsFormProps) {
             append({
               title: "",
               amount: "" as unknown as number, // bad practice but it works
-              category: Category.Cash,
+              category: AssetCategory.CASH,
               retirement: false,
               includeInGrowthCalculation: false,
             });

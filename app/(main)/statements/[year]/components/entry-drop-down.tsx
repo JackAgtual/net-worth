@@ -15,8 +15,8 @@ import AssetDialog from "./asset-dialog";
 import LiabilityDialog from "./liability-dialog";
 
 type EntryDropDownProps = {
-  entryId: string;
-  statementId: string;
+  entryId: number;
+  statementId: number;
 } & (
   | { entityType: "asset"; data: AssetForm }
   | { entityType: "liability"; data: LiabilityForm }

@@ -9,7 +9,7 @@ export default function AddEntry({
   statementId,
   entryType,
 }: {
-  statementId: string;
+  statementId: number;
   entryType: "asset" | "liability";
 }) {
   const [open, setOpen] = useState(false);

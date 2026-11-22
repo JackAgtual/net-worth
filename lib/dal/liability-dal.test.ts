@@ -1,263 +1,195 @@
+import { Liability, Statement, User } from "@/generated/prisma/client";
 import {
   addLiabilityToStatement,
-  removeLiabilityFromStatement,
-  updateLiabilityOnStatement,
+  deleteLiability,
+  updateLiability,
 } from "@/lib/dal/liability-dal";
-import { Liability, Statement } from "@/lib/db/models";
 import {
   createStatement,
+  createUser,
+  logout,
   mockSession,
-  USER_A,
-  USER_B,
+  nextRedirect,
 } from "@/tests/dal-helper";
-import { setupMongoTestDb } from "@/tests/setup-mongo";
+import { setupTestDb } from "@/tests/db-setup";
+import { Decimal } from "@prisma/client/runtime/client";
+import { prisma } from "../db/prisma";
+import { LiabilityForm } from "../types/liability-types";
 
-setupMongoTestDb();
+vi.mock("../db/prisma", async () => ({
+  prisma: (await import("@/tests/db-setup")).testPrisma,
+}));
 
-jest.mock("@/lib/auth/auth-utils");
+vi.mock("../auth/auth-utils", () => ({
+  getValidSessionOrRedirect: vi.fn(),
+}));
 
-const defaultLiabilityData = { title: "Mortgage", amount: 150000 };
-const liabilityData = { title: "Car Loan", amount: 10000 };
+setupTestDb();
 
-async function createStatementWithLiability(userId: string, year: number) {
-  const statement = await createStatement(userId, year);
-  const liability = await Liability.create({ userId, ...defaultLiabilityData });
-  statement.liabilities.push(liability._id);
-  await statement.save();
-  return { statement, liability };
-}
-describe("Statement DAL", () => {
+describe("Liability DAL", () => {
+  let user: User;
+  let statement: Statement;
+  let existingLiability1: Liability;
+  let existingLiability2: Liability;
+
+  beforeEach(async () => {
+    user = await createUser();
+
+    mockSession(user.id);
+
+    statement = await createStatement(user.id, 2020);
+
+    existingLiability1 = await prisma.liability.create({
+      data: {
+        statementId: statement.id,
+        title: "Liability 1",
+        amount: 200,
+      },
+    });
+    existingLiability2 = await prisma.liability.create({
+      data: {
+        statementId: statement.id,
+        title: "Liability 2",
+        amount: 300,
+      },
+    });
+  });
+
   describe("addLiabilityToStatement", () => {
-    it("creates a liability and adds it to the statement", async () => {
-      mockSession(USER_A);
-      const { statement } = await createStatementWithLiability(USER_A, 2023);
+    const liabilityData: LiabilityForm = {
+      title: "Credit card",
+      amount: 500,
+      amountOneYearAgo: null,
+      notes: null,
+      paymentsMade: null,
+    };
 
+    it("creates a liability and adds it to the statement and returns numberified type", async () => {
       const liability = await addLiabilityToStatement(
-        statement._id.toString(),
+        statement.id,
         liabilityData
       );
 
       expect(liability).not.toBeNull();
+      expect(liability?.statementId).toEqual(statement.id);
       expect(liability?.title).toBe(liabilityData.title);
       expect(liability?.amount).toBe(liabilityData.amount);
-
-      const updatedStatement = await Statement.findById(statement._id);
-      expect(updatedStatement?.liabilities).toHaveLength(2);
     });
 
-    it("sets the userId from the session on the liability", async () => {
-      mockSession(USER_A);
-      const { statement } = await createStatementWithLiability(USER_A, 2023);
+    it("throws error if unauthenticated", async () => {
+      logout();
 
-      const liability = await addLiabilityToStatement(
-        statement._id.toString(),
-        liabilityData
-      );
+      await expect(
+        addLiabilityToStatement(statement.id, liabilityData)
+      ).rejects.toThrow(nextRedirect);
 
-      expect(liability?.userId).toBe(USER_A);
-    });
-
-    it("does not modify existing liabilities", async () => {
-      mockSession(USER_A);
-      const { statement, liability: existing } =
-        await createStatementWithLiability(USER_A, 2023);
-
-      await addLiabilityToStatement(statement._id.toString(), liabilityData);
-
-      const unchangedLiability = await Liability.findById(existing._id);
-      expect(unchangedLiability?.title).toBe(defaultLiabilityData.title);
-      expect(unchangedLiability?.amount).toBe(defaultLiabilityData.amount);
+      expect(await prisma.liability.count()).toBe(2);
     });
 
     it("returns null when statement does not exist", async () => {
-      mockSession(USER_A);
-      const { statement } = await createStatementWithLiability(USER_A, 2023);
-      await Statement.findByIdAndDelete(statement._id);
+      const liability = await addLiabilityToStatement(9999, liabilityData);
 
-      const result = await addLiabilityToStatement(
-        statement._id.toString(),
-        liabilityData
-      );
-
-      expect(result).toBeNull();
+      expect(liability).toBeNull();
     });
 
     it("returns null when statement belongs to another user", async () => {
-      mockSession(USER_A);
-      const { statement } = await createStatementWithLiability(USER_B, 2023);
+      const otherUser = await createUser();
 
-      const result = await addLiabilityToStatement(
-        statement._id.toString(),
-        liabilityData
-      );
+      mockSession(otherUser.id);
 
-      expect(result).toBeNull();
+      const liability = await addLiabilityToStatement(9999, liabilityData);
+
+      expect(liability).toBeNull();
     });
   });
 
-  describe("removeLiabilityFromStatement", () => {
+  describe("deleteLiability", () => {
     it("deletes only the target liability", async () => {
-      mockSession(USER_A);
-      const { statement, liability: existing } =
-        await createStatementWithLiability(USER_A, 2023);
-      const liabilityToDelete = await Liability.create({
-        userId: USER_A,
-        ...liabilityData,
-      });
-      statement.liabilities.push(liabilityToDelete._id);
-      await statement.save();
+      const deleted = await deleteLiability(existingLiability1.id);
+      const liabilities = await prisma.liability.findMany();
 
-      await removeLiabilityFromStatement(
-        statement._id.toString(),
-        liabilityToDelete._id.toString()
-      );
-
-      const updatedStatement = await Statement.findById(statement._id);
-      expect(updatedStatement?.liabilities).toHaveLength(1);
-      expect(updatedStatement?.liabilities[0].toString()).toBe(
-        existing._id.toString()
-      );
+      expect(deleted).toBeTruthy();
+      expect(liabilities.length).toEqual(1);
+      expect(liabilities.at(0)?.id).toEqual(existingLiability2.id);
     });
 
-    it("deletes the liability document", async () => {
-      mockSession(USER_A);
-      const { statement } = await createStatementWithLiability(USER_A, 2023);
-      const liabilityToDelete = await Liability.create({
-        userId: USER_A,
-        ...liabilityData,
-      });
-      statement.liabilities.push(liabilityToDelete._id);
-      await statement.save();
+    it("throws error if unauthenticated", async () => {
+      logout();
 
-      await removeLiabilityFromStatement(
-        statement._id.toString(),
-        liabilityToDelete._id.toString()
+      await expect(deleteLiability(existingLiability1.id)).rejects.toThrow(
+        nextRedirect
       );
-
-      const deletedLiability = await Liability.findById(liabilityToDelete._id);
-      expect(deletedLiability).toBeNull();
-    });
-
-    it("does not modify other liability documents", async () => {
-      mockSession(USER_A);
-      const { statement, liability: existing } =
-        await createStatementWithLiability(USER_A, 2023);
-      const liabilityToDelete = await Liability.create({
-        userId: USER_A,
-        ...liabilityData,
-      });
-      statement.liabilities.push(liabilityToDelete._id);
-      await statement.save();
-
-      await removeLiabilityFromStatement(
-        statement._id.toString(),
-        liabilityToDelete._id.toString()
-      );
-
-      const unchangedLiability = await Liability.findById(existing._id);
-      expect(unchangedLiability).toMatchObject(defaultLiabilityData);
+      expect(await prisma.liability.count()).toBe(2);
     });
 
     it("returns false when liability does not exist", async () => {
-      mockSession(USER_A);
-      const { statement } = await createStatementWithLiability(USER_A, 2023);
-      const liability = await Liability.create({
-        userId: USER_A,
-        ...liabilityData,
-      });
-      statement.liabilities.push(liability._id);
-      await statement.save();
+      const deleted = await deleteLiability(999);
+      const liabilities = await prisma.liability.findMany();
 
-      await Liability.findByIdAndDelete(liability._id);
-
-      const result = await removeLiabilityFromStatement(
-        statement._id.toString(),
-        liability._id.toString()
-      );
-
-      expect(result).toBe(false);
+      expect(deleted).toBeFalsy();
+      expect(liabilities.length).toEqual(2);
     });
 
-    it("returns null when statement does not exist", async () => {
-      mockSession(USER_A);
-      const { statement } = await createStatementWithLiability(USER_A, 2023);
-      await Statement.findByIdAndDelete(statement._id);
+    it("does not allow user to delete a different user's liability", async () => {
+      const otherUser = await createUser();
+      mockSession(otherUser.id);
 
-      const result = await removeLiabilityFromStatement(
-        statement._id.toString(),
-        "some-liability-id"
-      );
+      const deleted = await deleteLiability(existingLiability1.id);
 
-      expect(result).toBeNull();
+      const assets = await prisma.liability.findMany();
+
+      expect(deleted).toBeFalsy();
+      expect(assets.length).toEqual(2);
     });
   });
 
-  describe("updateLiabilityOnStatement", () => {
-    let statement: InstanceType<typeof Statement>;
-    let existing: InstanceType<typeof Liability>;
-    let liabilityToUpdate: InstanceType<typeof Liability>;
-
-    beforeEach(async () => {
-      mockSession(USER_A);
-      const result = await createStatementWithLiability(USER_A, 2023);
-      statement = result.statement;
-      existing = result.liability;
-      liabilityToUpdate = await Liability.create({
-        userId: USER_A,
-        ...liabilityData,
-      });
-      statement.liabilities.push(liabilityToUpdate._id);
-      await statement.save();
-    });
+  describe("updateAsset", () => {
+    const updates: LiabilityForm = {
+      title: "Liability 1 updated",
+      amount: 125,
+      amountOneYearAgo: 200,
+      paymentsMade: 100,
+      notes: "Some notes",
+    };
 
     it("updates the target liability with new data", async () => {
-      const updated = await updateLiabilityOnStatement(
-        statement._id.toString(),
-        liabilityToUpdate._id.toString(),
-        { title: "Personal Loan", amount: 5000 }
-      );
+      const wasUpdated = await updateLiability(existingLiability1.id, updates);
+      const updatedLiability = await prisma.liability.findUnique({
+        where: { id: existingLiability1.id },
+      });
 
-      expect(updated).not.toBeNull();
-      expect(updated?.title).toBe("Personal Loan");
-      expect(updated?.amount).toBe(5000);
+      expect(wasUpdated).toBeTruthy();
+      expect(updatedLiability).not.toBeNull();
+      expect(updatedLiability).toMatchObject({
+        ...updates,
+        amount: Decimal(updates.amount),
+        amountOneYearAgo: Decimal(updates.amountOneYearAgo ?? 0),
+        paymentsMade: Decimal(updates.paymentsMade ?? 0),
+      });
     });
 
-    it("does not modify other liabilities", async () => {
-      await updateLiabilityOnStatement(
-        statement._id.toString(),
-        liabilityToUpdate._id.toString(),
-        { title: "Personal Loan", amount: 5000 }
-      );
+    it("throws error if unauthenticated", async () => {
+      logout();
 
-      const unchangedLiability = await Liability.findById(existing._id);
-      expect(unchangedLiability).toMatchObject(defaultLiabilityData);
+      await expect(
+        updateLiability(existingLiability1.id, updates)
+      ).rejects.toThrow(nextRedirect);
+
+      expect(await prisma.liability.count()).toBe(2);
     });
 
-    it("returns null when the liability is not on the statement", async () => {
-      const { statement: otherStatement } = await createStatementWithLiability(
-        USER_A,
-        2022
-      );
+    it("does not modify other assets", async () => {
+      await updateLiability(existingLiability1.id, updates);
+      const unAffectedAsset = await prisma.liability.findUnique({
+        where: { id: existingLiability2.id },
+      });
 
-      const result = await updateLiabilityOnStatement(
-        otherStatement._id.toString(),
-        liabilityToUpdate._id.toString(),
-        { title: "Personal Loan", amount: 5000 }
-      );
-
-      expect(result).toBeNull();
+      expect(unAffectedAsset).not.toBeNull();
+      expect(unAffectedAsset).toStrictEqual(existingLiability2);
     });
 
-    it("returns null when statement does not exist", async () => {
-      await Statement.findByIdAndDelete(statement._id);
-
-      const result = await updateLiabilityOnStatement(
-        statement._id.toString(),
-        liabilityToUpdate._id.toString(),
-        { title: "Personal Loan", amount: 5000 }
-      );
-
-      expect(result).toBeNull();
+    it("throws error if liability does not exist", async () => {
+      await expect(updateLiability(999, updates)).rejects.toThrow();
     });
   });
 });

@@ -1,105 +1,29 @@
-import { z } from "zod";
-import { Category, Contributor, UserItem, userItemSchema } from "@/types/types";
+import { Prisma } from "@/generated/prisma/client";
 import {
-  AssetDoc,
-  assetFormSchema,
-  AssetHydrated,
-  assetSchema,
-  AssetUpdate,
-} from "./asset-types";
-import {
-  LiabilityDoc,
-  liabilityFormSchema,
-  LiabilityHydrated,
-  liabilitySchema,
-  LiabilityUpdate,
-} from "./liability-types";
-import { HydratedDocument, Model, Types } from "mongoose";
+  AssetInputSchema,
+  LiabilityInputSchema,
+  StatementInputSchema,
+} from "@/generated/prisma/schemas";
 import { Control } from "react-hook-form";
+import { z } from "zod";
 
-const statementSchemaBase = userItemSchema.extend({
-  year: z.int(),
-  lastYearSalary: z.number().optional(),
-  assets: z.array(assetSchema),
-  liabilities: z.array(liabilitySchema),
+export const statementFormSchema = StatementInputSchema.omit({
+  user: true,
+  userId: true,
+}).extend({
+  assets: z.array(AssetInputSchema.omit({ statement: true })),
+  liabilities: z.array(LiabilityInputSchema.omit({ statement: true })),
 });
-
-export const statementSchema = statementSchemaBase.extend({
-  assets: z.array(assetSchema),
-  liabilities: z.array(liabilitySchema),
-});
-
-export const statementFormSchema = statementSchema
-  .extend({
-    assets: z.array(assetFormSchema).optional(),
-    liabilities: z.array(liabilityFormSchema).optional(),
-  })
-  .omit({ userId: true });
 
 export type StatementForm = z.infer<typeof statementFormSchema>;
 
 export type StatementFormControl = Control<StatementForm>;
 
-// not infering type form zod because I need to reference ObjectId
-export type StatementDoc = Omit<
-  z.infer<typeof statementSchema>,
-  "assets" | "liabilities"
-> & {
-  assets: Types.Array<Types.ObjectId>;
-  liabilities: Types.Array<Types.ObjectId>;
-};
-
-export type StatementMethods = {
-  getAssets(): Promise<AssetHydrated[]>;
-  getLiabilities(): Promise<LiabilityHydrated[]>;
-  getTotalAssetAmount(): Promise<number>;
-  getTotalLiabilityAmount(): Promise<number>;
-  getNetWorth(): Promise<number>;
-  getTotalAssetAmountByCategory(category: Category): Promise<number>;
-  getPercentOfAssetsByCategory(category: Category): Promise<number>;
-  getContributionAmountByContributor(contributor: Contributor): Promise<number>;
-  getContributioPercentOfSalaryByContributor(
-    contributor: Contributor
-  ): Promise<number | undefined>;
-  getTotalWithdrawals(): Promise<number>;
-  getTotalWithdrawalsPercentOfSalary(): Promise<number | undefined>;
-  getNetContributions(): Promise<number>;
-  getNetContributionsPercentOfSalary(): Promise<number | undefined>;
-  getLastYearAssetGrowth(): Promise<number>;
-  getLastYearAssetGrowthPercentOfSalary(): Promise<number | undefined>;
-  getTotalRetirementAssets(): Promise<number>;
-  getRetirementAssetsByCategory(category: Category): Promise<number>;
-  getTotalLiabilityPaymentsMade(): Promise<number>;
-  getTotalLiabilityPaymentsMadePercentOfSalary(): Promise<number | undefined>;
-  getTotalLiabilityGrowthFromInterest(): Promise<number>;
-  getTotalLiabilityGrowthFromInterestPercentOfSalary(): Promise<
-    number | undefined
-  >;
-  getPercentOfSalary(number: number): number | undefined;
-  addLiability(liability: LiabilityDoc): Promise<LiabilityHydrated>;
-  addLiabilities(liabilities: LiabilityDoc[]): Promise<void>;
-  deleteLiability(id: Types.ObjectId | string): Promise<boolean>;
-  updateLiability(
-    id: Types.ObjectId | string,
-    changes: LiabilityUpdate
-  ): Promise<LiabilityHydrated | null>;
-  addAsset(asset: AssetDoc): Promise<AssetHydrated>;
-  addAssets(assets: AssetDoc[]): Promise<void>;
-  deleteAsset(id: Types.ObjectId | string): Promise<boolean>;
-  updateAsset(
-    id: Types.ObjectId | string,
-    changes: AssetUpdate
-  ): Promise<AssetHydrated | null>;
-};
-
-export type StatementModelType = Model<StatementDoc, {}, StatementMethods>;
-
-export type StatementHydrated = HydratedDocument<
-  StatementDoc,
-  StatementMethods
->;
-
 export type StatementOverview = {
   year: number;
   netWorth: number;
 };
+
+export type FullStatement = Prisma.StatementGetPayload<{
+  include: { assets: true; liabilities: true };
+}>;

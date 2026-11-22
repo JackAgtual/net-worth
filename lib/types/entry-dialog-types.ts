@@ -13,7 +13,7 @@ export type EntryAction = (typeof entryAction)[keyof typeof entryAction];
 type BaseAssetOrLiabilityDialogProps = {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
-  statementId: string;
+  statementId: number;
 };
 
 type CreateAssetOrLiabilityDialogProps = BaseAssetOrLiabilityDialogProps & {
@@ -23,13 +23,13 @@ type CreateAssetOrLiabilityDialogProps = BaseAssetOrLiabilityDialogProps & {
 type EditAssetOrLiabilityDialogProps<T extends AssetForm | LiabilityForm> =
   BaseAssetOrLiabilityDialogProps & {
     action: typeof entryAction.EDIT;
-    entryId: string;
+    entryId: number;
     data: T;
   };
 
 type DeleteAssetOrLiabilityDialogProps = BaseAssetOrLiabilityDialogProps & {
   action: typeof entryAction.DELETE;
-  entryId: string;
+  entryId: number;
 };
 
 type AssetOrLiabilityDialogProps<T extends AssetForm | LiabilityForm> =

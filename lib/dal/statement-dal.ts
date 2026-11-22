@@ -1,44 +1,68 @@
-import { checkSession } from "../auth/auth-utils";
-import { Statement } from "../db/models";
+import { getValidSessionOrRedirect } from "../auth/auth-utils";
+import { numberify } from "../db/numberify";
+import { prisma } from "../db/prisma";
 import { StatementForm } from "../types/statement-types";
 
-export async function getAllStatements(sortAscending: boolean = true) {
-  const session = await checkSession();
+export async function createStatement(data: StatementForm) {
+  const { user } = await getValidSessionOrRedirect();
 
-  return Statement.find({
-    userId: session.user.id,
-  }).sort({ year: sortAscending ? 1 : -1 });
+  const { assets, liabilities, ...statement } = data;
+
+  await prisma.statement.create({
+    data: {
+      ...statement,
+      userId: user.id,
+      assets: { create: assets },
+      liabilities: { create: liabilities },
+    },
+  });
+}
+
+export async function getAllStatements(sortAscending: boolean = true) {
+  const { user } = await getValidSessionOrRedirect();
+
+  const statement = await prisma.statement.findMany({
+    where: { userId: user.id },
+    orderBy: { year: sortAscending ? "asc" : "desc" },
+    include: { assets: true, liabilities: true },
+  });
+  return numberify(statement);
 }
 
 export async function getStatementFromYear(year: number) {
-  const session = await checkSession();
+  const { user } = await getValidSessionOrRedirect();
 
-  return Statement.findOne({
-    year,
-    userId: session.user.id,
+  const statement = await prisma.statement.findUnique({
+    where: { userId_year: { userId: user.id, year } },
+    include: {
+      assets: { orderBy: { createdAt: "asc" } },
+      liabilities: { orderBy: { createdAt: "asc" } },
+    },
   });
+  return numberify(statement);
 }
 
-export async function getStatementFromId(id: string) {
-  const session = await checkSession();
+export async function getStatementFromId(id: number) {
+  const { user } = await getValidSessionOrRedirect();
 
-  return Statement.findOne({
-    userId: session.user.id,
-    _id: id,
+  const statement = await prisma.statement.findUnique({
+    where: { id, userId: user.id },
+    include: { assets: true, liabilities: true },
   });
+  return numberify(statement);
 }
 
 export async function statementYearAlreadyExists(year: number) {
-  const session = await checkSession();
+  const { user } = await getValidSessionOrRedirect();
 
-  const existingStatements = await Statement.find({
-    userId: session.user.id,
-    year,
+  const count = await prisma.statement.count({
+    where: { userId: user.id, year },
   });
-
-  return existingStatements.length !== 0;
+  return count > 0;
 }
 
-export async function deleteStatement(statementData: Partial<StatementForm>) {
-  await Statement.deleteOne(statementData);
+export async function deleteStatement(id: number) {
+  const { user } = await getValidSessionOrRedirect();
+
+  await prisma.statement.delete({ where: { id, userId: user.id } });
 }

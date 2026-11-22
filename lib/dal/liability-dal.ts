@@ -1,45 +1,41 @@
-import { checkSession } from "../auth/auth-utils";
+import { getValidSessionOrRedirect } from "../auth/auth-utils";
+import { numberify } from "../db/numberify";
+import { prisma } from "../db/prisma";
 import { LiabilityForm } from "../types/liability-types";
 import { getStatementFromId } from "./statement-dal";
 
 export async function addLiabilityToStatement(
-  statementId: string,
+  statementId: number,
   data: LiabilityForm
 ) {
-  const session = await checkSession();
+  await getValidSessionOrRedirect();
   const statementDoc = await getStatementFromId(statementId);
 
   if (!statementDoc) return null;
 
-  return statementDoc.addLiability({
-    userId: session.user.id,
-    ...data,
+  const liability = await prisma.liability.create({
+    data: { ...data, statementId },
   });
+  return numberify(liability);
 }
 
-export async function removeLiabilityFromStatement(
-  statementId: string,
-  liabilityId: string
-) {
-  const statementDoc = await getStatementFromId(statementId);
+export async function deleteLiability(id: number) {
+  const { user } = await getValidSessionOrRedirect();
 
-  if (!statementDoc) {
-    return null;
-  }
+  const { count } = await prisma.liability.deleteMany({
+    where: { id, statement: { userId: user.id } },
+  });
 
-  return statementDoc.deleteLiability(liabilityId);
+  return count > 0;
 }
 
-export async function updateLiabilityOnStatement(
-  statementId: string,
-  liabilityId: string,
-  data: LiabilityForm
-) {
-  const statementDoc = await getStatementFromId(statementId);
+export async function updateLiability(id: number, data: LiabilityForm) {
+  const { user } = await getValidSessionOrRedirect();
 
-  if (!statementDoc) {
-    return null;
-  }
+  const updated = await prisma.liability.update({
+    where: { id, statement: { userId: user.id } },
+    data,
+  });
 
-  return statementDoc.updateLiability(liabilityId, data);
+  return !!updated;
 }

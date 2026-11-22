@@ -1,7 +1,8 @@
 import { chartConfig } from "@/components/chart/chart-config";
+import { AssetCategory } from "@/generated/prisma/enums";
 import { getStatementFromYear } from "@/lib/dal/statement-dal";
 import { IncomeData } from "@/lib/types/chart-data-types";
-import { Category, Contributor } from "@/lib/types/types";
+import { Contributor } from "@/lib/types/types";
 import { StatementDataAggregator } from "@/lib/utils/statement-data-aggregator";
 import { SearchParams } from "next/dist/server/request/search-params";
 import AddEntry from "./components/add-entry";
@@ -19,13 +20,14 @@ import ViewSelector from "./components/view-selector";
 
 type PageProps = {
   params: Promise<{
-    year: number;
+    year: string;
   }>;
   searchParams: Promise<SearchParams>;
 };
 
 export default async function Page({ params, searchParams }: PageProps) {
-  const { year } = await params;
+  const { year: yearParam } = await params;
+  const year = Number(yearParam);
 
   const { view = "table" } = await searchParams;
 
@@ -33,11 +35,7 @@ export default async function Page({ params, searchParams }: PageProps) {
 
   if (!statement) return <div>Couldn't find that statement</div>;
 
-  const [assets, liabilities, data] = await Promise.all([
-    statement.getAssets(),
-    statement.getLiabilities(),
-    StatementDataAggregator.getAllDataFromStatement(statement),
-  ]);
+  const data = StatementDataAggregator.getAllDataFromStatement(statement);
 
   const netWorthData = [
     {
@@ -57,7 +55,7 @@ export default async function Page({ params, searchParams }: PageProps) {
     },
   ];
 
-  const categoryData = Object.values(Category).map((category) => {
+  const categoryData = Object.values(AssetCategory).map((category) => {
     return {
       category,
       amount: data.categories.amount[category],
@@ -127,16 +125,19 @@ export default async function Page({ params, searchParams }: PageProps) {
     },
   ];
 
-  const statementId = statement._id.toString();
+  const statementId = statement.id;
 
   return (
     <>
       <h1>{year} statement</h1>
       <h2>Assets</h2>
-      <AssetTable assets={assets} statementId={statementId} />
+      <AssetTable assets={statement.assets} statementId={statementId} />
       <AddEntry entryType="asset" statementId={statementId} />
       <h2>Liabilities</h2>
-      <LiabilityTable liabilities={liabilities} statementId={statementId} />
+      <LiabilityTable
+        liabilities={statement.liabilities}
+        statementId={statementId}
+      />
       <AddEntry entryType="liability" statementId={statementId} />
       <ViewSelector />
       <h2>Net worth</h2>

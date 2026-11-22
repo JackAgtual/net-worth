@@ -44,12 +44,12 @@ export default function ContributionForm<
       placeholder: "10,000",
     },
     {
-      name: "contribution.self",
+      name: "selfContributions",
       label: "Self contribution",
       placeholder: "1,000",
     },
     {
-      name: "contribution.nonSelf",
+      name: "nonSelfContributions",
       label: "Non-self contribution",
       placeholder: "500",
     },

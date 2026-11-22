@@ -1,0 +1,25 @@
+{
+  "pureModels": true,
+  "variants": {
+    "input": {
+      "enabled": true,
+      "excludeFields": ["id", "createdAt", "updatedAt"]
+    }
+  },
+  "models": {
+    "Asset": {
+      "variants": {
+        "input": {
+          "excludeFields": ["statementId"]
+        }
+      }
+    },
+    "Liability": {
+      "variants": {
+        "input": {
+          "excludeFields": ["statementId"]
+        }
+      }
+    }
+  }
+}

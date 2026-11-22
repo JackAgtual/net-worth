@@ -1,0 +1,132 @@
+generator client {
+    provider = "prisma-client"
+    output   = "../generated/prisma"
+}
+
+generator zod {
+    provider = "prisma-zod-generator"
+    output   = "../generated/prisma"
+}
+
+datasource db {
+    provider = "postgresql"
+}
+
+model User {
+    id            String    @id
+    name          String
+    email         String
+    emailVerified Boolean   @default(false)
+    image         String?
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt
+    sessions      Session[]
+    accounts      Account[]
+
+    statements Statement[]
+
+    @@unique([email])
+    @@map("user")
+}
+
+model Session {
+    id        String   @id
+    expiresAt DateTime
+    token     String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    ipAddress String?
+    userAgent String?
+    userId    String
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([token])
+    @@index([userId])
+    @@map("session")
+}
+
+model Account {
+    id                    String    @id
+    accountId             String
+    providerId            String
+    userId                String
+    user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    accessToken           String?
+    refreshToken          String?
+    idToken               String?
+    accessTokenExpiresAt  DateTime?
+    refreshTokenExpiresAt DateTime?
+    scope                 String?
+    password              String?
+    createdAt             DateTime  @default(now())
+    updatedAt             DateTime  @updatedAt
+
+    @@index([userId])
+    @@map("account")
+}
+
+model Verification {
+    id         String   @id
+    identifier String
+    value      String
+    expiresAt  DateTime
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+
+    @@index([identifier])
+    @@map("verification")
+}
+
+model Statement {
+    id             Int      @id @default(autoincrement())
+    user           User     @relation(fields: [userId], references: [id])
+    userId         String
+    year           Int
+    lastYearSalary Decimal? @db.Decimal(10, 2)
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+
+    liabilities Liability[]
+    assets      Asset[]
+
+    @@unique([userId, year])
+}
+
+model Liability {
+    id               Int       @id @default(autoincrement())
+    statement        Statement @relation(fields: [statementId], references: [id])
+    statementId      Int
+    title            String
+    amount           Decimal   @db.Decimal(10, 2)
+    amountOneYearAgo Decimal?  @db.Decimal(10, 2)
+    paymentsMade     Decimal?  @db.Decimal(10, 2)
+    notes            String?
+    createdAt        DateTime  @default(now())
+    updatedAt        DateTime  @updatedAt
+}
+
+enum AssetCategory {
+    CASH
+    AFTER_TAX
+    TAX_FREE
+    TAX_DEFERRED
+    PROPERTY
+}
+
+model Asset {
+    id                         Int           @id @default(autoincrement())
+    statement                  Statement     @relation(fields: [statementId], references: [id])
+    statementId                Int
+    title                      String
+    amount                     Decimal       @db.Decimal(10, 2)
+    category                   AssetCategory
+    includeInGrowthCalculation Boolean       @default(false)
+    amountOneYearAgo           Decimal?      @db.Decimal(10, 2)
+    selfContributions          Decimal?      @db.Decimal(10, 2)
+    nonSelfContributions       Decimal?      @db.Decimal(10, 2)
+    withdrawals                Decimal?      @db.Decimal(10, 2)
+    retirement                 Boolean       @default(false)
+    notes                      String?
+    createdAt                  DateTime      @default(now())
+    updatedAt                  DateTime      @updatedAt
+}
