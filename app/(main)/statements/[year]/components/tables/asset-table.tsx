@@ -42,20 +42,6 @@ export default async function AssetTable({
         {assets.map((asset) => {
           const { id } = asset;
 
-          // TODO: Find a better way to do this
-          const assetFormData: AssetForm = {
-            title: asset.title,
-            amount: asset.amount,
-            category: asset.category,
-            retirement: asset.retirement,
-            amountOneYearAgo: asset.amountOneYearAgo,
-            selfContributions: asset.selfContributions,
-            nonSelfContributions: asset.nonSelfContributions,
-            withdrawals: asset.withdrawals,
-            includeInGrowthCalculation: asset.includeInGrowthCalculation,
-            notes: asset.notes,
-          };
-
           return (
             <TableRow key={id}>
               <TableCell>{asset.title}</TableCell>
@@ -80,7 +66,7 @@ export default async function AssetTable({
                   entryId={id}
                   statementId={statementId}
                   entityType="asset"
-                  data={assetFormData}
+                  data={asset}
                 />
               </TableCell>
             </TableRow>

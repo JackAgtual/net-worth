@@ -37,15 +37,6 @@ export default async function LiabilityTable({
         {liabilities.map((liability) => {
           const { id } = liability;
 
-          // TODO: Find a better way to do this
-          const liabilityFormData: LiabilityForm = {
-            title: liability.title,
-            amount: liability.amount,
-            amountOneYearAgo: liability.amountOneYearAgo,
-            paymentsMade: liability.paymentsMade,
-            notes: liability.notes,
-          };
-
           return (
             <TableRow key={id}>
               <TableCell>{liability.title}</TableCell>
@@ -63,7 +54,7 @@ export default async function LiabilityTable({
                   entryId={id}
                   statementId={statementId}
                   entityType="liability"
-                  data={liabilityFormData}
+                  data={liability}
                 />
               </TableCell>
             </TableRow>
