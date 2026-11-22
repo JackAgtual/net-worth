@@ -34,9 +34,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar data={sidebarData} />
-      <SidebarInset>
+      <SidebarInset className="min-w-0">
         <MobileSidebarTrigger />
-        <div className="px-6 py-8">{children}</div>
+        <div className="min-w-0 px-6 py-8">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );
