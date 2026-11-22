@@ -73,7 +73,7 @@ export function EntryDialog<T extends FieldValues>({
               {contentsMap[action].description}
             </DialogDescription>
           </DialogHeader>
-          {children}
+          <div className="py-4">{children}</div>
           <DialogFooter>
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>

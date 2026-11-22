@@ -10,7 +10,7 @@ import {
 } from "react-hook-form";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
-import { Field, FieldError, FieldLabel } from "../ui/field";
+import { Field, FieldError, FieldLabel, FieldSet } from "../ui/field";
 import { Input } from "../ui/input";
 import {
   Select,
@@ -47,7 +47,7 @@ export function AssetForm<TForm extends FieldValues & TAssetForm = TAssetForm>({
   }
 
   return (
-    <>
+    <FieldSet>
       <Controller
         name={getName("title")}
         control={control}
@@ -140,6 +140,6 @@ export function AssetForm<TForm extends FieldValues & TAssetForm = TAssetForm>({
           </Field>
         )}
       />
-    </>
+    </FieldSet>
   );
 }

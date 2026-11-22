@@ -1,6 +1,6 @@
 import { LiabilityForm as TLiabilityForm } from "@/lib/types/liability-types";
 import { Control, Controller, FieldPath, FieldValues } from "react-hook-form";
-import { Field, FieldError, FieldLabel } from "../ui/field";
+import { Field, FieldError, FieldLabel, FieldSet } from "../ui/field";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { DollarInput } from "./DollarInput";
@@ -22,7 +22,7 @@ export function LiabilityForm<
   }
 
   return (
-    <>
+    <FieldSet>
       <Controller
         name={getName("title")}
         control={control}
@@ -69,6 +69,6 @@ export function LiabilityForm<
           </Field>
         )}
       />
-    </>
+    </FieldSet>
   );
 }
