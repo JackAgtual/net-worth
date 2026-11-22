@@ -20,7 +20,7 @@ export default function StatementsTable({ data }: StatementsTableProps) {
   const router = useRouter();
 
   return (
-    <Table>
+    <Table className="max-w-md">
       <TableHeader>
         <TableRow>
           <TableHead>Year</TableHead>
