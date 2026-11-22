@@ -43,6 +43,8 @@ describe("Statement", () => {
         notes: null,
         retirement: false,
         withdrawals: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
       {
         id: 2,
@@ -57,6 +59,8 @@ describe("Statement", () => {
         notes: null,
         retirement: false,
         withdrawals: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
       {
         id: 3,
@@ -71,6 +75,8 @@ describe("Statement", () => {
         notes: null,
         retirement: false,
         withdrawals: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
       {
         id: 4,
@@ -85,6 +91,8 @@ describe("Statement", () => {
         retirement: false,
         selfContributions: null,
         withdrawals: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
       {
         id: 5,
@@ -99,6 +107,8 @@ describe("Statement", () => {
         retirement: true,
         notes: null,
         withdrawals: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
       {
         id: 6,
@@ -113,6 +123,8 @@ describe("Statement", () => {
         retirement: true,
         notes: null,
         withdrawals: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
       {
         id: 7,
@@ -127,6 +139,8 @@ describe("Statement", () => {
         retirement: true,
         notes: null,
         withdrawals: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
     ];
 
@@ -139,6 +153,8 @@ describe("Statement", () => {
         amountOneYearAgo: null,
         notes: null,
         paymentsMade: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
       {
         id: 2,
@@ -148,6 +164,8 @@ describe("Statement", () => {
         amountOneYearAgo: null,
         notes: null,
         paymentsMade: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
     ];
 
@@ -158,6 +176,8 @@ describe("Statement", () => {
       lastYearSalary: 100_000,
       assets,
       liabilities,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
   });
 
@@ -281,6 +301,8 @@ describe("Statement", () => {
           notes: null,
           retirement: false,
           withdrawals: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
         };
       });
 

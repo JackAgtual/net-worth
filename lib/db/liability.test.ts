@@ -14,6 +14,8 @@ describe("Liability getGrowthFromInterest(liability)", () => {
       amountOneYearAgo: null,
       notes: null,
       paymentsMade: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
   });
 

@@ -23,6 +23,8 @@ describe("Asset", () => {
       notes: null,
       retirement: false,
       withdrawals: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
   });
 
