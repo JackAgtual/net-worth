@@ -19,7 +19,7 @@ export async function AmountAndPercentOfIncomeTable({
   data: AmountAndPercentOfIncomeTableData[];
 }) {
   return (
-    <Table>
+    <Table className="max-w-fit">
       <TableHeader>
         <TableRow>
           <TableHead>Metric</TableHead>

@@ -15,7 +15,7 @@ export function ViewSelector() {
   const view = searchParams.get("view") ?? "table";
 
   return (
-    <>
+    <div>
       <h1>Select view</h1>
       <RadioGroup value={view} className="flex">
         <Link href="?view=table">
@@ -39,6 +39,6 @@ export function ViewSelector() {
           </FieldLabel>
         </Link>
       </RadioGroup>
-    </>
+    </div>
   );
 }

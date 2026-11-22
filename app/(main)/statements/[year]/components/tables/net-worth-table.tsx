@@ -15,7 +15,7 @@ export type NetWorthTableData = {
 
 export async function NetWorthTable({ data }: { data: NetWorthTableData[] }) {
   return (
-    <Table>
+    <Table className="max-w-fit">
       <TableHeader>
         <TableRow>
           <TableHead>Metric</TableHead>

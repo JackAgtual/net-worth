@@ -17,12 +17,20 @@ import { IncomeTable } from "./components/tables/income-table";
 import { LiabilityTable } from "./components/tables/liability-table";
 import { NetWorthTable } from "./components/tables/net-worth-table";
 import { ViewSelector } from "./components/view-selector";
+import { tiktok } from "better-auth";
+import { ReactNode } from "react";
 
 type PageProps = {
   params: Promise<{
     year: string;
   }>;
   searchParams: Promise<SearchParams>;
+};
+
+type TableChartMetric = {
+  title: string;
+  table: ReactNode;
+  chart: ReactNode;
 };
 
 export default async function Page({ params, searchParams }: PageProps) {
@@ -125,53 +133,61 @@ export default async function Page({ params, searchParams }: PageProps) {
     },
   ];
 
+  const metrics: TableChartMetric[] = [
+    {
+      title: "Net worth",
+      table: <NetWorthTable data={netWorthData} />,
+      chart: <NetWorthChart data={netWorthData} />,
+    },
+    {
+      title: "Category analysis",
+      table: <CategoryTable data={categoryData} />,
+      chart: <CategoryChart data={categoryData} />,
+    },
+    {
+      title: "Income analysis",
+      table: <IncomeTable data={incomeData} />,
+      chart: <IncomeChart data={incomeData} />,
+    },
+    {
+      title: "Contribution & Withdrawal analysis",
+      table: <AmountAndPercentOfIncomeTable data={contributionData} />,
+      chart: <AmountAndPercentOfIncomeChart data={contributionData} />,
+    },
+    {
+      title: "Liability payments",
+      table: <AmountAndPercentOfIncomeTable data={liabilityPaymentsData} />,
+      chart: <AmountAndPercentOfIncomeChart data={liabilityPaymentsData} />,
+    },
+  ];
+
   const statementId = statement.id;
 
   return (
     <>
-      <h1>{year} statement</h1>
-      <h2>Assets</h2>
-      <AssetTable assets={statement.assets} statementId={statementId} />
-      <AddEntry entryType="asset" statementId={statementId} />
-      <h2>Liabilities</h2>
-      <LiabilityTable
-        liabilities={statement.liabilities}
-        statementId={statementId}
-      />
-      <AddEntry entryType="liability" statementId={statementId} />
-      <ViewSelector />
-      <h2>Net worth</h2>
-      {view === "table" ? (
-        <NetWorthTable data={netWorthData} />
-      ) : (
-        <NetWorthChart data={netWorthData} />
-      )}
-
-      <h2>Category analysis</h2>
-      {view === "table" ? (
-        <CategoryTable data={categoryData} />
-      ) : (
-        <CategoryChart data={categoryData} />
-      )}
-
-      <h2>Income analysis</h2>
-      {view === "table" ? (
-        <IncomeTable data={incomeData} />
-      ) : (
-        <IncomeChart data={incomeData} />
-      )}
-      <h2>Contribution & Withdrawal analysis</h2>
-      {view === "table" ? (
-        <AmountAndPercentOfIncomeTable data={contributionData} />
-      ) : (
-        <AmountAndPercentOfIncomeChart data={contributionData} />
-      )}
-      <h2>Liability payments</h2>
-      {view === "table" ? (
-        <AmountAndPercentOfIncomeTable data={liabilityPaymentsData} />
-      ) : (
-        <AmountAndPercentOfIncomeChart data={liabilityPaymentsData} />
-      )}
+      <h1 className="text-xl mb-5">{year} statement</h1>
+      <div className="flex flex-col gap-y-10">
+        <div>
+          <h2>Assets</h2>
+          <AssetTable assets={statement.assets} statementId={statementId} />
+          <AddEntry entryType="asset" statementId={statementId} />
+        </div>
+        <div>
+          <h2>Liabilities</h2>
+          <LiabilityTable
+            liabilities={statement.liabilities}
+            statementId={statementId}
+          />
+          <AddEntry entryType="liability" statementId={statementId} />
+        </div>
+        <ViewSelector />
+        {metrics.map((metric) => (
+          <div key={metric.title}>
+            <h2>{metric.title}</h2>
+            {view === "table" ? metric.table : metric.chart}
+          </div>
+        ))}
+      </div>
     </>
   );
 }

@@ -15,7 +15,7 @@ export type IncomeTableData = {
 
 export async function IncomeTable({ data }: { data: IncomeTableData[] }) {
   return (
-    <Table>
+    <Table className="max-w-fit">
       <TableHeader>
         <TableRow>
           <TableHead>Item</TableHead>
