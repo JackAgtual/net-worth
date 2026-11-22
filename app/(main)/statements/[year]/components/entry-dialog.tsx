@@ -31,7 +31,7 @@ type DialogContents = {
   description: string;
 };
 
-export default function EntryDialog<T extends FieldValues>({
+export function EntryDialog<T extends FieldValues>({
   open,
   setOpen,
   action,

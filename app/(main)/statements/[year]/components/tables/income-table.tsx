@@ -13,11 +13,7 @@ export type IncomeTableData = {
   format: "dollar" | "percent";
 };
 
-export default async function IncomeTable({
-  data,
-}: {
-  data: IncomeTableData[];
-}) {
+export async function IncomeTable({ data }: { data: IncomeTableData[] }) {
   return (
     <Table>
       <TableHeader>

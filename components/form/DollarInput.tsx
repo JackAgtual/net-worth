@@ -87,7 +87,7 @@ function DollarInputInner({
   );
 }
 
-export default function DollarInput<
+export function DollarInput<
   TFormValues extends FieldValues,
   TName extends FieldPath<TFormValues>,
 >({

@@ -13,12 +13,12 @@ import {
   YAxis,
 } from "recharts";
 import { AmountAndPercentOfIncomeTableData } from "../tables/contribution-withdrawal-table";
-import StatementChartContainer from "./statement-chart-container";
+import { StatementChartContainer } from "./statement-chart-container";
 
 type AmountAndPercentOfIncomeChartData = AmountAndPercentOfIncomeTableData &
   Fill;
 
-export default function AmountAndPercentOfIncomeChart({
+export function AmountAndPercentOfIncomeChart({
   data,
 }: {
   data: AmountAndPercentOfIncomeChartData[];

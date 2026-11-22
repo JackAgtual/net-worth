@@ -17,9 +17,8 @@ import {
   FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldSet,
 } from "../ui/field";
-import DollarInput from "./DollarInput";
+import { DollarInput } from "./DollarInput";
 
 type TDollarInput = {
   name: FieldPath<TAssetForm>;
@@ -36,7 +35,7 @@ type ContributionFormProps<
   setIncludeContributions: Dispatch<SetStateAction<boolean>>;
 };
 
-export default function ContributionForm<
+export function ContributionForm<
   TForm extends FieldValues & TAssetForm = TAssetForm,
 >({
   control,

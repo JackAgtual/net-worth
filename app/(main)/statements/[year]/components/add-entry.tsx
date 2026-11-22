@@ -2,10 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import AssetDialog from "./asset-dialog";
-import LiabilityDialog from "./liability-dialog";
+import { AssetDialog } from "./asset-dialog";
+import { LiabilityDialog } from "./liability-dialog";
 
-export default function AddEntry({
+export function AddEntry({
   statementId,
   entryType,
 }: {

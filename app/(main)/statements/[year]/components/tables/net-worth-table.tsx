@@ -13,11 +13,7 @@ export type NetWorthTableData = {
   value: number;
 };
 
-export default async function NetWorthTable({
-  data,
-}: {
-  data: NetWorthTableData[];
-}) {
+export async function NetWorthTable({ data }: { data: NetWorthTableData[] }) {
   return (
     <Table>
       <TableHeader>

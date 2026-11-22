@@ -1,6 +1,6 @@
 "use client";
 
-import CustomLine from "@/components/chart/CustomLine";
+import { CustomLine } from "@/components/chart/CustomLine";
 import { AssetGrowthChartData } from "@/lib/types/chart-data-types";
 import { NumberVsYearLineChart } from "./number-vs-year-line-chart";
 

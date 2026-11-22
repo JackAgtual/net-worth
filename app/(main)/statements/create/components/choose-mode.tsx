@@ -11,9 +11,9 @@ import { getAllStatements } from "@/lib/dal/statement-dal";
 import { ExternalLinkIcon } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import PrefillForm from "./prefill-form";
+import { PrefillForm } from "./prefill-form";
 
-export default async function ChooseMode() {
+export async function ChooseMode() {
   await getValidSessionOrRedirect();
 
   const blankParams = new URLSearchParams({ mode: "blank" }).toString();

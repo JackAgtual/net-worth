@@ -7,14 +7,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Asset } from "@/generated/prisma/client";
-import { AssetForm } from "@/lib/types/asset-types";
-import { formatAsDollar } from "@/lib/utils/format-utils";
-import EntryDropDown from "../entry-drop-down";
-import { Numberify } from "@/lib/db/numberify";
 import { getGrowthFromAppreciation } from "@/lib/db/asset";
+import { Numberify } from "@/lib/db/numberify";
+import { formatAsDollar } from "@/lib/utils/format-utils";
+import { EntryDropDown } from "../entry-drop-down";
 import { NotesTableCellWrapper } from "./notes-table-cell-wrapper";
 
-export default async function AssetTable({
+export async function AssetTable({
   assets,
   statementId,
 }: {

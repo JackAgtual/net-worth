@@ -13,7 +13,7 @@ export type AmountAndPercentOfIncomeTableData = {
   percentOfIncome: number | undefined;
 };
 
-export default async function AmountAndPercentOfIncomeTable({
+export async function AmountAndPercentOfIncomeTable({
   data,
 }: {
   data: AmountAndPercentOfIncomeTableData[];

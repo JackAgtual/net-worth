@@ -7,7 +7,7 @@ type CustomLineProps = Omit<ComponentProps<typeof Line>, "dataKey" | "ref"> & {
   dashed?: boolean;
 };
 
-export default function CustomLine({
+export function CustomLine({
   dataKey,
   strokeWidth = 2.5,
   dot = false,

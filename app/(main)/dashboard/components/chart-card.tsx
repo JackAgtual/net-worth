@@ -5,7 +5,7 @@ type ChartCardProps = {
   children: React.ReactNode;
 };
 
-export default function ChartCard({ title, children }: ChartCardProps) {
+export function ChartCard({ title, children }: ChartCardProps) {
   return (
     <Card>
       <CardHeader>

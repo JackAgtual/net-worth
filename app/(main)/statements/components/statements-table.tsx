@@ -16,7 +16,7 @@ type StatementsTableProps = {
   data: StatementOverview[];
 };
 
-export default function StatementsTable({ data }: StatementsTableProps) {
+export function StatementsTable({ data }: StatementsTableProps) {
   const router = useRouter();
 
   return (

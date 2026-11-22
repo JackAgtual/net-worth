@@ -1,6 +1,6 @@
 "use client";
 
-import LiabilityForm from "@/components/form/liability-form";
+import { LiabilityForm } from "@/components/form/liability-form";
 import { FieldError } from "@/components/ui/field";
 import {
   createLiabilityAction,
@@ -16,9 +16,9 @@ import { setFormErrors } from "@/lib/utils/form-utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { usePathname } from "next/navigation";
 import { useForm } from "react-hook-form";
-import EntryDialog from "./entry-dialog";
+import { EntryDialog } from "./entry-dialog";
 
-export default function LiabilityDialog(props: LiabilityDialogProps) {
+export function LiabilityDialog(props: LiabilityDialogProps) {
   const { open, setOpen, statementId, action } = props;
 
   let data = undefined;

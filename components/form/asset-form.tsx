@@ -20,8 +20,8 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
-import DollarInput from "./DollarInput";
-import ContributionForm from "./contribution-form";
+import { DollarInput } from "./DollarInput";
+import { ContributionForm } from "./contribution-form";
 
 type AssetFormProps<TForm extends FieldValues & TAssetForm = TAssetForm> = {
   control: Control<any>; // TODO: Fix types
@@ -30,9 +30,7 @@ type AssetFormProps<TForm extends FieldValues & TAssetForm = TAssetForm> = {
   initialIncludeContributions?: boolean;
 };
 
-export default function AssetForm<
-  TForm extends FieldValues & TAssetForm = TAssetForm,
->({
+export function AssetForm<TForm extends FieldValues & TAssetForm = TAssetForm>({
   control,
   setValue,
   baseName,

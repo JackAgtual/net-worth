@@ -1,11 +1,11 @@
-import NoStatements from "@/components/misc/no-statements";
+import { NoStatements } from "@/components/misc/no-statements";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAllStatements } from "@/lib/dal/statement-dal";
 import { formatAsDollar } from "@/lib/utils/format-utils";
 import { StatementDataAggregator } from "@/lib/utils/statement-data-aggregator";
 import { AssetGrowthChart } from "./components/asset-growth-chart";
 import { CategoryPercentageChart } from "./components/category-percentage-chart";
-import ChartCard from "./components/chart-card";
+import { ChartCard } from "./components/chart-card";
 import { ContributionWithdrawalChart } from "./components/contribution-withdrawal-chart";
 import { NetWorthChart } from "./components/net-worth-chart";
 

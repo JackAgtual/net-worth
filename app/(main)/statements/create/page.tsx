@@ -2,9 +2,9 @@ import { getValidSessionOrRedirect } from "@/lib/auth/auth-utils";
 import { getStatementFormPrefillData } from "@/lib/utils/form-utils-server";
 import { SearchParams } from "next/dist/server/request/search-params";
 import { z } from "zod";
-import ChooseMode from "./components/choose-mode";
-import StatementForm from "./components/statement-form";
-import StatementFormCard from "./components/statement-form-card";
+import { ChooseMode } from "./components/choose-mode";
+import { StatementForm } from "./components/statement-form";
+import { StatementFormCard } from "./components/statement-form-card";
 
 export default async function Page({
   searchParams,

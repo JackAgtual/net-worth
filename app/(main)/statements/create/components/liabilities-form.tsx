@@ -1,6 +1,6 @@
 "use client";
 
-import LiabilityForm from "@/components/form/liability-form";
+import { LiabilityForm } from "@/components/form/liability-form";
 import { Button } from "@/components/ui/button";
 import { FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
 import { Separator } from "@/components/ui/separator";
@@ -14,7 +14,7 @@ type LiabilitiesFormProps = {
   control: StatementFormControl;
 };
 
-export default function LiabilitiesForm({ control }: LiabilitiesFormProps) {
+export function LiabilitiesForm({ control }: LiabilitiesFormProps) {
   const { fields, append, remove } = useFieldArray({
     control,
     name: "liabilities",

@@ -11,8 +11,8 @@ import { AssetForm } from "@/lib/types/asset-types";
 import { LiabilityForm } from "@/lib/types/liability-types";
 import { MoreHorizontalIcon } from "lucide-react";
 import { useState } from "react";
-import AssetDialog from "./asset-dialog";
-import LiabilityDialog from "./liability-dialog";
+import { AssetDialog } from "./asset-dialog";
+import { LiabilityDialog } from "./liability-dialog";
 
 type EntryDropDownProps = {
   entryId: number;
@@ -22,7 +22,7 @@ type EntryDropDownProps = {
   | { entityType: "liability"; data: LiabilityForm }
 );
 
-export default function EntryDropDown({
+export function EntryDropDown({
   entryId,
   statementId,
   entityType,

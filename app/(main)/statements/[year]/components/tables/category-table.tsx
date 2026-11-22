@@ -14,11 +14,7 @@ export type CategoryTableData = {
   percent: number;
 };
 
-export default async function CategoryTable({
-  data,
-}: {
-  data: CategoryTableData[];
-}) {
+export async function CategoryTable({ data }: { data: CategoryTableData[] }) {
   return (
     <>
       <Table>

@@ -1,8 +1,8 @@
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { signOut } from "@/lib/actions/auth-actions";
 import { SidebarData } from "@/lib/types/sidebar-types";
-import AppSidebar from "./components/app-sidebar";
-import MobileSidebarTrigger from "./components/mobile-sidebar-trigger";
+import { AppSidebar } from "./components/app-sidebar";
+import { MobileSidebarTrigger } from "./components/mobile-sidebar-trigger";
 
 const sidebarData: SidebarData[] = [
   {

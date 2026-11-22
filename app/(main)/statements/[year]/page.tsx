@@ -5,18 +5,18 @@ import { IncomeData } from "@/lib/types/chart-data-types";
 import { Contributor } from "@/lib/types/types";
 import { StatementDataAggregator } from "@/lib/utils/statement-data-aggregator";
 import { SearchParams } from "next/dist/server/request/search-params";
-import AddEntry from "./components/add-entry";
-import CategoryChart from "./components/charts/category-chart";
-import AmountAndPercentOfIncomeChart from "./components/charts/contribution-withdrawal-chart";
-import IncomeChart, { IncomeChartData } from "./components/charts/income-chart";
-import NetWorthChart from "./components/charts/net-worth-chart";
-import AssetTable from "./components/tables/asset-table";
-import CategoryTable from "./components/tables/category-table";
-import AmountAndPercentOfIncomeTable from "./components/tables/contribution-withdrawal-table";
-import IncomeTable from "./components/tables/income-table";
-import LiabilityTable from "./components/tables/liability-table";
-import NetWorthTable from "./components/tables/net-worth-table";
-import ViewSelector from "./components/view-selector";
+import { AddEntry } from "./components/add-entry";
+import { CategoryChart } from "./components/charts/category-chart";
+import { AmountAndPercentOfIncomeChart } from "./components/charts/contribution-withdrawal-chart";
+import { IncomeChart, IncomeChartData } from "./components/charts/income-chart";
+import { NetWorthChart } from "./components/charts/net-worth-chart";
+import { AssetTable } from "./components/tables/asset-table";
+import { CategoryTable } from "./components/tables/category-table";
+import { AmountAndPercentOfIncomeTable } from "./components/tables/contribution-withdrawal-table";
+import { IncomeTable } from "./components/tables/income-table";
+import { LiabilityTable } from "./components/tables/liability-table";
+import { NetWorthTable } from "./components/tables/net-worth-table";
+import { ViewSelector } from "./components/view-selector";
 
 type PageProps = {
   params: Promise<{

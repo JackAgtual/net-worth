@@ -1,6 +1,6 @@
 "use client";
 
-import DollarInput from "@/components/form/DollarInput";
+import { DollarInput } from "@/components/form/DollarInput";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -18,10 +18,10 @@ import { setFormErrors } from "@/lib/utils/form-utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { redirect } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
-import AssetsForm from "./assets-form";
-import LiabilitiesForm from "./liabilities-form";
+import { AssetsForm } from "./assets-form";
+import { LiabilitiesForm } from "./liabilities-form";
 
-export default function StatementForm({
+export function StatementForm({
   defaultValues,
   showAllContributionSubForms = false,
 }: {

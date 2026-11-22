@@ -2,7 +2,7 @@ import { StatementForm } from "@/lib/types/statement-types";
 import { render, screen } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
 import { useForm } from "react-hook-form";
-import AssetsForm from "./assets-form";
+import { AssetsForm } from "./assets-form";
 
 function TestForm() {
   const { control } = useForm<StatementForm>();

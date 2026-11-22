@@ -7,9 +7,9 @@ import {
   SidebarMenu,
 } from "@/components/ui/sidebar";
 import { SidebarData } from "@/lib/types/sidebar-types";
-import SidebarItem from "./sidebar-item";
+import { SidebarItem } from "./sidebar-item";
 
-export default function AppSidebar({ data }: { data: SidebarData[] }) {
+export function AppSidebar({ data }: { data: SidebarData[] }) {
   return (
     <Sidebar>
       <SidebarHeader>Net Worth Tracker</SidebarHeader>

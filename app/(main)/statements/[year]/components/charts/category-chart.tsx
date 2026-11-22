@@ -6,15 +6,15 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { Fill } from "@/lib/types/chart-data-types";
 import { formatAsDollar, formatAsPercent } from "@/lib/utils/format-utils";
 import { Pie, PieChart } from "recharts";
 import { CategoryTableData } from "../tables/category-table";
-import StatementChartContainer from "./statement-chart-container";
-import { Fill } from "@/lib/types/chart-data-types";
+import { StatementChartContainer } from "./statement-chart-container";
 
 type CategoryChartData = CategoryTableData & Fill;
 
-export default function CategoryChart({ data }: { data: CategoryChartData[] }) {
+export function CategoryChart({ data }: { data: CategoryChartData[] }) {
   return (
     <StatementChartContainer>
       <PieChart>

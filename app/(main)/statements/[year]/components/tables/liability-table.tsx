@@ -7,14 +7,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Liability } from "@/generated/prisma/client";
-import { LiabilityForm } from "@/lib/types/liability-types";
-import { formatAsDollar } from "@/lib/utils/format-utils";
-import EntryDropDown from "../entry-drop-down";
-import { Numberify } from "@/lib/db/numberify";
 import { getGrowthFromInterest } from "@/lib/db/liability";
+import { Numberify } from "@/lib/db/numberify";
+import { formatAsDollar } from "@/lib/utils/format-utils";
+import { EntryDropDown } from "../entry-drop-down";
 import { NotesTableCellWrapper } from "./notes-table-cell-wrapper";
 
-export default async function LiabilityTable({
+export async function LiabilityTable({
   liabilities,
   statementId,
 }: {

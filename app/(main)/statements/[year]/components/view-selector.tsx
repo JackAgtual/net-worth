@@ -10,7 +10,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
-export default function ViewSelector() {
+export function ViewSelector() {
   const searchParams = useSearchParams();
   const view = searchParams.get("view") ?? "table";
 

@@ -13,11 +13,11 @@ import {
   YAxis,
 } from "recharts";
 import { IncomeTableData } from "../tables/income-table";
-import StatementChartContainer from "./statement-chart-container";
+import { StatementChartContainer } from "./statement-chart-container";
 
 export type IncomeChartData = IncomeTableData & Fill & { hideBar?: boolean };
 
-export default function IncomeChart({ data }: { data: IncomeChartData[] }) {
+export function IncomeChart({ data }: { data: IncomeChartData[] }) {
   const filteredData = data.filter((el) => el.hideBar !== true);
   const percentOfSalary = data.find(
     (el) => el.name === IncomeData.AssetGrowthPercentOfSalary

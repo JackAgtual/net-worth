@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "../ui/button";
 
-export default function NoStatements() {
+export function NoStatements() {
   return (
     <>
       <p>You don't have any statements</p>

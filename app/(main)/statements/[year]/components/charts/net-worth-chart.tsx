@@ -1,6 +1,7 @@
 "use client";
 
 import { ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { Fill } from "@/lib/types/chart-data-types";
 import { formatAsDollar } from "@/lib/utils/format-utils";
 import {
   Bar,
@@ -10,13 +11,12 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import StatementChartContainer from "./statement-chart-container";
 import { NetWorthTableData } from "../tables/net-worth-table";
-import { Fill } from "@/lib/types/chart-data-types";
+import { StatementChartContainer } from "./statement-chart-container";
 
 type NetWorthChartData = NetWorthTableData & Fill;
 
-export default function NetWorthChart({ data }: { data: NetWorthChartData[] }) {
+export function NetWorthChart({ data }: { data: NetWorthChartData[] }) {
   return (
     <StatementChartContainer>
       <BarChart accessibilityLayer data={data}>

@@ -1,9 +1,9 @@
-import NoStatements from "@/components/misc/no-statements";
+import { NoStatements } from "@/components/misc/no-statements";
 import { Button } from "@/components/ui/button";
 import { getAllStatements } from "@/lib/dal/statement-dal";
 import { StatementDataAggregator } from "@/lib/utils/statement-data-aggregator";
 import Link from "next/link";
-import StatementsTable from "./components/statements-table";
+import { StatementsTable } from "./components/statements-table";
 
 export default async function Page() {
   const allStatements = await getAllStatements(false);

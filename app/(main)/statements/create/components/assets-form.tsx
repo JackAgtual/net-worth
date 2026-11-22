@@ -1,6 +1,6 @@
 "use client";
 
-import AssetForm from "@/components/form/asset-form";
+import { AssetForm } from "@/components/form/asset-form";
 import { Button } from "@/components/ui/button";
 import { FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
 import { Separator } from "@/components/ui/separator";
@@ -17,7 +17,7 @@ type AssetsFormProps = {
   showAllContributionSubForms?: boolean;
 };
 
-export default function AssetsForm({
+export function AssetsForm({
   control,
   setValue,
   showAllContributionSubForms = false,

@@ -3,7 +3,7 @@ import { Control, Controller, FieldPath, FieldValues } from "react-hook-form";
 import { Field, FieldError, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import DollarInput from "./DollarInput";
+import { DollarInput } from "./DollarInput";
 
 type LiabilityFormProps<
   TForm extends FieldValues & TLiabilityForm = TLiabilityForm,
@@ -12,7 +12,7 @@ type LiabilityFormProps<
   baseName?: FieldPath<TForm>;
 };
 
-export default function LiabilityForm<
+export function LiabilityForm<
   TForm extends FieldValues & TLiabilityForm = TLiabilityForm,
 >({ control, baseName }: LiabilityFormProps<TForm>) {
   function getName(name: FieldPath<TLiabilityForm>): FieldPath<TForm> {

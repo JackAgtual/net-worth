@@ -11,7 +11,7 @@ import {
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
-export default function PrefillForm({ years }: { years: number[] }) {
+export function PrefillForm({ years }: { years: number[] }) {
   async function onSubmit(formData: FormData) {
     "use server";
 

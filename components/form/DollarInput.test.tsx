@@ -1,8 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
-
 import { useForm } from "react-hook-form";
-import DollarInput from "./DollarInput";
+import { DollarInput } from "./DollarInput";
 
 function TestForm({ defaultValue }: { defaultValue?: number }) {
   const { control } = useForm({
