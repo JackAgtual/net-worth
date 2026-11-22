@@ -14,9 +14,14 @@ import { FieldPath, useFieldArray, UseFormSetValue } from "react-hook-form";
 type AssetsFormProps = {
   control: StatementFormControl;
   setValue: UseFormSetValue<StatementForm>;
+  showAllContributionSubForms?: boolean;
 };
 
-export default function AssetsForm({ control, setValue }: AssetsFormProps) {
+export default function AssetsForm({
+  control,
+  setValue,
+  showAllContributionSubForms = false,
+}: AssetsFormProps) {
   const { fields, append, remove } = useFieldArray({
     control,
     name: "assets",
@@ -34,6 +39,7 @@ export default function AssetsForm({ control, setValue }: AssetsFormProps) {
                 baseName={baseName}
                 control={control}
                 setValue={setValue}
+                initialIncludeContributions={showAllContributionSubForms}
               />
               <Button
                 type="button"

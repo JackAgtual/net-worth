@@ -30,7 +30,10 @@ export default async function Page({
   const defaultVals = await getStatementFormPrefillData(yearInt);
   return (
     <StatementFormCard>
-      <StatementForm defaultValues={defaultVals} />
+      <StatementForm
+        defaultValues={defaultVals}
+        showAllContributionSubForms={true} // Need to show contributions because amount one year ago is pre-filled
+      />
     </StatementFormCard>
   );
 }

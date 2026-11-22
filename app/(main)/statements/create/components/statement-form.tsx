@@ -18,8 +18,10 @@ import LiabilitiesForm from "./liabilities-form";
 
 export default function StatementForm({
   defaultValues,
+  showAllContributionSubForms = false,
 }: {
   defaultValues?: TStatementForm;
+  showAllContributionSubForms?: boolean;
 }) {
   const {
     control,
@@ -76,7 +78,11 @@ export default function StatementForm({
         name="lastYearSalary"
         placeholder="70,000"
       />
-      <AssetsForm control={control} setValue={setValue} />
+      <AssetsForm
+        control={control}
+        setValue={setValue}
+        showAllContributionSubForms={showAllContributionSubForms}
+      />
       <LiabilitiesForm control={control} />
 
       <Button type="submit">Create</Button>
