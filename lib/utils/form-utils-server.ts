@@ -23,6 +23,7 @@ export async function getStatementFormPrefillData(year: number) {
     liabilities: prefillStatement.liabilities.map((liability) => {
       return {
         title: liability.title,
+        amountOneYearAgo: liability.amount,
       };
     }),
   } as StatementForm; // TODO: Fix typing
