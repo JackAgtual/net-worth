@@ -29,11 +29,13 @@ export default async function Page({
   const yearInt = z.coerce.number().int().parse(year);
   const defaultVals = await getStatementFormPrefillData(yearInt);
   return (
-    <StatementFormCard>
-      <StatementForm
-        defaultValues={defaultVals}
-        showAllContributionSubForms={true} // Need to show contributions because amount one year ago is pre-filled
-      />
-    </StatementFormCard>
+    <div className="max-w-6xl mx-auto">
+      <StatementFormCard>
+        <StatementForm
+          defaultValues={defaultVals}
+          showAllContributionSubForms={true} // Need to show contributions because amount one year ago is pre-filled
+        />
+      </StatementFormCard>
+    </div>
   );
 }

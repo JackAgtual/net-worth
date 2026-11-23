@@ -50,12 +50,12 @@ export function StatementForm({
 
   return (
     <form
-      className="flex-col"
+      className="flex-col @container"
       onSubmit={handleSubmit(onSubmit, (err) => {
         console.error(err);
       })}
     >
-      <FieldGroup>
+      <FieldGroup className="max-w-2xl @xl:grid @xl:grid-cols-2">
         <Controller
           name="year"
           control={control}

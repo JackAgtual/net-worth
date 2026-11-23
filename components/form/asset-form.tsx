@@ -47,7 +47,7 @@ export function AssetForm<TForm extends FieldValues & TAssetForm = TAssetForm>({
   }
 
   return (
-    <FieldSet>
+    <FieldSet className="@xl:grid @xl:grid-cols-2 @2xl:grid-cols-3">
       <Controller
         name={getName("title")}
         control={control}
@@ -93,7 +93,7 @@ export function AssetForm<TForm extends FieldValues & TAssetForm = TAssetForm>({
         name={getName("retirement")}
         control={control}
         render={({ field }) => (
-          <Field orientation="horizontal">
+          <Field className="col-span-full" orientation="horizontal">
             <Checkbox
               id={getName("retirement")}
               name="retirement"
@@ -106,27 +106,29 @@ export function AssetForm<TForm extends FieldValues & TAssetForm = TAssetForm>({
           </Field>
         )}
       />
-      {includeContributions ? (
-        <ContributionForm
-          control={control}
-          getName={getName}
-          setIncludeContributions={setIncludeContributions}
-          setValue={setValue}
-        />
-      ) : (
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={() => setIncludeContributions(true)}
-        >
-          Include contribution details
-        </Button>
-      )}
+      <div className="col-span-full">
+        {includeContributions ? (
+          <ContributionForm
+            control={control}
+            getName={getName}
+            setIncludeContributions={setIncludeContributions}
+            setValue={setValue}
+          />
+        ) : (
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => setIncludeContributions(true)}
+          >
+            Include contribution details
+          </Button>
+        )}
+      </div>
       <Controller
         name={getName("notes")}
         control={control}
         render={({ field: controllerField, fieldState }) => (
-          <Field>
+          <Field className="col-span-full">
             <FieldLabel>Notes</FieldLabel>
             <Textarea
               {...controllerField}

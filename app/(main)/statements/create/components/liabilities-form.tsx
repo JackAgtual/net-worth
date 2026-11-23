@@ -21,7 +21,7 @@ export function LiabilitiesForm({ control }: LiabilitiesFormProps) {
   });
 
   return (
-    <FieldSet className="my-6">
+    <FieldSet className="my-6 @container">
       <FieldLegend>Liabilities</FieldLegend>
       <FieldGroup>
         {fields.map((field, index) => {
@@ -30,6 +30,7 @@ export function LiabilitiesForm({ control }: LiabilitiesFormProps) {
             <FieldGroup key={field.id}>
               <LiabilityForm baseName={baseName} control={control} />
               <Button
+                className="w-fit"
                 type="button"
                 variant="outline"
                 onClick={() => {

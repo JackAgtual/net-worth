@@ -22,7 +22,7 @@ export function LiabilityForm<
   }
 
   return (
-    <FieldSet>
+    <FieldSet className="grid grid-cols-1 @xl:grid-cols-2 @2xl:grid-cols-4">
       <Controller
         name={getName("title")}
         control={control}
@@ -55,7 +55,7 @@ export function LiabilityForm<
         name={getName("notes")}
         control={control}
         render={({ field: controllerField, fieldState }) => (
-          <Field>
+          <Field className="col-span-full">
             <FieldLabel>Notes</FieldLabel>
             <Textarea
               {...controllerField}

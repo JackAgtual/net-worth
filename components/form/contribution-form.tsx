@@ -77,7 +77,7 @@ export function ContributionForm<
   }
 
   return (
-    <Card>
+    <Card className="@container">
       <CardHeader className="flex flex-row justify-between">
         <CardTitle>Contribution Details</CardTitle>
         <Button variant="ghost" type="button" onClick={handleContributionClose}>
@@ -85,7 +85,7 @@ export function ContributionForm<
         </Button>
       </CardHeader>
       <CardContent>
-        <FieldGroup>
+        <FieldGroup className="grid @xl:grid-cols-2 @4xl:grid-cols-4">
           {dollarInputs.map(({ label, name, placeholder }) => (
             <DollarInput
               key={name}
@@ -99,7 +99,7 @@ export function ContributionForm<
             name={getName(includeInGrowth)}
             control={control}
             render={({ field }) => (
-              <Field orientation="horizontal">
+              <Field className="col-span-full" orientation="horizontal">
                 <Checkbox
                   id={getName(includeInGrowth)}
                   name={getName(includeInGrowth)}

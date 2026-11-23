@@ -28,7 +28,7 @@ export function AssetsForm({
   });
 
   return (
-    <FieldSet className="my-6">
+    <FieldSet className="my-6 @container">
       <FieldLegend>Assets</FieldLegend>
       <FieldGroup>
         {fields.map((field, index) => {
@@ -42,6 +42,7 @@ export function AssetsForm({
                 initialIncludeContributions={showAllContributionSubForms}
               />
               <Button
+                className="w-fit"
                 type="button"
                 variant="outline"
                 onClick={() => {
