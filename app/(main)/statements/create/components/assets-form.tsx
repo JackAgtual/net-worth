@@ -4,7 +4,7 @@ import { AssetForm } from "@/components/form/asset-form";
 import { Button } from "@/components/ui/button";
 import { FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
 import { Separator } from "@/components/ui/separator";
-import { AssetCategory } from "@/generated/prisma/enums";
+import { emptyAsset } from "@/lib/types/asset-types";
 import {
   StatementForm,
   StatementFormControl,
@@ -60,13 +60,7 @@ export function AssetsForm({
         <Button
           type="button"
           onClick={() => {
-            append({
-              title: "",
-              amount: "" as unknown as number, // bad practice but it works
-              category: AssetCategory.CASH,
-              retirement: false,
-              includeInGrowthCalculation: false,
-            });
+            append(emptyAsset);
           }}
         >
           Add asset

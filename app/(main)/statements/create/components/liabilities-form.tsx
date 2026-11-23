@@ -4,6 +4,7 @@ import { LiabilityForm } from "@/components/form/liability-form";
 import { Button } from "@/components/ui/button";
 import { FieldGroup, FieldLegend, FieldSet } from "@/components/ui/field";
 import { Separator } from "@/components/ui/separator";
+import { emptyLiability } from "@/lib/types/liability-types";
 import {
   StatementForm,
   StatementFormControl,
@@ -48,7 +49,7 @@ export function LiabilitiesForm({ control }: LiabilitiesFormProps) {
         <Button
           type="button"
           onClick={() => {
-            append({ title: "", amount: "" as unknown as number }); // bad practice but it works
+            append(emptyLiability);
           }}
         >
           Add liability
