@@ -69,9 +69,10 @@ export function ContributionForm<
       includeInGrowth,
     ];
 
-    fieldsToClear.forEach((field) =>
-      setValue(getName(field), undefined as any)
-    );
+    fieldsToClear.forEach((field) => {
+      const val = field === includeInGrowth ? false : undefined;
+      setValue(getName(field), val as any);
+    });
     setIncludeContributions(false);
   }
 
