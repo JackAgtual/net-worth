@@ -7,7 +7,7 @@ type ChartCardProps = {
 
 export function ChartCard({ title, children }: ChartCardProps) {
   return (
-    <Card>
+    <Card className="w-full max-w-7xl">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>

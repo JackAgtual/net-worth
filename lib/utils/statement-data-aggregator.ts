@@ -110,17 +110,15 @@ export class StatementDataAggregator {
     };
   }
 
-  async getMostRecentStatementData() {
+  getMostRecentStatementData() {
     return StatementDataAggregator.getAllDataFromStatement(
       this.mostRecentStatement
     );
   }
 
-  async getPlotData() {
-    const allData = await Promise.all(
-      this.statements.map(async (statement) => {
-        return StatementDataAggregator.getAllDataFromStatement(statement);
-      })
+  getDataOverTime() {
+    const allData = this.statements.map((statement) =>
+      StatementDataAggregator.getAllDataFromStatement(statement)
     );
 
     const netWorth: NetWorthChartData[] = [];

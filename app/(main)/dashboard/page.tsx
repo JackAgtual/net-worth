@@ -17,20 +17,59 @@ export default async function Home() {
   }
 
   const statementDataAggregator = new StatementDataAggregator(allStatements);
-  const [plotData, mostRecent] = await Promise.all([
-    statementDataAggregator.getPlotData(),
-    statementDataAggregator.getMostRecentStatementData(),
-  ]);
+  const plotData = statementDataAggregator.getDataOverTime();
+  const mostRecent = statementDataAggregator.getMostRecentStatementData();
+
+  const charts = [
+    {
+      title: "Net Worth vs. Time",
+      chart: <NetWorthChart chartData={plotData.netWorth} />,
+    },
+    {
+      title: "Asset Category vs. Time",
+      chart: (
+        <CategoryPercentageChart chartData={plotData.categoryPercentage} />
+      ),
+    },
+    {
+      title: "Asset Growth & Salary vs. Time",
+      chart: <AssetGrowthChart chartData={plotData.assetGrowth} />,
+    },
+    {
+      title: "Contribution & Withdrawal Amount vs. Time",
+      chart: (
+        <ContributionWithdrawalChart
+          chartData={plotData.contributionWithdrawalAmount}
+        />
+      ),
+    },
+    {
+      title: "Contribution & Withdrawal Percent of Salary vs. Time",
+      chart: (
+        <ContributionWithdrawalChart
+          chartData={plotData.contributionWithdrawalPercentOfSalary}
+          yAxisFormat="percent"
+        />
+      ),
+    },
+    {
+      title: "Cumulative Contribution & Withdrawal Amount vs. Time",
+      chart: (
+        <ContributionWithdrawalChart
+          chartData={plotData.cumulativeContributionWithdrawalAmount}
+        />
+      ),
+    },
+  ];
 
   return (
     <>
-      <p>Most recent statement: {mostRecent?.year}</p>
-      <Card>
+      <Card className="w-fit mx-auto mb-10">
         <CardHeader>
-          <CardTitle>Net Worth</CardTitle>
+          <CardTitle>{`Net Worth - ${mostRecent.year}`}</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 w-fit gap-x-2">
+        <CardContent className="grid grid-cols-2">
+          <div className="grid grid-cols-2 w-fit gap-x-2 h-fit">
             <p>Net worth:</p>
             <p>{formatAsDollar(mostRecent.netWorth)}</p>
             <p>Assets:</p>
@@ -38,46 +77,21 @@ export default async function Home() {
             <p>Liabilities:</p>
             <p>{formatAsDollar(mostRecent.liabilityAmount)}</p>
           </div>
-        </CardContent>
-      </Card>
-      <ChartCard title="Net Worth vs. Time">
-        <NetWorthChart chartData={plotData.netWorth} />
-      </ChartCard>
-      <ChartCard title="Asset Category vs. Time">
-        <CategoryPercentageChart chartData={plotData.categoryPercentage} />
-      </ChartCard>
-      <Card>
-        <CardHeader>
-          <CardTitle>Asset Growth vs. Salary</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 w-fit gap-x-2">
-            <p>Salary</p>
+          <div className="grid grid-cols-2 w-fit gap-x-2 h-fit">
+            <p>Salary:</p>
             <p>{formatAsDollar(mostRecent.lastYearSalary)}</p>
             <p>Asset growth:</p>
             <p>{formatAsDollar(mostRecent.lastYearAssetGrowth)}</p>
           </div>
         </CardContent>
       </Card>
-      <ChartCard title="Asset Growth & Salary vs. Time">
-        <AssetGrowthChart chartData={plotData.assetGrowth} />
-      </ChartCard>
-      <ChartCard title="Contribution & Withdrawal Amount vs. Time">
-        <ContributionWithdrawalChart
-          chartData={plotData.contributionWithdrawalAmount}
-        />
-      </ChartCard>
-      <ChartCard title="Contribution & Withdrawal Percent of Salary vs. Time">
-        <ContributionWithdrawalChart
-          chartData={plotData.contributionWithdrawalPercentOfSalary}
-          yAxisFormat="percent"
-        />
-      </ChartCard>
-      <ChartCard title="Cumulative Contribution & Withdrawal Amount vs. Time">
-        <ContributionWithdrawalChart
-          chartData={plotData.cumulativeContributionWithdrawalAmount}
-        />
-      </ChartCard>
+      <div className="w-full flex flex-col items-center gap-y-10">
+        {charts.map((chart) => (
+          <ChartCard key={chart.title} title={chart.title}>
+            {chart.chart}
+          </ChartCard>
+        ))}
+      </div>
     </>
   );
 }
