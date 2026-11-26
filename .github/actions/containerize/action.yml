@@ -1,0 +1,59 @@
+name: Containerize
+description: Build and push Docker image to GHCR
+
+inputs:
+  actor:
+    description: Username used to log in to GHCR
+    required: true
+  github_token:
+    description: GitHub token used to log in to GHCR
+    required: true
+  dhi_username:
+    description: Username to log in to dhi.io
+    required: true
+  dhi_token:
+    description: DockerHub token to log in to dhi.io
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Login to ghcr.io
+      uses: docker/login-action@v4
+      with:
+        registry: ghcr.io
+        username: ${{ inputs.actor }}
+        password: ${{ inputs.github_token }}
+
+    - name: Login to dhi.io
+      uses: docker/login-action@v4
+      with:
+        registry: dhi.io
+        username: ${{ inputs.dhi_username }}
+        password: ${{ inputs.dhi_token }}
+
+    - name: Compute variables for tagging images
+      shell: bash
+      id: vars
+      run: |
+        echo "sha_short=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+        echo "runner_image=ghcr.io/jackagtual/net-worth-tracker" >> "$GITHUB_OUTPUT"
+        echo "migration_image=ghcr.io/jackagtual/net-worth-tracker-migrator" >> "$GITHUB_OUTPUT"
+
+    - name: Build and push runner image
+      uses: docker/build-push-action@v7
+      with:
+        push: true
+        target: runner
+        tags: |
+          ${{ steps.vars.outputs.runner_image }}:latest
+          ${{ steps.vars.outputs.runner_image }}:${{ steps.vars.outputs.sha_short }}
+
+    - name: Build and push migration image
+      uses: docker/build-push-action@v7
+      with:
+        push: true
+        target: migration
+        tags: |
+          ${{ steps.vars.outputs.migration_image }}:latest
+          ${{ steps.vars.outputs.migration_image }}:${{ steps.vars.outputs.sha_short }}
