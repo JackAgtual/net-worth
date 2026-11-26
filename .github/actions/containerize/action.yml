@@ -55,7 +55,7 @@ runs:
       with:
         context: .
         push: true
-        target: migration
+        target: migrator
         tags: |
           ${{ steps.vars.outputs.migration_image }}:latest
           ${{ steps.vars.outputs.migration_image }}:${{ steps.vars.outputs.sha_short }}
