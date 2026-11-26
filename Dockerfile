@@ -17,7 +17,7 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Assumes "npm ci", "npm run build", and "npx prisma generate" were already run
+# Assumes "npm ci", "npx prisma generate", and "npm run build" were already run
 COPY --chown=node:node /.next/standalone ./
 COPY --chown=node:node /.next/static ./.next/static
 

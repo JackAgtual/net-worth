@@ -43,6 +43,7 @@ runs:
     - name: Build and push runner image
       uses: docker/build-push-action@v7
       with:
+        context: .
         push: true
         target: runner
         tags: |
@@ -52,6 +53,7 @@ runs:
     - name: Build and push migration image
       uses: docker/build-push-action@v7
       with:
+        context: .
         push: true
         target: migration
         tags: |
